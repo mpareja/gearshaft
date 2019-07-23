@@ -1,4 +1,5 @@
 const StreamName = require('../stream-name')
+const { exampleStreamName } = require('../examples')
 
 const A_CATEGORY = 'someCategory'
 const AN_ID = 'some_id'
@@ -123,6 +124,41 @@ describe('stream-name', () => {
 
     it('entity name is the category', () => {
       expect(StreamName.getEntityName(name)).toBe(A_CATEGORY)
+    })
+  })
+
+  describe('examples', () => {
+    describe('no category', () => {
+      it('category is test + random bytes + XX', () => {
+        const name = exampleStreamName()
+        expect(StreamName.getCategory(name)).toMatch(/^test.{32}XX/)
+      })
+    })
+
+    describe('with category', () => {
+      it('category is as stated', () => {
+        const name = exampleStreamName('bob')
+        expect(StreamName.getCategory(name)).toMatch('bob')
+      })
+    })
+
+    describe('with category and randomize option', () => {
+      it('category is as stated + random bytes + XX', () => {
+        const name = exampleStreamName('bogus', { randomize: true })
+        expect(StreamName.getCategory(name)).toMatch(/^bogus.{32}XX/)
+      })
+    })
+
+    describe('with category, id and randomize option', () => {
+      const name = exampleStreamName('bogus', AN_ID, { randomize: true })
+
+      it('category is as stated + random bytes + XX', () => {
+        expect(StreamName.getCategory(name)).toMatch(/^bogus.{32}XX/)
+      })
+
+      it('id is as stated', () => {
+        expect(StreamName.getId(name)).toEqual(AN_ID)
+      })
     })
   })
 })
