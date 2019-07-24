@@ -5,7 +5,7 @@ const A_CATEGORY = 'someCategory'
 const AN_ID = 'some_id'
 
 describe('stream-name', () => {
-  describe('with category', () => {
+  describe('with category no id', () => {
     const name = StreamName.create(A_CATEGORY)
 
     it('stream name is the category', () => {
@@ -17,7 +17,6 @@ describe('stream-name', () => {
     })
 
     it('is not a category stream', () => {
-      const name = StreamName.create(A_CATEGORY, AN_ID)
       expect(StreamName.isCategory(name)).toBe(true)
     })
 
@@ -45,8 +44,8 @@ describe('stream-name', () => {
       expect(StreamName.getCategory(name)).toBe(A_CATEGORY)
     })
 
-    it('is a category stream', () => {
-      expect(StreamName.isCategory(name)).toBe(true)
+    it('is not a category stream', () => {
+      expect(StreamName.isCategory(name)).toBe(false)
     })
 
     it('entity name is the category', () => {

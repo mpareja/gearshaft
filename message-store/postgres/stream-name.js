@@ -45,7 +45,7 @@ class StreamName {
   }
 
   static isCategory (name) {
-    return name.indexOf('-') >= 0
+    return name.indexOf('-') < 0
   }
 }
 
