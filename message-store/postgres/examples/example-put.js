@@ -1,9 +1,9 @@
 const { exampleStreamName } = require('./example-stream-name')
 const { exampleWriteMessageData } = require('./example-message-data')
 
-const examplePut = async (store, { count } = {}) => {
+const examplePut = async (store, { streamName, count } = {}) => {
   count = count || 1
-  const streamName = exampleStreamName()
+  streamName = streamName || exampleStreamName()
 
   let position
   while (count--) {
