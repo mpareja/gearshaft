@@ -1,4 +1,4 @@
-const createStore = require('../get')
+const createStore = require('../')
 const createLog = require('./test-log')
 const createMessageStoreDb = require('./create-message-store-db')
 const {
