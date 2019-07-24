@@ -21,7 +21,7 @@ module.exports = ({ db, log, batchSize = 1000 }) => {
   }
 
   const query = async (streamName, position, batchSize) => {
-    const values = [ streamName, position, batchSize, null ]
+    const values = [streamName, position, batchSize, null]
     const parameters = '$1::varchar, $2::bigint, $3::bigint, $4::varchar'
     const sql = `SELECT * FROM get_category_messages(${parameters});`
 

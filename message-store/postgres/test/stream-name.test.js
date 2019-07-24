@@ -89,7 +89,7 @@ describe('stream-name', () => {
     })
 
     it('types list contains all the types', () => {
-      expect(StreamName.getTypes(name)).toEqual([ 'someType', 'someOtherType' ])
+      expect(StreamName.getTypes(name)).toEqual(['someType', 'someOtherType'])
     })
 
     it('entity name is the category', () => {
