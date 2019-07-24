@@ -1,9 +1,24 @@
+const getConfig = require('../../../../test/config')
 const createTestDb = require('../../../../db/test/create-test-db') // test connection via this
 const { Client } = require('pg')
 
-const createMessageStoreDb = async () => {
-  const { config, close } = await createTestDb()
-  return createInstance(config, close)
+const createMessageStoreDb = /* istanbul ignore next */ async () => {
+  try {
+    let config = getConfig().db
+    let close = () => {}
+
+    if (config.generate) {
+      const createdDb = await createTestDb()
+      config = createdDb.config
+      close = createdDb.close
+    }
+
+    return createInstance(config, close)
+  } catch (e) {
+    // for some reason, jest is not outputting errors in beforeAll
+    console.log('Error creating message store', e)
+    throw e
+  }
 }
 module.exports = createMessageStoreDb
 
