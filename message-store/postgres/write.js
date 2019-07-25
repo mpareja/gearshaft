@@ -19,13 +19,15 @@ module.exports = ({ db, log, put }) => {
 
   const writeMessages = async (messages, streamName, expectedVersion) => {
     let position
-    for (const message of messages) {
-      position = await put(message, streamName, expectedVersion)
+    await db.transaction(async (txdb) => {
+      for (const message of messages) {
+        position = await put(message, streamName, expectedVersion, txdb)
 
-      if (typeof expectedVersion === 'number') {
-        expectedVersion += 1
+        if (typeof expectedVersion === 'number') {
+          expectedVersion += 1
+        }
       }
-    }
+    })
     return position
   }
 

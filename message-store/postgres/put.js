@@ -3,15 +3,16 @@ const { uuid } = require('../../identifier')
 
 const EXPECTED_VERSION_ERROR_CODE = 'ExpectedVersionError'
 
-module.exports = ({ db, log }) => {
+module.exports = ({ db: globalDb, log }) => {
   const putError = operationError('message-store put')
 
-  const put = async (message, streamName, expectedVersion) => {
+  const put = async (message, streamName, expectedVersion, db) => {
     log.debug({ type: message.type, streamName, expectedVersion }, 'message-store put: starting')
 
+    db = db || globalDb
     message.id = message.id || uuid()
 
-    const results = await insert(message, streamName, expectedVersion)
+    const results = await insert(message, streamName, expectedVersion, db)
 
     const position = results.rows[0].write_message
 
@@ -22,7 +23,7 @@ module.exports = ({ db, log }) => {
     return position
   }
 
-  const insert = async (message, streamName, expectedVersion) => {
+  const insert = async (message, streamName, expectedVersion, db) => {
     const { id, type } = message
     const data = serialize(message.data)
     const metadata = serialize(message.metadata)
