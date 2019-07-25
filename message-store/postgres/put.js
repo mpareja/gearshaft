@@ -49,7 +49,7 @@ module.exports = ({ db, log }) => {
       e.code = EXPECTED_VERSION_ERROR_CODE
       return e
     }
-    return putError('error writing to database', error)
+    return putError(`error writing to database: ${error.message}`, error)
   }
 
   const isExpectedVersionError = (err) => {

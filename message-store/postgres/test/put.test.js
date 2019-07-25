@@ -211,7 +211,7 @@ describe('put', () => {
       const promise = store.put(message, exampleStreamName())
 
       await expect(promise).rejects.toMatchObject({
-        message: 'message-store put: error writing to database',
+        message: 'message-store put: error writing to database: Cannot use a pool after calling end on the pool',
         inner: expect.anything()
       })
     })
