@@ -17,7 +17,7 @@ const setup = async () => {
 describe('write', () => {
   describe('single message', () => {
     let position, streamName, writeMessage
-    beforeEach(async () => {
+    beforeAll(async () => {
       setup()
       streamName = exampleStreamName()
       writeMessage = exampleWriteMessageData()

@@ -36,7 +36,7 @@ describe('pg', () => {
 
     describe('error during transaction after writing message', () => {
       let streamName, promise
-      beforeEach(() => {
+      beforeAll(() => {
         streamName = exampleStreamName()
 
         promise = db.transaction(async (transaction) => {
