@@ -50,5 +50,23 @@ describe('message-transforms', () => {
         expect(message.metadata.other).toBeNull()
       })
     })
+
+    describe('message without metadata', () => {
+      it('includes empty metadata', () => {
+        const message = exampleMessage()
+        delete message.metadata
+
+        const messageData = toWriteMessageData(message)
+
+        expect(messageData.metadata).toEqual({})
+      })
+    })
+
+    describe('null message', () => {
+      it('is an error', () => {
+        expect(() => toWriteMessageData(null)).toThrow(
+          'message must be defined')
+      })
+    })
   })
 })

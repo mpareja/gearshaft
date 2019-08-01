@@ -1,3 +1,4 @@
+const assert = require('assert')
 const deleteKeysWithNullValues = (obj) => {
   for (const [key, val] of Object.entries(obj)) {
     if (val === null) {
@@ -7,8 +8,10 @@ const deleteKeysWithNullValues = (obj) => {
 }
 
 module.exports.toWriteMessageData = (message) => {
+  assert(message, 'toWriteMessageData: message must be defined')
+
   const { id, metadata: messageMetadata, ...data } = message
-  const { ...metadata } = messageMetadata
+  const { ...metadata } = messageMetadata || {}
 
   deleteKeysWithNullValues(metadata)
 
