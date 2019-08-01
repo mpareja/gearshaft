@@ -1,5 +1,8 @@
 const { uuid } = require('../../../identifier')
-const { exampleRandomValue } = require('./example-random-value')
+const {
+  exampleMetadata,
+  exampleRandomValue
+} = require('../../../messaging/examples')
 
 const exampleWriteMessageData = ({ id, type, data, metadata } = {}) => {
   id = id || uuid()
@@ -7,10 +10,6 @@ const exampleWriteMessageData = ({ id, type, data, metadata } = {}) => {
   data = data || { someAttribute: exampleRandomValue() }
   metadata = metadata || exampleMetadata()
   return { id, type, data, metadata }
-}
-
-const exampleMetadata = () => {
-  return { someMetaAttribute: exampleRandomValue() }
 }
 
 module.exports = { exampleWriteMessageData }
