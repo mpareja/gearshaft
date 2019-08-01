@@ -1,5 +1,5 @@
 const createStore = require('../')
-const createLog = require('./test-log')
+const createLog = require('../../../test/test-log')
 const createMessageStoreDb = require('./create-message-store-db')
 const {
   examplePut,
