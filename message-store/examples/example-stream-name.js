@@ -1,6 +1,6 @@
 const crypto = require('crypto')
 const StreamName = require('../stream-name.js')
-const { uuid } = require('../../../identifier')
+const { uuid } = require('../../identifier')
 
 const exampleStreamName = (category, id, extra) => {
   if (typeof id === 'object') {
