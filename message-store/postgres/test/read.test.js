@@ -1,10 +1,7 @@
-const createStore = require('../')
-const createLog = require('../../../test/test-log')
-const createMessageStoreDb = require('./create-message-store-db')
 const {
-  examplePut,
-  exampleStreamName
-} = require('../examples')
+  createStore, createLog, createMessageStoreDb,
+  examplePut, exampleStreamName
+} = require('./init-message-store')
 
 let db
 beforeAll(async () => { db = await createMessageStoreDb() }, 8100) // 4s create postgres + 4s to migrate
