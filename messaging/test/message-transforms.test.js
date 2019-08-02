@@ -1,13 +1,14 @@
-const { toWriteMessageData } = require('../message-transforms')
+const { fromReadMessageData, toWriteMessageData } = require('../message-transforms')
 const {
-  exampleMessage
+  exampleMessage,
+  exampleMessageClass
 } = require('../examples')
 
 describe('message-transforms', () => {
   describe('toWriteMessageData', () => {
     let message, messageData
 
-    beforeAll(() => {
+    beforeEach(() => {
       message = exampleMessage()
       messageData = toWriteMessageData(message)
     })
@@ -65,7 +66,72 @@ describe('message-transforms', () => {
     describe('null message', () => {
       it('is an error', () => {
         expect(() => toWriteMessageData(null)).toThrow(
-          'message must be defined')
+          'toWriteMessageData: message must be defined')
+      })
+    })
+  })
+
+  describe('fromWriteMessageData', () => {
+    let message, messageClass, messageData, transformed
+
+    beforeEach(() => {
+      messageClass = exampleMessageClass()
+      message = exampleMessage(messageClass)
+      messageData = toWriteMessageData(message)
+      messageData.streamName = 'someStream'
+      messageData.position = 1
+      messageData.globalPosition = 123
+      messageData.time = new Date()
+      transformed = fromReadMessageData(messageData, messageClass)
+    })
+
+    it('includes id', () => {
+      expect(transformed.id).toBe(message.id)
+    })
+
+    it('message is instance of message class', () => {
+      expect(transformed).toBeInstanceOf(messageClass)
+    })
+
+    it('includes message fields', () => {
+      expect(transformed.someAttribute).toBe(messageData.data.someAttribute)
+    })
+
+    it('includes message metadata', () => {
+      expect(transformed.metadata.someMetaAttribute)
+        .toEqual(messageData.metadata.someMetaAttribute)
+    })
+
+    it('includes stream name', () => {
+      expect(transformed.streamName).toBe(messageData.streamName)
+    })
+
+    it('includes position', () => {
+      expect(transformed.position).toBe(messageData.position)
+    })
+
+    it('includes global position', () => {
+      expect(transformed.globalPosition).toBe(messageData.globalPosition)
+    })
+
+    it('includes time', () => {
+      expect(transformed.time).toBe(messageData.time)
+    })
+
+    describe('MessageData without metadata', () => {
+      it('includes empty metadata', () => {
+        delete messageData.metadata
+
+        const transformed = fromReadMessageData(messageData, messageClass)
+
+        expect(transformed.metadata).toEqual({})
+      })
+    })
+
+    describe('null message', () => {
+      it('is an error', () => {
+        expect(() => fromReadMessageData(null)).toThrow(
+          'fromReadMessageData: messageData must be defined')
       })
     })
   })

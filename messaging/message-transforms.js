@@ -23,3 +23,19 @@ module.exports.toWriteMessageData = (message) => {
   }
   return messageData
 }
+
+module.exports.fromReadMessageData = (messageData, Class) => {
+  assert(messageData, 'fromReadMessageData: messageData must be defined')
+
+  const message = new Class()
+  Object.assign(message, messageData.data)
+  message.id = messageData.id
+  message.metadata = messageData.metadata || {}
+
+  message.streamName = messageData.streamName
+  message.position = messageData.position
+  message.globalPosition = messageData.globalPosition
+  message.time = messageData.time
+
+  return message
+}
