@@ -1,6 +1,7 @@
 const createEntityStore = require('../entity-store')
 const {
-  exampleCategory
+  exampleCategory,
+  exampleMessageStore
 } = require('../examples')
 
 class SomeEntityClass {}
@@ -12,7 +13,7 @@ describe('entity-store', () => {
       options = {
         category: exampleCategory(),
         entity: SomeEntityClass,
-        store: { read: () => {} },
+        store: exampleMessageStore(),
         registerHandlers: jest.fn()
       }
     })
