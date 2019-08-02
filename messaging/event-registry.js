@@ -5,13 +5,14 @@ module.exports = () => {
     handlers.push([messageClass, handler])
   }
 
-  const get = (message) => {
-    const messageClass = message.constructor
-    const handler = handlers
-      .filter(([aClass]) => aClass === messageClass)
-      .map(([_, handler]) => handler)[0]
+  const get = (messageData) => {
+    const { type } = messageData
+    const found = handlers
+      .filter(([aClass]) => aClass.name === type)[0] || []
 
-    return { handler, messageClass }
+    const [messageClass, handler] = found
+
+    return { messageClass, handler }
   }
 
   return { get, register }

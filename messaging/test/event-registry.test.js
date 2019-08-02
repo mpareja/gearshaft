@@ -1,6 +1,6 @@
 const createRegistry = require('../event-registry')
 const {
-  exampleMessage,
+  exampleMessageData,
   exampleMessageClass
 } = require('../examples')
 
@@ -9,7 +9,7 @@ describe('event-registry', () => {
     it('returns no handler', () => {
       const registry = createRegistry()
 
-      const found = registry.get(exampleMessage())
+      const found = registry.get(exampleMessageData())
 
       expect(found.handler).toBeUndefined()
     })
@@ -19,24 +19,24 @@ describe('event-registry', () => {
     const registry = createRegistry()
     const Class = exampleMessageClass()
     const handler = () => {}
-    const message = exampleMessage(Class)
+    const messageData = exampleMessageData(Class)
     registry.register(Class, handler)
 
     it('returns the handler', () => {
-      const found = registry.get(message)
+      const found = registry.get(messageData)
 
       expect(found.handler).toBe(handler)
     })
 
     it('returns the message class', () => {
-      const found = registry.get(message)
+      const found = registry.get(messageData)
 
       expect(found.messageClass).toBe(Class)
     })
 
     describe('getting unregistered class', () => {
       it('returns no handler', () => {
-        const messageOfOtherClass = exampleMessage()
+        const messageOfOtherClass = exampleMessageData()
 
         const found = registry.get(messageOfOtherClass)
 
@@ -55,18 +55,18 @@ describe('event-registry', () => {
     registry.register(Class2, handler2)
 
     it('returns first message handler', () => {
-      const message = exampleMessage(Class1)
+      const messageData = exampleMessageData(Class1)
 
-      const found = registry.get(message)
+      const found = registry.get(messageData)
 
       expect(found.handler).toBe(handler1)
       expect(found.messageClass).toBe(Class1)
     })
 
     it('returns second message handler', () => {
-      const message = exampleMessage(Class2)
+      const messageData = exampleMessageData(Class2)
 
-      const found = registry.get(message)
+      const found = registry.get(messageData)
 
       expect(found.handler).toBe(handler2)
       expect(found.messageClass).toBe(Class2)
@@ -74,7 +74,7 @@ describe('event-registry', () => {
 
     describe('getting unregistered class', () => {
       it('returns no handler', () => {
-        const messageOfOtherClass = exampleMessage()
+        const messageOfOtherClass = exampleMessageData()
 
         const found = registry.get(messageOfOtherClass)
 
