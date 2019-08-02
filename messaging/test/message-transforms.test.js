@@ -17,7 +17,7 @@ describe('message-transforms', () => {
     })
 
     it('includes type', () => {
-      expect(messageData.type).toBe('AnExampleMessage')
+      expect(messageData.type).toMatch(/^AnExampleMessage_/)
     })
 
     it('includes message fields', () => {
