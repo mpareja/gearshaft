@@ -11,7 +11,7 @@ describe('event-registry', () => {
 
       const found = registry.get(exampleMessage())
 
-      expect(found).toBeUndefined()
+      expect(found.handler).toBeUndefined()
     })
   })
 
@@ -25,7 +25,13 @@ describe('event-registry', () => {
     it('returns the handler', () => {
       const found = registry.get(message)
 
-      expect(found).toBe(handler)
+      expect(found.handler).toBe(handler)
+    })
+
+    it('returns the message class', () => {
+      const found = registry.get(message)
+
+      expect(found.messageClass).toBe(Class)
     })
 
     describe('getting unregistered class', () => {
@@ -34,7 +40,7 @@ describe('event-registry', () => {
 
         const found = registry.get(messageOfOtherClass)
 
-        expect(found).toBeUndefined()
+        expect(found.handler).toBeUndefined()
       })
     })
   })
@@ -53,7 +59,8 @@ describe('event-registry', () => {
 
       const found = registry.get(message)
 
-      expect(found).toBe(handler1)
+      expect(found.handler).toBe(handler1)
+      expect(found.messageClass).toBe(Class1)
     })
 
     it('returns second message handler', () => {
@@ -61,7 +68,8 @@ describe('event-registry', () => {
 
       const found = registry.get(message)
 
-      expect(found).toBe(handler2)
+      expect(found.handler).toBe(handler2)
+      expect(found.messageClass).toBe(Class2)
     })
 
     describe('getting unregistered class', () => {
@@ -70,7 +78,7 @@ describe('event-registry', () => {
 
         const found = registry.get(messageOfOtherClass)
 
-        expect(found).toBeUndefined()
+        expect(found.handler).toBeUndefined()
       })
     })
   })

@@ -6,12 +6,12 @@ module.exports = () => {
   }
 
   const get = (message) => {
-    const desiredClass = message.constructor
+    const messageClass = message.constructor
     const handler = handlers
-      .filter(([messageClass]) => messageClass === desiredClass)
+      .filter(([aClass]) => aClass === messageClass)
       .map(([_, handler]) => handler)[0]
 
-    return handler
+    return { handler, messageClass }
   }
 
   return { get, register }
