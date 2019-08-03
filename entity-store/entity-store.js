@@ -19,6 +19,6 @@ function validateOptions (options) {
   assert(typeof options.category === 'string', m('category required'))
   assert(typeof options.entity === 'function', m('entity required'))
   assert(typeof options.registerHandlers === 'function', m('registerHandlers required'))
-  assert(options.store, m('message-store required'))
-  assert(typeof options.store.read === 'function', m('message-store missing read'))
+  assert(options.messageStore, m('messageStore required'))
+  assert(typeof options.messageStore.read === 'function', m('messageStore missing read'))
 }

@@ -13,7 +13,7 @@ describe('entity-store', () => {
       options = {
         category: exampleCategory(),
         entity: SomeEntityClass,
-        store: exampleMessageStore(),
+        messageStore: exampleMessageStore(),
         registerHandlers: jest.fn()
       }
     })
@@ -58,18 +58,18 @@ describe('entity-store', () => {
         }).toThrow(new Error('entity-store create: registerHandlers required'))
       })
 
-      it('no store provided', () => {
-        delete options.store
+      it('no message store provided', () => {
+        delete options.messageStore
         expect(() => {
           createEntityStore(options)
-        }).toThrow(new Error('entity-store create: message-store required'))
+        }).toThrow(new Error('entity-store create: messageStore required'))
       })
 
       it('store without read method', () => {
-        delete options.store.read
+        delete options.messageStore.read
         expect(() => {
           createEntityStore(options)
-        }).toThrow(new Error('entity-store create: message-store missing read'))
+        }).toThrow(new Error('entity-store create: messageStore missing read'))
       })
     })
   })
