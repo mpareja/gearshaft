@@ -17,7 +17,7 @@ describe('message-store-memory', () => {
     })
   })
 
-  describe('write messages to stream', () => {
+  describe('write seperate messages to stream', () => {
     let store, message1, message2
     beforeEach(() => {
       message1 = exampleMessageData()
@@ -54,6 +54,26 @@ describe('message-store-memory', () => {
           found.push(message)
         }
         expect(found).toHaveLength(0)
+      })
+    })
+  })
+
+  describe('write batch of messages to stream', () => {
+    let store, message1, message2
+    beforeEach(() => {
+      message1 = exampleMessageData()
+      message2 = exampleMessageData()
+      store = createMessageStore()
+      store.write([message1, message2], 'stream-123')
+    })
+
+    describe('reading messages from stream', () => {
+      it('returns expected messages', async () => {
+        const found = []
+        for await (const message of store.read('stream-123')) {
+          found.push(message)
+        }
+        expect(found).toEqual([message1, message2])
       })
     })
   })

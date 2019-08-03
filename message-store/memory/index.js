@@ -11,14 +11,17 @@ module.exports = () => {
     }
   }
 
-  const write = (message, streamName) => {
+  const write = (msgOrBatch, streamName) => {
     let stream = streams[streamName]
     if (!stream) {
       stream = []
       streams[streamName] = stream
     }
 
-    stream.push(message)
+    const batch = Array.isArray(msgOrBatch) ? msgOrBatch : [msgOrBatch]
+    for (const message of batch) {
+      stream.push(message)
+    }
   }
 
   return { read, write }
