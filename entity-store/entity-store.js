@@ -1,17 +1,39 @@
 const assert = require('assert')
 const createRegistry = require('../messaging/event-registry')
+const StreamName = require('../message-store/stream-name')
+const { fromReadMessageData } = require('../messaging/message-transforms')
 
 const m = (msg) => `entity-store create: ${msg}`
 
 module.exports = (options) => {
   validateOptions(options)
 
-  const { registerHandlers } = options
+  const {
+    category,
+    entity: EntityClass,
+    messageStore,
+    registerHandlers
+  } = options
 
   const registry = createRegistry()
-  registerHandlers(registry)
+  registerHandlers(registry.register)
 
-  return {}
+  const entity = new EntityClass()
+
+  const fetch = async (id) => {
+    const streamName = StreamName.create(category, id)
+    for await (const messageData of messageStore.read(streamName)) {
+      const { handler, messageClass } = registry.get(messageData)
+
+      const message = fromReadMessageData(messageData, messageClass)
+
+      handler(entity, message)
+    }
+
+    return entity
+  }
+
+  return { fetch }
 }
 
 function validateOptions (options) {

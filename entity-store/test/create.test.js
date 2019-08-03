@@ -1,10 +1,9 @@
 const createEntityStore = require('../entity-store')
 const {
   exampleCategory,
-  exampleMessageStore
+  exampleMessageStore,
+  ExampleEntityClass
 } = require('../examples')
-
-class SomeEntityClass {}
 
 describe('entity-store', () => {
   describe('create', () => {
@@ -12,7 +11,7 @@ describe('entity-store', () => {
     beforeEach(() => {
       options = {
         category: exampleCategory(),
-        entity: SomeEntityClass,
+        entity: ExampleEntityClass,
         messageStore: exampleMessageStore(),
         registerHandlers: jest.fn()
       }
@@ -26,7 +25,7 @@ describe('entity-store', () => {
     it('calls registerHandlers with registry', () => {
       createEntityStore(options)
       expect(options.registerHandlers).toHaveBeenCalledWith(
-        expect.objectContaining({ register: expect.any(Function) })
+        expect.any(Function)
       )
     })
 
