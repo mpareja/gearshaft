@@ -84,7 +84,7 @@ module.exports.generateEntityStoreSuite = ({
 
         it('message is applied to correct handler', async () => {
           expect(result.applied).toEqual([
-            { method: 'methodA', message: ignoreReadMetadata(message) }
+            { method: 'methodA', id: message.id }
           ])
         })
       })
@@ -103,8 +103,8 @@ module.exports.generateEntityStoreSuite = ({
 
         it('both messages applied to correct handler in order', () => {
           expect(result.applied).toEqual([
-            { method: 'methodB', message: ignoreReadMetadata(messageB) },
-            { method: 'methodA', message: ignoreReadMetadata(messageA) }
+            { method: 'methodB', id: messageB.id },
+            { method: 'methodA', id: messageA.id }
           ])
         })
       })
@@ -113,12 +113,4 @@ module.exports.generateEntityStoreSuite = ({
       })
     })
   })
-}
-
-function ignoreReadMetadata (message) {
-  message.globalPosition = expect.any(Number)
-  message.position = expect.any(Number)
-  message.streamName = expect.any(String)
-  message.time = expect.any(Date)
-  return message
 }

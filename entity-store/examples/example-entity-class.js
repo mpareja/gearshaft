@@ -4,7 +4,7 @@ class ExampleEntityClass {
   }
 
   note (method, message) {
-    this.applied.push({ method, message })
+    this.applied.push({ method, id: message.id })
   }
 
   methodA (message) {
