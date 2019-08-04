@@ -3,13 +3,14 @@ const createLog = require('../../test/test-log')
 const createWriter = require('../../messaging/write')
 const StreamName = require('../../message-store/stream-name')
 const {
+  exampleCategory,
   ExampleEntityClass,
   exampleMessage,
   exampleMessageClass,
   exampleStreamName
 } = require('../examples')
 
-const A_CATEGORY = 'pets'
+const A_CATEGORY = exampleCategory()
 const MessageClassA = exampleMessageClass()
 const MessageClassB = exampleMessageClass()
 
@@ -110,6 +111,16 @@ module.exports.generateEntityStoreSuite = ({
       })
 
       describe('handler not registered for message', () => {
+        it('ignores message', async () => {
+          const message = exampleMessage()
+          const streamName = exampleStreamName(A_CATEGORY)
+          const id = StreamName.getId(streamName)
+          await write(message, streamName)
+
+          const result = await entityStore.fetch(id)
+
+          expect(result.applied).toHaveLength(0)
+        })
       })
     })
   })

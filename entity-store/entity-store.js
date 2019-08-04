@@ -25,6 +25,8 @@ module.exports = (options) => {
     for await (const messageData of messageStore.read(streamName)) {
       const { handler, messageClass } = registry.get(messageData)
 
+      if (!handler) { continue }
+
       const message = fromReadMessageData(messageData, messageClass)
 
       handler(entity, message)
