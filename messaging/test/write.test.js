@@ -88,4 +88,16 @@ describe('write', () => {
       })
     })
   })
+
+  describe('write.initial', () => {
+    it('uses version -1', async () => {
+      const streamName = exampleStreamName()
+      const message = exampleMessage()
+      const messageData = toWriteMessageData(message)
+
+      await write.initial(message, streamName)
+
+      expect(store.write).toHaveBeenCalledWith([messageData], streamName, -1)
+    })
+  })
 })
