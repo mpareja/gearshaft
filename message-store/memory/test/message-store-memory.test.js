@@ -1,6 +1,8 @@
+const createLog = require('../../../test/test-log')
 const createMessageStore = require('../index')
 const uuidValidate = require('uuid-validate')
 const { generateReadSuite } = require('../../test/read-test-suite')
+const { generateWriteSuite } = require('../../test/write-test-suite')
 const {
   exampleMessageData,
   exampleStreamName
@@ -8,10 +10,12 @@ const {
 
 describe('message-store-memory', () => {
   generateReadSuite({ createMessageStore })
+  generateWriteSuite({ createMessageStore })
 
-  let store
+  let store, log
   beforeEach(() => {
-    store = createMessageStore()
+    log = createLog()
+    store = createMessageStore({ log })
   })
 
   const read = (...args) => {
@@ -212,7 +216,7 @@ describe('message-store-memory', () => {
       let streamName, error, sharedStore
       beforeAll(async () => {
         streamName = exampleStreamName()
-        sharedStore = createMessageStore()
+        sharedStore = createMessageStore({ log })
         const oldPosition = await sharedStore.write(exampleMessageData(), streamName)
         await sharedStore.write(exampleMessageData(), streamName)
 
@@ -224,7 +228,7 @@ describe('message-store-memory', () => {
       })
 
       it('results in an error', async () => {
-        const expectedMessage = `message-store write: Wrong expected version: 0 (Stream: ${streamName}, Stream Version: 1)`
+        const expectedMessage = `message-store put: Wrong expected version: 0 (Stream: ${streamName}, Stream Version: 1)`
         expect(error).toEqual(new Error(expectedMessage))
       })
 
