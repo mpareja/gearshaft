@@ -19,7 +19,7 @@ module.exports = () => {
     }
   }
 
-  const write = async (msgOrBatch, streamName, expectedVersion) => {
+  const put = async (inputMessage, streamName, expectedVersion) => {
     let stream = streams[streamName]
     if (!stream) {
       stream = []
@@ -30,30 +30,37 @@ module.exports = () => {
     if (typeof expectedVersion === 'number' && expectedVersion !== currentVersion) {
       throw writeError(`Wrong expected version: ${expectedVersion} (Stream: ${streamName}, Stream Version: ${currentVersion})`)
     }
+
+    const id = inputMessage.id || uuid()
+    if (messageIds[id]) {
+      throw writeError(`duplicate message id: ${id}`)
+    }
+
+    const message = cloneDeep(inputMessage)
+    message.id = message.id || uuid()
+    message.position = stream.length
+    message.globalPosition = globalPosition++
+    message.time = new Date()
+    message.streamName = streamName
+
+    const lastPosition = message.position
+
+    stream.push(message)
+    messageIds[message.id] = true
+
+    return lastPosition
+  }
+
+  const write = async (msgOrBatch, streamName, expectedVersion) => {
     let lastPosition
 
     const batch = Array.isArray(msgOrBatch) ? msgOrBatch : [msgOrBatch]
     for (const inputMessage of batch) {
-      const id = inputMessage.id || uuid()
-      if (messageIds[id]) {
-        throw writeError(`duplicate message id: ${id}`)
-      }
-
-      const message = cloneDeep(inputMessage)
-      message.id = message.id || uuid()
-      message.position = stream.length
-      message.globalPosition = globalPosition++
-      message.time = new Date()
-      message.streamName = streamName
-
-      lastPosition = message.position
-
-      stream.push(message)
-      messageIds[message.id] = true
+      lastPosition = await put(inputMessage, streamName, expectedVersion)
     }
 
     return lastPosition
   }
 
-  return { read, write }
+  return { put, read, write }
 }

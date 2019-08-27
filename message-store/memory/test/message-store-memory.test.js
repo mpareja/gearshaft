@@ -1,11 +1,14 @@
 const createMessageStore = require('../index')
 const uuidValidate = require('uuid-validate')
+const { generateReadSuite } = require('../../test/read-test-suite')
 const {
   exampleMessageData,
   exampleStreamName
 } = require('../../examples')
 
 describe('message-store-memory', () => {
+  generateReadSuite({ createMessageStore })
+
   let store
   beforeEach(() => {
     store = createMessageStore()
