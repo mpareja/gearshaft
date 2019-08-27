@@ -1,8 +1,8 @@
-const { uuid } = require('../../../identifier')
+const { uuid } = require('../../identifier')
 const {
   exampleMetadata,
   exampleRandomValue
-} = require('../../../messaging/examples')
+} = require('../../messaging/examples')
 
 const exampleWriteMessageData = ({ id, type, data, metadata } = {}) => {
   id = id || uuid()

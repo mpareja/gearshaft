@@ -1,4 +1,4 @@
-const { exampleStreamName } = require('../../examples/example-stream-name')
+const { exampleStreamName } = require('./example-stream-name')
 const { exampleWriteMessageData } = require('./example-message-data')
 
 const examplePut = async (store, { streamName, count, trackMessages = false } = {}) => {
