@@ -5,14 +5,14 @@ const writeError = operationError('messaging write')
 
 module.exports = ({ log, store }) => {
   const write = async (messageOrBatch, streamName, { expectedVersion } = {}) => {
+    const messages = Array.isArray(messageOrBatch) ? messageOrBatch : [messageOrBatch]
     const info = {
-      count: Array.isArray(messageOrBatch) ? messageOrBatch.length : 1,
+      count: messages.count,
       expectedVersion,
       streamName
     }
     log.debug(info, 'messaging write: starting')
 
-    const messages = Array.isArray(messageOrBatch) ? messageOrBatch : [messageOrBatch]
     const data = transformMessages(messages)
 
     const position = store.write(data, streamName, expectedVersion)
