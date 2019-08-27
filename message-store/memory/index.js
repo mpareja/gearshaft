@@ -19,6 +19,11 @@ module.exports = ({ log }) => {
     return subset
   }
 
+  const getLast = async function (streamName, position) {
+    const stream = streams[streamName] || []
+    return stream[stream.length - 1] || null
+  }
+
   const read = async function * (streamName, position) {
     const subset = await get(streamName, position)
 
@@ -110,5 +115,5 @@ module.exports = ({ log }) => {
     return err.code === EXPECTED_VERSION_ERROR_CODE
   }
 
-  return { get, isExpectedVersionError, put, read, write }
+  return { get, getLast, isExpectedVersionError, put, read, write }
 }

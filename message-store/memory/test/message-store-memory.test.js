@@ -1,6 +1,7 @@
 const createLog = require('../../../test/test-log')
 const createMessageStore = require('../index')
 const uuidValidate = require('uuid-validate')
+const { generateGetLastSuite } = require('../../test/get-last-test-suite')
 const { generateReadSuite } = require('../../test/read-test-suite')
 const { generateWriteSuite } = require('../../test/write-test-suite')
 const {
@@ -9,6 +10,7 @@ const {
 } = require('../../examples')
 
 describe('message-store-memory', () => {
+  generateGetLastSuite({ createMessageStore })
   generateReadSuite({ createMessageStore })
   generateWriteSuite({ createMessageStore })
 
