@@ -1,5 +1,6 @@
 const operationError = require('../../errors/operation-error')
 const StreamName = require('../stream-name')
+const { deserialize } = require('./deserialize')
 
 module.exports = ({ db, log, batchSize = 1000 }) => {
   const getError = operationError('message-store get')
@@ -14,7 +15,7 @@ module.exports = ({ db, log, batchSize = 1000 }) => {
       throw getError('error reading from database', inner)
     }
 
-    const results = dbResults.rows.map(deserialize)
+    const results = dbResults.map(deserialize)
     const count = results.length
 
     log.info({ batchSize, count, position, streamName }, 'message-store get: successful')
@@ -29,20 +30,8 @@ module.exports = ({ db, log, batchSize = 1000 }) => {
       ? `SELECT * FROM get_category_messages(${parameters});`
       : `SELECT * FROM get_stream_messages(${parameters});`
 
-    return db.query(sql, values)
-  }
-
-  const deserialize = (row) => {
-    return {
-      id: row.id,
-      streamName: row.stream_name,
-      type: row.type,
-      position: row.position,
-      globalPosition: row.global_position,
-      data: JSON.parse(row.data),
-      metadata: JSON.parse(row.metadata),
-      time: new Date(row.time)
-    }
+    const result = await db.query(sql, values)
+    return result.rows
   }
 
   return { get }
