@@ -1,4 +1,5 @@
 module.exports = {
+  ...require('../../examples'),
   ...require('../../messaging/examples'),
   ...require('./example-message-data.js'),
   ...require('./example-message-store.js'),
