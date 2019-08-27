@@ -1,4 +1,3 @@
-const { generateGetSuite } = require('../../test/get-test-suite')
 const {
   createStore, createLog, createMessageStoreDb, exampleStreamName
 } = require('./init-message-store')
@@ -10,8 +9,6 @@ afterAll(async () => { await db.close() })
 const createMessageStore = (options) => createStore({ db, ...options })
 
 describe('message-store-postgres', () => {
-  generateGetSuite({ createMessageStore })
-
   describe('get', () => {
     describe('connection error', () => {
       it('propagates error', async () => {

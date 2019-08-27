@@ -22,15 +22,35 @@ exports.generateGetLastSuite = ({
 
         expect(lastMessage.data).toEqual(writeMessage.data)
       })
+
+      it('logs success', async () => {
+        const { streamName } = await examplePut(store, { count: 2 })
+
+        await store.getLast(streamName)
+
+        expect(log.info).toHaveBeenCalledWith({
+          count: 1,
+          streamName
+        }, 'message-store getLast: successful')
+      })
     })
 
     describe('stream with no messages', () => {
+      let lastMessage, streamName
+      beforeEach(async () => {
+        streamName = exampleStreamName()
+        lastMessage = await store.getLast(streamName)
+      })
+
       it('returns null', async () => {
-        const streamName = exampleStreamName()
-
-        const lastMessage = await store.getLast(streamName)
-
         expect(lastMessage).toBeNull()
+      })
+
+      it('logs success', async () => {
+        expect(log.info).toHaveBeenCalledWith({
+          count: 0,
+          streamName
+        }, 'message-store getLast: successful')
       })
     })
   })

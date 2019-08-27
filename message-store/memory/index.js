@@ -21,7 +21,12 @@ module.exports = ({ log }) => {
 
   const getLast = async function (streamName, position) {
     const stream = streams[streamName] || []
-    return stream[stream.length - 1] || null
+    const result = stream[stream.length - 1] || null
+    log.info({
+      count: result ? 1 : 0,
+      streamName
+    }, 'message-store getLast: successful')
+    return result
   }
 
   const read = async function * (streamName, position) {
