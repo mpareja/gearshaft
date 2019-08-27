@@ -19,13 +19,24 @@ module.exports = ({ log }) => {
     return subset
   }
 
-  const getLast = async function (streamName, position) {
+  const getLast = async function (streamName) {
     const stream = streams[streamName] || []
-    const result = stream[stream.length - 1] || null
+
+    let count = 0
+    let position
+    let result = null
+    if (stream.length) {
+      count = 1
+      position = stream.length - 1
+      result = stream[position]
+    }
+
     log.info({
-      count: result ? 1 : 0,
+      count,
+      position,
       streamName
     }, 'message-store getLast: successful')
+
     return result
   }
 

@@ -30,6 +30,7 @@ exports.generateGetLastSuite = ({
 
         expect(log.info).toHaveBeenCalledWith({
           count: 1,
+          position: 1,
           streamName
         }, 'message-store getLast: successful')
       })
