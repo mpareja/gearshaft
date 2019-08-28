@@ -1,4 +1,6 @@
 const assert = require('assert')
+const cloneDeep = require('lodash.clonedeep')
+
 const deleteKeysWithNullValues = (obj) => {
   for (const [key, val] of Object.entries(obj)) {
     if (val === null) {
@@ -30,12 +32,14 @@ module.exports.fromReadMessageData = (messageData, Class) => {
   const message = new Class()
   Object.assign(message, messageData.data)
   message.id = messageData.id
-  message.metadata = messageData.metadata || {}
 
-  message.streamName = messageData.streamName
-  message.position = messageData.position
-  message.globalPosition = messageData.globalPosition
-  message.time = messageData.time
+  const metadata = messageData.metadata ? cloneDeep(messageData.metadata) : {}
+  message.metadata = metadata
+
+  metadata.streamName = messageData.streamName
+  metadata.position = messageData.position
+  metadata.globalPosition = messageData.globalPosition
+  metadata.time = messageData.time
 
   return message
 }

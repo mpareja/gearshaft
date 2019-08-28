@@ -97,34 +97,37 @@ describe('message-transforms', () => {
       expect(transformed.someAttribute).toBe(messageData.data.someAttribute)
     })
 
-    it('includes message metadata', () => {
-      expect(transformed.metadata.someMetaAttribute)
-        .toEqual(messageData.metadata.someMetaAttribute)
-    })
+    describe('metadata', () => {
+      it('includes message metadata', () => {
+        expect(transformed.metadata.someMetaAttribute)
+          .toEqual(messageData.metadata.someMetaAttribute)
+      })
 
-    it('includes stream name', () => {
-      expect(transformed.streamName).toBe(messageData.streamName)
-    })
+      it('includes stream name', () => {
+        expect(transformed.metadata.streamName).toBe(messageData.streamName)
+      })
 
-    it('includes position', () => {
-      expect(transformed.position).toBe(messageData.position)
-    })
+      it('includes position', () => {
+        expect(transformed.metadata.position).toBe(messageData.position)
+      })
 
-    it('includes global position', () => {
-      expect(transformed.globalPosition).toBe(messageData.globalPosition)
-    })
+      it('includes global position', () => {
+        expect(transformed.metadata.globalPosition).toBe(messageData.globalPosition)
+      })
 
-    it('includes time', () => {
-      expect(transformed.time).toBe(messageData.time)
-    })
+      it('includes time', () => {
+        expect(transformed.metadata.time).toBe(messageData.time)
+      })
 
-    describe('MessageData without metadata', () => {
-      it('includes empty metadata', () => {
-        delete messageData.metadata
+      describe('MessageData without metadata', () => {
+        it('includes standard metadata', () => {
+          delete messageData.metadata
 
-        const transformed = fromReadMessageData(messageData, messageClass)
+          const transformed = fromReadMessageData(messageData, messageClass)
 
-        expect(transformed.metadata).toEqual({})
+          expect(transformed.metadata).toBeInstanceOf(Object)
+          expect(transformed.metadata.position).toBe(messageData.position)
+        })
       })
     })
 
