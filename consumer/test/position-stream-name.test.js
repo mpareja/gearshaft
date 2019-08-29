@@ -8,9 +8,8 @@ const {
 describe('position-stream-name', () => {
   describe('given a stream without an id', () => {
     const streamName = exampleStreamName(null, 'none')
-    const consumerType = 'SomeConsumer'
     const consumerId = exampleConsumerId()
-    const positionStreamName = getPositionStreamName(streamName, consumerType, consumerId)
+    const positionStreamName = getPositionStreamName(streamName, consumerId)
 
     it('stream id becomes consumer id', () => {
       expect(StreamName.getId(positionStreamName)).toEqual(consumerId)
@@ -28,9 +27,8 @@ describe('position-stream-name', () => {
 
   describe('given a stream with an id', () => {
     const streamName = exampleStreamName(null, 'SomeStreamId')
-    const consumerType = 'SomeConsumer'
     const consumerId = 'SomeConsumerId'
-    const positionStreamName = getPositionStreamName(streamName, consumerType, consumerId)
+    const positionStreamName = getPositionStreamName(streamName, consumerId)
 
     it('appends the consumer id to the stream id with an underscore', () => {
       expect(StreamName.getId(positionStreamName)).toEqual('SomeStreamId_SomeConsumerId')
@@ -39,8 +37,7 @@ describe('position-stream-name', () => {
 
   describe('given no consumer id', () => {
     const streamName = exampleStreamName()
-    const consumerType = 'SomeConsumer'
-    const positionStreamName = getPositionStreamName(streamName, consumerType)
+    const positionStreamName = getPositionStreamName(streamName)
 
     it('id remains unchanged', () => {
       expect(StreamName.getId(positionStreamName)).toEqual(StreamName.getId(streamName))
@@ -50,10 +47,9 @@ describe('position-stream-name', () => {
   describe('types', () => {
     describe('given stream name with existing types', () => {
       const streamName = exampleStreamName(null, { types: ['bob'] })
-      const consumerType = 'SomeConsumer'
       const consumerId = exampleConsumerId()
 
-      const positionStreamName = getPositionStreamName(streamName, consumerType, consumerId)
+      const positionStreamName = getPositionStreamName(streamName, consumerId)
 
       it('preserves the existing types', () => {
         const types = StreamName.getTypes(positionStreamName)
@@ -68,10 +64,9 @@ describe('position-stream-name', () => {
 
     describe('given a stream name already containing position type', () => {
       const streamName = exampleStreamName(null, { types: ['position'] })
-      const consumerType = 'SomeConsumer'
       const consumerId = exampleConsumerId()
 
-      const positionStreamName = getPositionStreamName(streamName, consumerType, consumerId)
+      const positionStreamName = getPositionStreamName(streamName, consumerId)
 
       it('position type is only listed once', () => {
         const types = StreamName.getTypes(positionStreamName)

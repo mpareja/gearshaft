@@ -3,7 +3,7 @@ const { getPositionStreamName } = require('./position-stream-name')
 const { PositionRecorded } = require('./position-recorded')
 
 exports.createPositionStore = ({ store, consumerId }) => {
-  const streamName = getPositionStreamName('SomeStream', null, consumerId)
+  const streamName = getPositionStreamName('SomeStream', consumerId)
 
   const get = async () => {
     const messageData = await store.getLast(streamName)

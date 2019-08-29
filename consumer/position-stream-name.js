@@ -1,7 +1,7 @@
 const { StreamName } = require('../message-store')
 const TYPE = 'position'
 
-exports.getPositionStreamName = (streamName, consumerType, consumerId) => {
+exports.getPositionStreamName = (streamName, consumerId) => {
   const entity = StreamName.getEntityName(streamName)
 
   const sourceId = StreamName.getId(streamName)
