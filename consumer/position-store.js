@@ -2,11 +2,11 @@ const { fromReadMessageData, toWriteMessageData } = require('../messaging')
 const { getPositionStreamName } = require('./position-stream-name')
 const { PositionRecorded } = require('./position-recorded')
 
-exports.createPositionStore = ({ store, consumerId }) => {
-  const streamName = getPositionStreamName('SomeStream', consumerId)
+exports.createPositionStore = ({ store, streamName, consumerId }) => {
+  const positionStreamName = getPositionStreamName(streamName, consumerId)
 
   const get = async () => {
-    const messageData = await store.getLast(streamName)
+    const messageData = await store.getLast(positionStreamName)
 
     if (!messageData) {
       return null
@@ -20,7 +20,7 @@ exports.createPositionStore = ({ store, consumerId }) => {
   const put = (position) => {
     const recorded = PositionRecorded.create(position)
     const messageData = toWriteMessageData(recorded)
-    return store.write(messageData, streamName)
+    return store.write(messageData, positionStreamName)
   }
 
   return { get, put }
