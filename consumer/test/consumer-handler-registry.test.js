@@ -6,8 +6,9 @@ class UnhandledMessageClass {}
 class HandledMessageClass {}
 
 const setup = ({ strict } = {}) => {
+  const handlerCalls = []
+  const handler = (input) => { handlerCalls.push(input) }
   const log = createLog()
-  const handler = jest.fn()
   const registry = createConsumerHandlerRegistry({
     name: 'MyConsumer',
     log,
@@ -15,10 +16,23 @@ const setup = ({ strict } = {}) => {
   })
   registry.register(HandledMessageClass, handler)
 
-  return { handler, log, registry }
+  return { handlerCalls, handler, log, registry }
 }
 
 describe('consumer-handler-registry', () => {
+  describe('register', () => {
+    describe('given a handle method expecting multiple parameters', () => {
+      it('raises an error', () => {
+        const badHandler = () => {}
+        const { registry } = setup()
+
+        expect(() => {
+          registry.register(UnhandledMessageClass, badHandler)
+        }).toThrow('MyConsumer consumer: invalid handler, function must accept 1 parameter')
+      })
+    })
+  })
+
   describe('handle', () => {
     describe('handler found for message', () => {
       const setupHandlerFound = async () => {
@@ -31,10 +45,10 @@ describe('consumer-handler-registry', () => {
       }
 
       it('calls the handler function with the message instance', async () => {
-        const { handler, messageData } = await setupHandlerFound()
+        const { handlerCalls, messageData } = await setupHandlerFound()
 
-        expect(handler).toHaveBeenCalled()
-        const callMessage = handler.mock.calls[0][0]
+        expect(handlerCalls).toHaveLength(1)
+        const callMessage = handlerCalls[0]
         expect(callMessage).toBeInstanceOf(HandledMessageClass)
         expect(callMessage).toMatchObject(messageData.data)
       })

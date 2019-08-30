@@ -5,6 +5,13 @@ exports.createConsumerHandlerRegistry = ({ name, log, registerHandlers, strict }
   const consumerError = operationError(`${name} consumer`)
   const registry = createEventRegistry()
 
+  const register = (messageClass, handler) => {
+    if (handler.length !== 1) {
+      throw consumerError('invalid handler, function must accept 1 parameter')
+    }
+    registry.register(messageClass, handler)
+  }
+
   const handle = async (messageData) => {
     const { id, type } = messageData
     const meta = { consumerName: name, messageId: id, messageType: type }
@@ -27,5 +34,5 @@ exports.createConsumerHandlerRegistry = ({ name, log, registerHandlers, strict }
     }
   }
 
-  return { handle, register: registry.register }
+  return { handle, register }
 }
