@@ -1,7 +1,8 @@
 const { exampleRandomValue } = require('./example-random-value')
 const { Metadata } = require('../metadata')
 
-module.exports.exampleMetadata = () => {
+// the `metadata` found on an instance of a user's message class
+module.exports.exampleMessageMetadata = () => {
   const metadata = new Metadata()
   metadata.someMetaAttribute = exampleRandomValue()
 

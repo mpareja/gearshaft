@@ -1,9 +1,9 @@
 const { Metadata } = require('../metadata')
-const { exampleMetadata } = require('../examples')
+const { exampleMessageMetadata } = require('../examples')
 
 describe('metadata', () => {
   describe('follow', () => {
-    const source = exampleMetadata()
+    const source = exampleMessageMetadata()
     const dest = new Metadata()
 
     expect(source.causationMessageStreamName).not.toBe(dest.causationMessageStreamName)

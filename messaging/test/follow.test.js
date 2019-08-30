@@ -1,7 +1,7 @@
 const { follow } = require('../follow')
 const { Metadata } = require('../metadata')
 const {
-  exampleMetadata,
+  exampleMessageMetadata,
   exampleRandomValue
 } = require('../examples')
 
@@ -9,7 +9,7 @@ class SomeMessage {}
 
 describe('follow', () => {
   describe('metadata', () => {
-    const previous = { metadata: exampleMetadata() }
+    const previous = { metadata: exampleMessageMetadata() }
     const next = follow(previous, SomeMessage)
 
     it('next message metadata follows previous', () => {
@@ -21,7 +21,7 @@ describe('follow', () => {
 
   describe('message with simple top-level field', () => {
     const someField = exampleRandomValue()
-    const previous = { someField, metadata: exampleMetadata() }
+    const previous = { someField, metadata: exampleMessageMetadata() }
     const next = follow(previous, SomeMessage)
 
     it('field is copied', () => {
@@ -36,7 +36,7 @@ describe('follow', () => {
   describe('message with nested field', () => {
     const value = exampleRandomValue()
     const previous = {
-      metadata: exampleMetadata(),
+      metadata: exampleMessageMetadata(),
       parent: { child: value }
     }
     const next = follow(previous, SomeMessage)
@@ -53,7 +53,7 @@ describe('follow', () => {
   describe('message with array field', () => {
     const value = exampleRandomValue()
     const previous = {
-      metadata: exampleMetadata(),
+      metadata: exampleMessageMetadata(),
       some: {
         array: [{ value }],
         numArray: [1, 6, 12]
