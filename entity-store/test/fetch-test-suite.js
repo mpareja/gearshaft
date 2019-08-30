@@ -1,7 +1,6 @@
 const createEntityStore = require('../entity-store')
 const createLog = require('../../test/test-log')
-const StreamName = require('../../message-store/stream-name')
-const { createWriter } = require('../../messaging')
+const { createWriter, StreamName } = require('../../messaging')
 const {
   exampleCategory,
   ExampleEntityClass,

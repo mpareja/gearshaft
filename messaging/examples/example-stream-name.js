@@ -1,5 +1,6 @@
-const StreamName = require('../stream-name.js')
-const { exampleCategory, exampleRandomValue } = require('../../messaging/examples')
+const { StreamName } = require('../stream-name.js')
+const { exampleCategory } = require('./example-category')
+const { exampleRandomValue } = require('./example-random-value')
 
 const exampleStreamName = (category, id, extra) => {
   if (typeof id === 'object') {

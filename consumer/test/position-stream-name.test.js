@@ -1,5 +1,5 @@
 const { getPositionStreamName } = require('../position-stream-name')
-const { StreamName } = require('../../message-store')
+const { StreamName } = require('../../messaging')
 const {
   exampleConsumerId,
   exampleStreamName

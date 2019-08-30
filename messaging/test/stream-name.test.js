@@ -1,5 +1,5 @@
-const StreamName = require('../stream-name')
 const { exampleStreamName } = require('../examples')
+const { StreamName } = require('../stream-name')
 
 const A_CATEGORY = 'someCategory'
 const AN_ID = 'some_id'

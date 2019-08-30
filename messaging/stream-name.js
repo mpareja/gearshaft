@@ -49,4 +49,4 @@ class StreamName {
   }
 }
 
-module.exports = StreamName
+exports.StreamName = StreamName

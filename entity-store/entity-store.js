@@ -1,7 +1,6 @@
 const assert = require('assert')
 const createRegistry = require('../messaging/event-registry')
-const StreamName = require('../message-store/stream-name')
-const { fromReadMessageData } = require('../messaging/message-transforms')
+const { fromReadMessageData, StreamName } = require('../messaging')
 
 const m = (msg) => `entity-store create: ${msg}`
 
