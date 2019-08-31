@@ -68,17 +68,4 @@ describe('consumer', () => {
       })
     })
   })
-
-  /*
-  it('asdfasdf', () => {
-    const options = {
-      store,
-      streamName,
-      registerHandlers,
-      onError: (err, messageData) => {}
-    }
-    const consumer = createConsumer(options)
-    expect(consuemr).toBeDefined()
-  })
-  */
 })
