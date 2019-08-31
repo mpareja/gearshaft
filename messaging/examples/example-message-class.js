@@ -1,7 +1,7 @@
 const { exampleRandomValue } = require('./example-random-value')
 
-module.exports.exampleMessageClass = () => {
-  const className = `AnExampleMessage_${exampleRandomValue()}`
+module.exports.exampleMessageClass = (className) => {
+  className = className || `AnExampleMessage_${exampleRandomValue()}`
   let theClass
 
   // dynamically generate a class

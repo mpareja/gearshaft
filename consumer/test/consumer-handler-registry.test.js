@@ -1,13 +1,12 @@
 const createLog = require('../../test/test-log')
 const { createConsumerHandlerRegistry } = require('../consumer-handler-registry')
-const { exampleReadMessageData } = require('../examples')
+const { exampleHandler, exampleMessageClass, exampleReadMessageData } = require('../examples')
 
-class UnhandledMessageClass {}
-class HandledMessageClass {}
+const HandledMessageClass = exampleMessageClass('HandledMessageClass')
+const UnhandledMessageClass = exampleMessageClass('UnhandledMessageClass')
 
 const setup = ({ strict } = {}) => {
-  const handlerCalls = []
-  const handler = (input) => { handlerCalls.push(input) }
+  const handler = exampleHandler()
   const log = createLog()
   const registry = createConsumerHandlerRegistry({
     name: 'MyConsumer',
@@ -16,7 +15,7 @@ const setup = ({ strict } = {}) => {
   })
   registry.register(HandledMessageClass, handler)
 
-  return { handlerCalls, handler, log, registry }
+  return { handler, log, registry }
 }
 
 describe('consumer-handler-registry', () => {
@@ -45,10 +44,10 @@ describe('consumer-handler-registry', () => {
       }
 
       it('calls the handler function with the message instance', async () => {
-        const { handlerCalls, messageData } = await setupHandlerFound()
+        const { handler, messageData } = await setupHandlerFound()
 
-        expect(handlerCalls).toHaveLength(1)
-        const callMessage = handlerCalls[0]
+        expect(handler.calls).toHaveLength(1)
+        const callMessage = handler.calls[0]
         expect(callMessage).toBeInstanceOf(HandledMessageClass)
         expect(callMessage).toMatchObject(messageData.data)
       })
