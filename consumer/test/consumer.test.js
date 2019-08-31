@@ -3,26 +3,28 @@ const {
   exampleConsumer,
   exampleHandler,
   exampleMessageClass,
+  exampleMessageStore,
   exampleReadMessageData,
   exampleStreamName
 } = require('../examples')
 
 const HandledMessageClass = exampleMessageClass('HandledMessageClass')
 
+const setupConsumerWithHandler = (opts = {}) => {
+  const streamName = exampleStreamName()
+  const handler = exampleHandler()
+  const messageData = exampleReadMessageData(HandledMessageClass)
+  const registerHandlers = (register) => {
+    register(HandledMessageClass, handler)
+  }
+  const store = exampleMessageStore()
+  const consumer = exampleConsumer({ registerHandlers, store, streamName, ...opts })
+  return { consumer, handler, messageData, store, streamName }
+}
+
 describe('consumer', () => {
   describe('dispatch', () => {
     describe('given a handled message', () => {
-      const setupConsumerWithHandler = (opts = {}) => {
-        const streamName = exampleStreamName()
-        const handler = exampleHandler()
-        const messageData = exampleReadMessageData(HandledMessageClass)
-        const registerHandlers = (register) => {
-          register(HandledMessageClass, handler)
-        }
-        const consumer = exampleConsumer({ registerHandlers, streamName, ...opts })
-        return { consumer, handler, messageData, streamName }
-      }
-
       it('invokes the handler', async () => {
         const { consumer, handler, messageData } = setupConsumerWithHandler()
 
@@ -46,6 +48,92 @@ describe('consumer', () => {
           globalPosition: messageData.globalPosition,
           type: messageData.type
         }, 'MyThing consumer: HandledMessageClass message dispatched to handlers')
+      })
+    })
+
+    describe('position', () => {
+      describe('given no messages handled', () => {
+        it('consumer position is null', async () => {
+          const consumer = exampleConsumer()
+
+          const readPosition = await consumer.positionStore.get()
+
+          expect(readPosition).toBeNull()
+        })
+      })
+
+      describe('when position update interval is reached', () => {
+        it('updates the consumer position', async () => {
+          const { consumer, messageData } = setupConsumerWithHandler({ positionUpdateInterval: 1 })
+
+          await consumer.dispatch(messageData)
+
+          const readPosition = await consumer.positionStore.get()
+          expect(readPosition).toBe(messageData.globalPosition)
+        })
+      })
+
+      describe('when position update interval has not been reached', () => {
+        it('does not update the consumer position', async () => {
+          const { consumer, messageData } = setupConsumerWithHandler({ positionUpdateInterval: 2 })
+
+          await consumer.dispatch(messageData)
+
+          const readPosition = await consumer.positionStore.get()
+          expect(readPosition).toBeNull()
+        })
+      })
+
+      describe('when position update interval is hit subsequent times', () => {
+        it('updates the consumer position', async () => {
+          const { consumer } = setupConsumerWithHandler({ positionUpdateInterval: 1 })
+
+          const messageData1 = exampleReadMessageData(HandledMessageClass)
+          await consumer.dispatch(messageData1)
+
+          const messageData2 = exampleReadMessageData(HandledMessageClass)
+          messageData2.globalPosition += 1
+          await consumer.dispatch(messageData2)
+
+          const readPosition = await consumer.positionStore.get()
+          expect(readPosition).toBe(messageData2.globalPosition)
+        })
+      })
+
+      describe('when dispatching after position update interval was reached', () => {
+        it('does not update the consumer position', async () => {
+          const { consumer } = setupConsumerWithHandler({ positionUpdateInterval: 2 })
+
+          const messageData1 = exampleReadMessageData(HandledMessageClass)
+          await consumer.dispatch(messageData1)
+
+          const messageData2 = exampleReadMessageData(HandledMessageClass)
+          messageData2.globalPosition += 1
+          await consumer.dispatch(messageData2)
+
+          const messageData3 = exampleReadMessageData(HandledMessageClass)
+          messageData3.globalPosition += 2
+          await consumer.dispatch(messageData3)
+
+          const readPosition = await consumer.positionStore.get()
+          expect(readPosition).toBe(messageData2.globalPosition)
+        })
+      })
+
+      describe('when updating position fails', () => {
+        it('propagates the error', async () => {
+          const name = 'MyThing'
+          const { consumer, messageData, store } = setupConsumerWithHandler({ name, positionUpdateInterval: 1 })
+          const error = new Error('bogus put error')
+          store.write = () => { throw error }
+
+          const promise = consumer.dispatch(messageData)
+
+          await expect(promise).rejects.toThrow('MyThing consumer: error updating consumer position')
+          await expect(promise).rejects.toMatchObject({
+            inner: error
+          })
+        })
       })
     })
 
