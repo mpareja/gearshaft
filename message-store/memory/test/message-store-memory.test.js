@@ -92,57 +92,6 @@ describe('message-store-memory', () => {
     })
   })
 
-  describe('write seperate messages to stream', () => {
-    let message1, message2
-    beforeEach(async () => {
-      message1 = exampleMessageData()
-      message2 = exampleMessageData()
-      await store.write(message1, 'stream-123')
-      await store.write(message2, 'stream-123')
-    })
-
-    describe('reading messages from stream', () => {
-      it('returns expected messages', async () => {
-        const found = await read('stream-123')
-
-        expect(found.map(m => m.data)).toEqual([message1.data, message2.data])
-      })
-    })
-
-    describe('reading messages from stream position', () => {
-      it('returns expected subset of messages', async () => {
-        const found = await read('stream-123', 1)
-
-        expect(found.map(m => m.data)).toEqual([message2.data])
-      })
-    })
-
-    describe('reading messages from other stream', () => {
-      it('returns no messages', async () => {
-        const found = await read('stream-666')
-
-        expect(found).toHaveLength(0)
-      })
-    })
-  })
-
-  describe('write batch of messages to stream', () => {
-    let message1, message2
-    beforeEach(async () => {
-      message1 = exampleMessageData()
-      message2 = exampleMessageData()
-      await store.write([message1, message2], 'stream-123')
-    })
-
-    describe('reading messages from stream', () => {
-      it('returns expected messages', async () => {
-        const found = await read('stream-123')
-
-        expect(found.map(m => m.data)).toEqual([message1.data, message2.data])
-      })
-    })
-  })
-
   describe('positions', () => {
     describe('within a stream', () => {
       let found
@@ -194,50 +143,6 @@ describe('message-store-memory', () => {
 
       await expect(store.write(message, streamName)).rejects.toEqual(new Error(
         `message-store write: duplicate message id: ${message.id}`))
-    })
-  })
-
-  describe('expected version', () => {
-    describe('writing multiple messages in same category', () => {
-      it('messages are written with the expected versions', async () => {
-        const streamName = exampleStreamName()
-
-        const wm0 = exampleMessageData()
-        await store.write(wm0, streamName)
-
-        const wm1 = exampleMessageData()
-        await store.write(wm1, streamName)
-
-        const readMessage = (await read(streamName, 1))[0]
-
-        expect(readMessage.data).toEqual(wm1.data)
-      })
-    })
-
-    describe('writing message with stale version', () => {
-      let streamName, error, sharedStore
-      beforeAll(async () => {
-        streamName = exampleStreamName()
-        sharedStore = createMessageStore({ log })
-        const oldPosition = await sharedStore.write(exampleMessageData(), streamName)
-        await sharedStore.write(exampleMessageData(), streamName)
-
-        try {
-          await sharedStore.write(exampleMessageData(), streamName, oldPosition)
-        } catch (e) {
-          error = e
-        }
-      })
-
-      it('results in an error', async () => {
-        const expectedMessage = `message-store put: Wrong expected version: 0 (Stream: ${streamName}, Stream Version: 1)`
-        expect(error).toEqual(new Error(expectedMessage))
-      })
-
-      it('does not write new message', async () => {
-        const results = await readFrom(sharedStore, streamName)
-        expect(results.length).toBe(2)
-      })
     })
   })
 })

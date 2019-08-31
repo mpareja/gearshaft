@@ -57,6 +57,7 @@ exports.generateWriteSuite = ({
       it('all messages are written', async () => {
         const results = await store.get(streamName)
         expect(results).toHaveLength(2)
+        expect(results.map(m => m.data)).toEqual([writeMessage1.data, writeMessage2.data])
       })
     })
 
