@@ -22,7 +22,14 @@ exports.createConsumerHandlerRegistry = ({ name, log, registerHandlers, strict }
       log.debug({ ...meta, payload: messageData }, `${name} consumer: start handling ${type} message`)
 
       const message = fromReadMessageData(messageData, messageClass)
-      await handler(message)
+
+      try {
+        await handler(message)
+      } catch (inner) {
+        const error = consumerError(`${messageData.type} handler raised an error`, inner)
+        Object.assign(error, meta)
+        throw error
+      }
 
       log.info(meta, `${name} consumer: handled ${type} message`)
     } else {

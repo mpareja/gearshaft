@@ -98,5 +98,29 @@ describe('consumer-handler-registry', () => {
         })
       })
     })
+
+    describe('given handler throws an error', () => {
+      it('propagates the error with additional information', async () => {
+        const { registry } = setup()
+
+        const ErrorMessageClass = exampleMessageClass('ErrorMessageClass')
+        const messageData = exampleReadMessageData(ErrorMessageClass)
+
+        const error = new Error('bogus handler error')
+        registry.register(ErrorMessageClass, (input) => {
+          throw error
+        })
+
+        const promise = registry.handle(messageData)
+
+        await expect(promise).rejects.toThrow('MyConsumer consumer: ErrorMessageClass handler raised an error')
+        await expect(promise).rejects.toMatchObject({
+          consumerName: 'MyConsumer',
+          inner: error,
+          messageId: messageData.id,
+          messageType: 'ErrorMessageClass'
+        })
+      })
+    })
   })
 })
