@@ -5,7 +5,7 @@ const { generateGetLastSuite } = require('../../test/get-last-test-suite')
 const { generateReadSuite } = require('../../test/read-test-suite')
 const { generateWriteSuite } = require('../../test/write-test-suite')
 const {
-  exampleMessageData,
+  exampleWriteMessageData,
   exampleStreamName
 } = require('../../examples')
 
@@ -43,7 +43,7 @@ describe('message-store-memory', () => {
   describe('write message to stream', () => {
     let position, streamName, writeMessage
     beforeEach(async () => {
-      writeMessage = exampleMessageData()
+      writeMessage = exampleWriteMessageData()
       streamName = exampleStreamName()
       position = await store.write(writeMessage, streamName)
     })
@@ -71,7 +71,7 @@ describe('message-store-memory', () => {
   describe('stream without id', () => {
     it('writes the category as the stream name', async () => {
       const streamName = exampleStreamName(null, 'none')
-      await store.write(exampleMessageData(), streamName)
+      await store.write(exampleWriteMessageData(), streamName)
 
       const found = await read(streamName)
 
@@ -82,7 +82,7 @@ describe('message-store-memory', () => {
   describe('message without id', () => {
     it('generates id', async () => {
       const streamName = exampleStreamName()
-      const writeMessage = exampleMessageData()
+      const writeMessage = exampleWriteMessageData()
       delete writeMessage.id
       await store.write(writeMessage, streamName)
 
@@ -97,7 +97,7 @@ describe('message-store-memory', () => {
       let found
       beforeEach(async () => {
         const streamName = exampleStreamName()
-        await store.write([exampleMessageData(), exampleMessageData()], streamName)
+        await store.write([exampleWriteMessageData(), exampleWriteMessageData()], streamName)
 
         found = await read(streamName)
       })
@@ -115,11 +115,11 @@ describe('message-store-memory', () => {
       let found
       beforeEach(async () => {
         const streamName1 = exampleStreamName()
-        await store.write([exampleMessageData(), exampleMessageData()],
+        await store.write([exampleWriteMessageData(), exampleWriteMessageData()],
           streamName1)
 
         const streamName2 = exampleStreamName()
-        await store.write([exampleMessageData(), exampleMessageData()],
+        await store.write([exampleWriteMessageData(), exampleWriteMessageData()],
           streamName2)
 
         found = await read(streamName2)
@@ -138,7 +138,7 @@ describe('message-store-memory', () => {
   describe('duplicate message id', () => {
     it('is an error', async () => {
       const streamName = exampleStreamName()
-      const message = exampleMessageData()
+      const message = exampleWriteMessageData()
       await store.write(message, streamName)
 
       await expect(store.write(message, streamName)).rejects.toEqual(new Error(

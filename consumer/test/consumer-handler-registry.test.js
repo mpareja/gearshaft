@@ -1,6 +1,6 @@
 const createLog = require('../../test/test-log')
 const { createConsumerHandlerRegistry } = require('../consumer-handler-registry')
-const { exampleMessageData } = require('../examples')
+const { exampleReadMessageData } = require('../examples')
 
 class UnhandledMessageClass {}
 class HandledMessageClass {}
@@ -37,7 +37,7 @@ describe('consumer-handler-registry', () => {
     describe('handler found for message', () => {
       const setupHandlerFound = async () => {
         const vars = setup()
-        const messageData = exampleMessageData(HandledMessageClass)
+        const messageData = exampleReadMessageData(HandledMessageClass)
 
         await vars.registry.handle(messageData)
 
@@ -68,14 +68,14 @@ describe('consumer-handler-registry', () => {
       describe('not-strict consumer', () => {
         it('ignores the message', async () => {
           const { registry } = setup()
-          const messageData = exampleMessageData(UnhandledMessageClass)
+          const messageData = exampleReadMessageData(UnhandledMessageClass)
 
           await registry.handle(messageData)
         })
 
         it('logs handling of the message', async () => {
           const { log, registry } = setup()
-          const messageData = exampleMessageData(UnhandledMessageClass)
+          const messageData = exampleReadMessageData(UnhandledMessageClass)
 
           await registry.handle(messageData)
 
@@ -90,7 +90,7 @@ describe('consumer-handler-registry', () => {
       describe('strict consumer', () => {
         it('raises error', async () => {
           const { registry } = setup({ strict: true })
-          const messageData = exampleMessageData(UnhandledMessageClass)
+          const messageData = exampleReadMessageData(UnhandledMessageClass)
 
           const promise = registry.handle(messageData)
 

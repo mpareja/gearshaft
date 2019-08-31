@@ -1,6 +1,6 @@
 const createRegistry = require('../event-registry')
 const {
-  exampleMessageData,
+  exampleReadMessageData,
   exampleMessageClass
 } = require('../examples')
 
@@ -9,7 +9,7 @@ describe('event-registry', () => {
     it('returns no handler', () => {
       const registry = createRegistry()
 
-      const found = registry.get(exampleMessageData())
+      const found = registry.get(exampleReadMessageData())
 
       expect(found.handler).toBeUndefined()
     })
@@ -19,7 +19,7 @@ describe('event-registry', () => {
     const registry = createRegistry()
     const Class = exampleMessageClass()
     const handler = () => {}
-    const messageData = exampleMessageData(Class)
+    const messageData = exampleReadMessageData(Class)
     registry.register(Class, handler)
 
     it('returns the handler', () => {
@@ -36,7 +36,7 @@ describe('event-registry', () => {
 
     describe('getting unregistered class', () => {
       it('returns no handler', () => {
-        const messageOfOtherClass = exampleMessageData()
+        const messageOfOtherClass = exampleReadMessageData()
 
         const found = registry.get(messageOfOtherClass)
 
@@ -55,7 +55,7 @@ describe('event-registry', () => {
     registry.register(Class2, handler2)
 
     it('returns first message handler', () => {
-      const messageData = exampleMessageData(Class1)
+      const messageData = exampleReadMessageData(Class1)
 
       const found = registry.get(messageData)
 
@@ -64,7 +64,7 @@ describe('event-registry', () => {
     })
 
     it('returns second message handler', () => {
-      const messageData = exampleMessageData(Class2)
+      const messageData = exampleReadMessageData(Class2)
 
       const found = registry.get(messageData)
 
@@ -74,7 +74,7 @@ describe('event-registry', () => {
 
     describe('getting unregistered class', () => {
       it('returns no handler', () => {
-        const messageOfOtherClass = exampleMessageData()
+        const messageOfOtherClass = exampleReadMessageData()
 
         const found = registry.get(messageOfOtherClass)
 
