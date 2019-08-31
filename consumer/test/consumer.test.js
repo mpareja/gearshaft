@@ -122,17 +122,27 @@ describe('consumer', () => {
 
       describe('when updating position fails', () => {
         it('propagates the error', async () => {
+          const log = createLog()
           const name = 'MyThing'
-          const { consumer, messageData, store } = setupConsumerWithHandler({ name, positionUpdateInterval: 1 })
+          const { consumer, messageData, store } = setupConsumerWithHandler({ log, name, positionUpdateInterval: 1 })
           const error = new Error('bogus put error')
           store.write = () => { throw error }
 
           const promise = consumer.dispatch(messageData)
 
+          const ERROR = 'MyThing consumer: error updating consumer position'
           await expect(promise).rejects.toThrow('MyThing consumer: error updating consumer position')
           await expect(promise).rejects.toMatchObject({
             inner: error
           })
+
+          expect(log.error).toHaveBeenCalledWith({
+            streamName: expect.any(String),
+            position: messageData.position,
+            globalPosition: messageData.globalPosition,
+            type: messageData.type,
+            err: expect.any(Error)
+          }, ERROR)
         })
       })
     })

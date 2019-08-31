@@ -20,26 +20,36 @@ exports.createConsumer = ({
   registerHandlers(registry.register)
 
   const dispatch = async (messageData) => {
-    await registry.handle(messageData)
+    const meta = {
+      streamName,
+      position: messageData.position,
+      globalPosition: messageData.globalPosition,
+      type: messageData.type
+    }
 
+    try {
+      await registry.handle(messageData)
+
+      await updatePosition(messageData.globalPosition)
+    } catch (err) {
+      log.error({ ...meta, err }, err.message)
+      throw err
+    }
+
+    log.info(meta, `${name} consumer: ${messageData.type} message dispatched to handlers`)
+  }
+
+  const updatePosition = async (globalPosition) => {
     positionUpdateCount++
-
     if (positionUpdateCount >= positionUpdateInterval) {
       try {
-        await positionStore.put(messageData.globalPosition)
+        await positionStore.put(globalPosition)
       } catch (inner) {
         throw consumerError('error updating consumer position', inner)
       }
 
       positionUpdateCount = 0
     }
-
-    log.info({
-      streamName,
-      position: messageData.position,
-      globalPosition: messageData.globalPosition,
-      type: messageData.type
-    }, `${name} consumer: ${messageData.type} message dispatched to handlers`)
   }
 
   return { dispatch, positionStore }
