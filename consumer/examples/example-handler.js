@@ -4,3 +4,12 @@ exports.exampleHandler = () => {
   handler.calls = calls
   return handler
 }
+
+exports.exampleHandlerBlocking = () => {
+  const handler = (input) => new Promise((resolve, reject) => {
+    handler.resolve = resolve
+    handler.reject = reject
+  })
+
+  return handler
+}
