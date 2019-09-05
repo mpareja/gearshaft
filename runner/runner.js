@@ -14,13 +14,16 @@ exports.createRunner = ({ tasks }) => {
   }
 
   const triggerTask = (name, args) => {
-    const promise = tasks[name](...args)
-      .finally(() => {
+    let promise = tasks[name](...args)
+
+    if (promise instanceof Promise) {
+      promise = promise.finally(() => {
         const ix = active.indexOf(promise)
         active.splice(ix, 1)
       })
 
-    active.push(promise)
+      active.push(promise)
+    }
   }
 
   const pause = () => {

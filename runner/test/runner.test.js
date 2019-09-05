@@ -59,6 +59,19 @@ describe('trigger', () => {
       ])
     })
   })
+
+  describe('triggering a sync task', () => {
+    it('runs the task and considers it done immediately', async () => {
+      let done = false
+      const tasks = { syncTask: () => { done = true } }
+      const runner = createRunner({ tasks })
+
+      runner.trigger('syncTask')
+
+      expect(done).toBe(true)
+      expect(runner.stats().active).toBe(0)
+    })
+  })
 })
 
 describe('stats', () => {
