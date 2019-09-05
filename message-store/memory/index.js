@@ -7,7 +7,7 @@ const EXPECTED_VERSION_ERROR_CODE = 'ExpectedVersionError'
 const writeError = operationError('message-store write')
 const putError = operationError('message-store put')
 
-module.exports = ({ log }) => {
+module.exports = ({ batchSize = 1000, log }) => {
   const streams = {}
   const messageIds = {}
   let globalPosition = 0
@@ -15,7 +15,11 @@ module.exports = ({ log }) => {
   const get = async function (streamName, position) {
     position = position || 0
     const stream = streams[streamName] || []
-    const subset = stream.slice(position)
+    const subset = stream.slice(position, position + batchSize)
+
+    log.info({ batchSize, count: subset.length, position, streamName },
+      'message-store get: successful')
+
     return subset
   }
 
@@ -41,10 +45,17 @@ module.exports = ({ log }) => {
   }
 
   const read = async function * (streamName, position) {
-    const subset = await get(streamName, position)
+    while (true) {
+      const subset = await get(streamName, position)
+      if (!subset.length) {
+        break
+      }
 
-    for (const message of subset) {
-      yield message
+      for (const message of subset) {
+        yield message
+      }
+
+      position = subset[subset.length - 1].position + 1
     }
   }
 

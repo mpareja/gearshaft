@@ -1,4 +1,5 @@
 const createLog = require('../../test/test-log')
+const uuidValidate = require('uuid-validate')
 const {
   exampleStreamName, exampleWriteMessageData
 } = require('../examples')
@@ -25,7 +26,16 @@ exports.generateWriteSuite = ({
       it('is written', async () => {
         const [readMessage] = await store.get(streamName, position)
         expect(readMessage).toBeDefined()
-        expect(readMessage.data).toEqual(writeMessage.data)
+        expect(readMessage).toEqual({
+          id: writeMessage.id,
+          type: writeMessage.type,
+          data: writeMessage.data,
+          metadata: writeMessage.metadata,
+          streamName,
+          position: 0,
+          globalPosition: expect.any(Number),
+          time: expect.any(Date)
+        })
       })
 
       it('position is returned', () => {
@@ -93,6 +103,19 @@ exports.generateWriteSuite = ({
           const results = await store.get(streamName)
           expect(results).toHaveLength(1)
         })
+      })
+    })
+
+    describe('message without id', () => {
+      it('generates id', async () => {
+        const streamName = exampleStreamName()
+        const writeMessage = exampleWriteMessageData()
+        delete writeMessage.id
+
+        await store.write(writeMessage, streamName)
+
+        const readMessage = (await store.get(streamName))[0]
+        expect(uuidValidate(readMessage.id)).toBe(true)
       })
     })
 

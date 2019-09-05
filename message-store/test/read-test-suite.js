@@ -12,17 +12,21 @@ exports.generateReadSuite = ({
     store = createMessageStore({ log, ...options })
   }
 
+  const read = async (...args) => {
+    const found = []
+    for await (const message of store.read(...args)) {
+      found.push(message)
+    }
+    return found
+  }
+
   describe('read', () => {
     describe('empty stream', () => {
       it('returns no records', async () => {
         setup()
         const streamNameNoExist = exampleStreamName()
-        const found = []
 
-        /* istanbul ignore next */
-        for await (const record of store.read(streamNameNoExist)) {
-          found.push(record)
-        }
+        const found = await read(streamNameNoExist)
 
         expect(found).toHaveLength(0)
       })
@@ -32,11 +36,8 @@ exports.generateReadSuite = ({
       it('reads the item', async () => {
         setup()
         const { streamName, messages } = await examplePut(store, { count: 1, trackMessages: true })
-        const found = []
 
-        for await (const record of store.read(streamName, 0)) {
-          found.push(record)
-        }
+        const found = await read(streamName, 0)
 
         expect(found).toHaveLength(1)
         expect(found[0].data).toEqual(messages[0].data)
@@ -47,11 +48,8 @@ exports.generateReadSuite = ({
       it('reads the item', async () => {
         setup({ batchSize: 10 })
         const { streamName, messages } = await examplePut(store, { count: 3, trackMessages: true })
-        const found = []
 
-        for await (const record of store.read(streamName, 0)) {
-          found.push(record)
-        }
+        const found = await read(streamName, 0)
 
         expect(found).toHaveLength(3)
         expect(found[0].data).toEqual(messages[0].data)
@@ -64,11 +62,8 @@ exports.generateReadSuite = ({
       it('reads the items', async () => {
         setup({ batchSize: 3 })
         const { streamName, messages } = await examplePut(store, { count: 10, trackMessages: true })
-        const found = []
 
-        for await (const record of store.read(streamName, 0)) {
-          found.push(record)
-        }
+        const found = await read(streamName, 0)
 
         expect(found).toHaveLength(10)
         expect(found.map(f => f.data)).toEqual(messages.map(m => m.data))
@@ -86,11 +81,7 @@ exports.generateReadSuite = ({
 
       describe('no position defined', () => {
         it('starts from beginning of stream (position 0)', async () => {
-          const found = []
-
-          for await (const record of store.read(streamName)) {
-            found.push(record)
-          }
+          const found = await read(streamName)
 
           expect(found).toHaveLength(5)
           expect(found.map(f => f.data)).toEqual(messages.map(m => m.data))
@@ -99,11 +90,7 @@ exports.generateReadSuite = ({
 
       describe('position specified', () => {
         it('only returns records from the specified position', async () => {
-          const found = []
-
-          for await (const record of store.read(streamName, 2)) {
-            found.push(record)
-          }
+          const found = await read(streamName, 2)
 
           expect(found).toHaveLength(3)
           expect(found[0].data).toEqual(messages[2].data)
