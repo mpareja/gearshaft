@@ -5,15 +5,18 @@ const { createPositionStore } = require('./position-store')
 const { createRunner } = require('../runner')
 
 exports.createConsumer = ({
-  highWaterMark = 500,
   log,
-  lowWaterMark = 50,
   name,
   positionUpdateInterval = 100,
   registerHandlers,
   store,
   streamName,
-  strict = false
+  strict = false,
+
+  // TUNING
+  highWaterMark = 500,
+  lowWaterMark = 50,
+  pollingIntervalMs = 100
 }) => {
   const consumerError = operationError(`${name} consumer`)
 
@@ -23,13 +26,17 @@ exports.createConsumer = ({
   const registry = createConsumerHandlerRegistry({ name, log, strict })
   registerHandlers(registry.register)
 
-  const dispatch = async (messageData) => {
-    const meta = {
+  const getLogMeta = (messageData) => {
+    return {
       streamName,
       position: messageData.position,
       globalPosition: messageData.globalPosition,
       type: messageData.type
     }
+  }
+
+  const dispatch = async (messageData) => {
+    const meta = getLogMeta(messageData)
 
     try {
       await registry.handle(messageData)
@@ -73,14 +80,21 @@ exports.createConsumer = ({
     }
 
     const waitToGetBatch = async (version) => {
-      await delay(100)
+      await delay(pollingIntervalMs)
       runner.trigger('getBatch', version)
     }
 
     // --- CONSUMPTION ----
 
     const processMessage = async () => {
-      await dispatch(queue.shift())
+      const messageData = queue.shift()
+      try {
+        await dispatch(messageData)
+      } catch (e) {
+        log.warn(getLogMeta(messageData), `${name} consumer: processing paused due to error (errorStrategy = "pause")`)
+        runner.pause()
+        queue.unshift(messageData) // place back in queue for retry if unpaused
+      }
 
       if (state === 'draining' && queue.length < lowWaterMark) {
         fill()

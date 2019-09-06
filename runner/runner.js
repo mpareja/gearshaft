@@ -50,7 +50,7 @@ exports.createRunner = ({ tasks }) => {
   }
 
   const stats = () => {
-    return { active: active.length, queued: queue.length }
+    return { active: active.length, paused, stopped, queued: queue.length }
   }
 
   return { pause, stats, stop, trigger, unpause }
