@@ -40,7 +40,7 @@ exports.createConsumer = ({
       throw err
     }
 
-    log.info(meta, `${name} consumer: ${messageData.type} message dispatched to handlers`)
+    log.debug(meta, `${name} consumer: ${messageData.type} message dispatched to handlers`)
   }
 
   const updatePosition = async (globalPosition) => {

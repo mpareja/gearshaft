@@ -42,7 +42,7 @@ describe('consumer', () => {
 
         await consumer.dispatch(messageData)
 
-        expect(log.info).toHaveBeenCalledWith({
+        expect(log.debug).toHaveBeenCalledWith({
           streamName,
           position: messageData.position,
           globalPosition: messageData.globalPosition,
