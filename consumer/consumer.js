@@ -12,6 +12,7 @@ exports.createConsumer = ({
   store,
   streamName,
   strict = false,
+  clock = () => new Date(),
 
   // TUNING
   highWaterMark = 500,
@@ -68,9 +69,51 @@ exports.createConsumer = ({
     let nextVersion = 0
     let queue = []
 
+    const throttleErrorLogging = (fn) => {
+      let errorLoggedTs = null
+      let errorCount = 0
+
+      const tenSecondsSinceLastLogged = () => {
+        const spanMs = clock() - errorLoggedTs
+        return spanMs >= (10 * 1000)
+      }
+
+      return async (...args) => {
+        let result
+        try {
+          result = await fn(...args)
+
+          if (errorLoggedTs) {
+            log.info({ streamName, errorCount }, `${name} consumer: reading from stream succeeded after encountering errors`)
+          }
+          errorLoggedTs = null
+          errorCount = 0
+        } catch (err) {
+          errorCount++
+          if (!errorLoggedTs || tenSecondsSinceLastLogged()) {
+            errorLoggedTs = clock()
+            log.error({ streamName, errorCount, err }, `${name} consumer: error reading from stream`)
+          }
+          throw err
+        }
+
+        return result
+      }
+    }
+
     // --- BATCH FETCHING ----
+    const get = throttleErrorLogging(async (...args) => {
+      return store.get(...args)
+    })
+
     const getBatch = async (version) => {
-      const batch = await store.get(streamName, version)
+      let batch
+      try {
+        batch = await get(streamName, version)
+      } catch (err) {
+        // wait for next batch (i.e. retry)
+        batch = []
+      }
 
       if (batch.length) {
         runner.trigger('batch', batch)

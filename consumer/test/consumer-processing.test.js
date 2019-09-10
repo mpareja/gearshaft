@@ -1,3 +1,4 @@
+const createClock = require('./fake-clock')
 const createLog = require('../../test/test-log')
 const promisify = require('util').promisify
 const setImmediateP = promisify(setImmediate)
@@ -192,5 +193,105 @@ describe('given a handler exception', () => {
     handler.resolve()
 
     await runner.stop()
+  })
+})
+
+describe('given an error while fetching messages', () => {
+  const setupFetchError = async (opts) => {
+    const scenario = await setupConsumerWithHandler(opts)
+    const { consumer, store } = scenario
+    store.get = jest.fn(async () => {
+      await setImmediateP()
+      throw new Error('get error')
+    })
+
+    const runner = consumer.start()
+    return { ...scenario, runner }
+  }
+
+  it('retries the fetch', async () => {
+    const { runner, store } = await setupFetchError()
+
+    while (store.get.mock.calls.length < 2) {
+      await setImmediateP()
+    }
+
+    await runner.stop()
+  })
+
+  it('logs the error', async () => {
+    const { log, runner, store, streamName } = await setupFetchError({
+      name: 'MyConsumer'
+    })
+
+    while (store.get.mock.calls.length < 1) {
+      await setImmediateP()
+    }
+
+    await runner.stop()
+
+    expect(log.error).toHaveBeenCalledWith({
+      streamName,
+      err: new Error('get error'),
+      errorCount: 1
+    }, 'MyConsumer consumer: error reading from stream')
+  })
+
+  it('waits 10s before logging the error again', async () => {
+    const clock = createClock()
+    const { log, runner, store, streamName } = await setupFetchError({
+      name: 'MyConsumer',
+      clock
+    })
+
+    while (store.get.mock.calls.length < 2) {
+      await setImmediateP()
+    }
+    await runner.pause() // wait for inflight store.get call to complete
+
+    clock.plusSeconds(10)
+
+    runner.unpause()
+
+    while (store.get.mock.calls.length < 3) {
+      await setImmediateP()
+    }
+    await runner.stop()
+
+    // expect: log failure, no log, log failure
+    expect(store.get).toHaveBeenCalledTimes(3)
+    expect(log.error).toHaveBeenCalledTimes(2) /// only logged 2 of 3 times
+    expect(log.error).toHaveBeenCalledWith({
+      streamName,
+      err: new Error('get error'),
+      errorCount: 3
+    }, 'MyConsumer consumer: error reading from stream')
+  })
+
+  it('logs when fetching starts working again', async () => {
+    const { log, runner, store, streamName } = await setupFetchError({
+      name: 'MyConsumer'
+    })
+
+    while (store.get.mock.calls.length < 1) {
+      await setImmediateP()
+    }
+    await runner.pause() // wait for inflight store.get call to complete
+
+    // setup store to no longer raise error
+    store.get = jest.fn(async () => {
+      await setImmediateP()
+      return []
+    })
+
+    runner.unpause()
+
+    while (store.get.mock.calls.length < 1) { // new store.get instance
+      await setImmediateP()
+    }
+    await runner.stop()
+
+    expect(log.info).toHaveBeenCalledWith({ streamName, errorCount: 1 },
+      'MyConsumer consumer: reading from stream succeeded after encountering errors')
   })
 })
