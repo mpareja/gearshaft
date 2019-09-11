@@ -17,9 +17,8 @@ module.exports = (options) => {
   const registry = createRegistry()
   registerHandlers(registry.register)
 
-  const entity = new EntityClass()
-
   const fetch = async (id) => {
+    const entity = new EntityClass()
     const streamName = StreamName.create(category, id)
     for await (const messageData of messageStore.read(streamName)) {
       const { handler, messageClass } = registry.get(messageData)

@@ -110,6 +110,33 @@ module.exports.generateEntityStoreSuite = ({
         })
       })
 
+      describe('two entities in message store', () => {
+        let message1, message2, result1, result2
+        beforeEach(async () => {
+          message1 = exampleMessage(MessageClassA)
+          const streamName1 = exampleStreamName(A_CATEGORY)
+          const id1 = StreamName.getId(streamName1)
+          await write(message1, streamName1)
+
+          message2 = exampleMessage(MessageClassA)
+          const streamName2 = exampleStreamName(A_CATEGORY)
+          const id2 = StreamName.getId(streamName2)
+          await write(message2, streamName2)
+
+          result1 = await entityStore.fetch(id1)
+          result2 = await entityStore.fetch(id2)
+        })
+
+        it('can be independently fetched', () => {
+          expect(result1.applied).toEqual([
+            { method: 'methodA', id: message1.id }
+          ])
+          expect(result2.applied).toEqual([
+            { method: 'methodA', id: message2.id }
+          ])
+        })
+      })
+
       describe('handler not registered for message', () => {
         it('ignores message', async () => {
           const message = exampleMessage()
