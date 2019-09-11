@@ -120,41 +120,25 @@ exports.generateWriteSuite = ({
     })
 
     describe('expected version', () => {
-      describe('writing multiple messages in same category', () => {
-        it('messages are written with the expected versions', async () => {
+      describe('writing message specifying previous message version', () => {
+        it('message is written with the expected version', async () => {
           const streamName = exampleStreamName()
 
           const wm0 = exampleWriteMessageData()
-          await store.write(wm0, streamName)
+          const position1 = await store.write(wm0, streamName)
 
           const wm1 = exampleWriteMessageData()
-          await store.write(wm1, streamName, 0)
+          const position2 = await store.write(wm1, streamName, position1)
 
-          const readMessage = (await store.get(streamName, 1))[0]
+          const readMessage = await store.getLast(streamName)
 
           expect(readMessage.data).toEqual(wm1.data)
+          expect(readMessage.metadata.position).toEqual(position2)
+          expect(readMessage.metadata.position).toEqual(1)
         })
       })
 
-      describe('writing messages in different categories without ids', () => {
-        it('messages are written with expected versions', async () => {
-          const streamName0 = exampleStreamName(null, 'none')
-          const wm0 = exampleWriteMessageData()
-          await store.write(wm0, streamName0)
-
-          const streamName1 = exampleStreamName(null, 'none')
-          const wm1 = exampleWriteMessageData()
-          await store.write(wm1, streamName1)
-
-          const rm0 = (await store.get(streamName0, 0))[0]
-          expect(rm0.data).toEqual(wm0.data)
-
-          const rm1 = (await store.get(streamName1, 0))[0]
-          expect(rm1.data).toEqual(wm1.data)
-        })
-      })
-
-      describe('writing message with stale version', () => {
+      describe('writing message specifying stale version', () => {
         let streamName, error
         beforeAll(async () => {
           streamName = exampleStreamName()
@@ -177,6 +161,24 @@ exports.generateWriteSuite = ({
         it('does not write new message', async () => {
           const results = await store.get(streamName)
           expect(results.length).toBe(2)
+        })
+      })
+
+      describe('writing messages in different categories without ids', () => {
+        it('messages are written with expected versions', async () => {
+          const streamName0 = exampleStreamName(null, 'none')
+          const wm0 = exampleWriteMessageData()
+          await store.write(wm0, streamName0)
+
+          const streamName1 = exampleStreamName(null, 'none')
+          const wm1 = exampleWriteMessageData()
+          await store.write(wm1, streamName1)
+
+          const rm0 = (await store.get(streamName0, 0))[0]
+          expect(rm0.data).toEqual(wm0.data)
+
+          const rm1 = (await store.get(streamName1, 0))[0]
+          expect(rm1.data).toEqual(wm1.data)
         })
       })
 
