@@ -12,7 +12,7 @@ describe('write', () => {
   let log, store, write
   beforeEach(() => {
     log = createLog()
-    store = { write: jest.fn().mockResolvedValue(A_POSITION) }
+    store = { write: jest.fn().mockResolvedValue(A_POSITION), isExpectedVersionError: jest.fn() }
     write = createWrite({ log, store })
   })
 
@@ -98,6 +98,14 @@ describe('write', () => {
       await write.initial(message, streamName)
 
       expect(store.write).toHaveBeenCalledWith([messageData], streamName, -1)
+    })
+  })
+
+  describe('isExpectedVersionError', () => {
+    it('defers to store implementation', () => {
+      const err = new Error('bogus')
+      write.isExpectedVersionError(err)
+      expect(store.isExpectedVersionError).toHaveBeenCalledWith(err)
     })
   })
 })
