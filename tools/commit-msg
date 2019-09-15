@@ -1,0 +1,14 @@
+#!/bin/bash
+
+# ensure commits are prefixed with a module
+
+commitFile="$1"
+
+main () {
+	if ! egrep '(^consumer:|^entity-store:|^message-store:|^messaging:|^package:|^runner:|^tools:)' "$commitFile"; then
+		echo "ERROR: missing acceptable prefix (like message-store:)"
+		exit 1
+	fi
+}
+
+main
