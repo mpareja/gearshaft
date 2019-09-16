@@ -13,8 +13,14 @@
     "cov": "opener coverage/index.html",
     "jest": "jest ${JEST_CI_ENV:-'--notify'}",
     "lint": "standard -v",
-    "test": "npm run clean && npm run lint && npm run jest",
-    "recreate": "export PGHOST=localhost PGUSER=postgres PGPASSWORD=NInAN5t3kJo8d7I3 && ./gems/bin/evt-pg-recreate-db && psql -c \"alter role message_store with password 'NInAN5t3kJo8d7I3';\""
+    "recreate": "export PGHOST=localhost PGUSER=postgres PGPASSWORD=NInAN5t3kJo8d7I3 && ./gems/bin/evt-pg-recreate-db && psql -c \"alter role message_store with password 'NInAN5t3kJo8d7I3';\"",
+    "test": "npm run clean && npm run lint && npm run jest"
+  },
+  "husky": {
+    "hooks": {
+      "commit-msg": "./tools/commit-msg \"$HUSKY_GIT_PARAMS\"",
+      "pre-commit": "npm test"
+    }
   },
   "jest": {
     "collectCoverage": true,
@@ -49,6 +55,7 @@
     "uuid-validate": "0.0.3"
   },
   "devDependencies": {
+    "husky": "^3.0.5",
     "jest": "^24.9.0",
     "js-joda": "^1.11.0",
     "opener": "^1.5.1",
