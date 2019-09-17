@@ -7,7 +7,7 @@ const EXPECTED_VERSION_ERROR_CODE = 'ExpectedVersionError'
 const writeError = operationError('message-store write')
 const putError = operationError('message-store put')
 
-module.exports = ({ batchSize = 1000, log }) => {
+module.exports.createMessageStore = ({ batchSize = 1000, log }) => {
   const streams = {}
   const messageIds = {}
   let globalPosition = 0

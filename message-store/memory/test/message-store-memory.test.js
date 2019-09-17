@@ -1,5 +1,5 @@
 const createLog = require('../../../test/test-log')
-const createMessageStore = require('../index')
+const { createMessageStore } = require('../index')
 const { generateGetLastSuite } = require('../../test/get-last-test-suite')
 const { generateGetSuite } = require('../../test/get-test-suite')
 const { generateReadSuite } = require('../../test/read-test-suite')

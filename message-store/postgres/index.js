@@ -4,7 +4,7 @@ const createPut = require('./put')
 const createRead = require('../read')
 const createWrite = require('./write')
 
-module.exports = (config) => {
+module.exports.createMessageStore = (config) => {
   const get = createGet(config)
   const getLast = createGetLast(config)
   const put = createPut(config)
