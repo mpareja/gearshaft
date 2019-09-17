@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "description": "",
   "main": "index.js",
-  "private": true,
+  "private": false,
   "engines": {
     "node": ">=10",
     "npm": ">=6"
@@ -48,7 +48,7 @@
     ]
   },
   "author": "Mario Pareja",
-  "license": "UNLICENSED",
+  "license": "MIT",
   "dependencies": {
     "lodash.clonedeep": "^4.5.0",
     "pg": "^7.12.1",
