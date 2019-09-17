@@ -15,7 +15,7 @@ module.exports = ({ log, store }) => {
 
     const data = transformMessages(messages)
 
-    const position = store.write(data, streamName, expectedVersion)
+    const position = await store.write(data, streamName, expectedVersion)
 
     log.info({
       ...info,

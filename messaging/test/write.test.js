@@ -101,6 +101,35 @@ describe('write', () => {
     })
   })
 
+  describe('error writing message', () => {
+    const setupWriteError = () => {
+      const streamName = exampleStreamName()
+      const message = exampleMessage()
+
+      const error = new Error('bogus write error')
+      store.write = jest.fn().mockRejectedValue(error)
+
+      const promise = write.initial(message, streamName)
+      return { error, promise }
+    }
+
+    it('propagates error', async () => {
+      const { error, promise } = setupWriteError()
+
+      await expect(promise).rejects.toEqual(error)
+    })
+
+    it('does not log success', async () => {
+      const { promise } = setupWriteError()
+
+      try {
+        await promise
+      } catch (e) {}
+
+      expect(log.info).not.toHaveBeenCalled()
+    })
+  })
+
   describe('isExpectedVersionError', () => {
     it('defers to store implementation', () => {
       const err = new Error('bogus')
