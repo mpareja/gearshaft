@@ -10,7 +10,7 @@ types.setTypeParser(20, (data) => {
   return Number(data)
 })
 
-module.exports = async (config) => {
+module.exports.createPostgresGateway = async (config) => {
   const pool = new Pool(config)
 
   pool.transaction = async (fn) => {

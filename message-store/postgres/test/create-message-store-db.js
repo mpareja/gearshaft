@@ -1,5 +1,5 @@
 const getConfig = require('./config')
-const createPg = require('../pg')
+const { createPostgresGateway } = require('../pg')
 
 const createMessageStoreDb = /* istanbul ignore next */ async () => {
   try {
@@ -15,7 +15,7 @@ const createMessageStoreDb = /* istanbul ignore next */ async () => {
 module.exports = createMessageStoreDb
 
 const createInstance = async (config) => {
-  const db = await createPg(config)
+  const db = await createPostgresGateway(config)
   db.recreate = () => createInstance(config)
   db.close = () => db.end()
   return db

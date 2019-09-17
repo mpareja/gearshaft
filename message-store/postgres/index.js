@@ -3,6 +3,7 @@ const createGetLast = require('./get-last')
 const createPut = require('./put')
 const createRead = require('../read')
 const createWrite = require('./write')
+const { createPostgresGateway } = require('./pg')
 
 module.exports.createMessageStore = (config) => {
   const get = createGet(config)
@@ -18,3 +19,5 @@ module.exports.createMessageStore = (config) => {
     ...write
   }
 }
+
+module.exports.createPostgresGateway = createPostgresGateway
