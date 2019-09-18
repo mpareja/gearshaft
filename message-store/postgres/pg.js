@@ -10,7 +10,7 @@ types.setTypeParser(20, (data) => {
   return Number(data)
 })
 
-module.exports.createPostgresGateway = async (config) => {
+module.exports.createPostgresGateway = (config) => {
   const pool = new Pool(config)
 
   pool.transaction = async (fn) => {
@@ -26,10 +26,6 @@ module.exports.createPostgresGateway = async (config) => {
       client.release()
     }
   }
-
-  // ensure we can connect
-  const client = await pool.connect()
-  client.release()
 
   return pool
 }

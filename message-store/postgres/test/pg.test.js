@@ -4,7 +4,7 @@ const {
 } = require('./init-message-store')
 
 let db
-beforeAll(async () => { db = await createMessageStoreDb() }, 8100) // 4s create postgres + 4s to migrate
+beforeAll(() => { db = createMessageStoreDb() })
 afterAll(async () => { await db.close() })
 
 let log
