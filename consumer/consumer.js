@@ -20,6 +20,7 @@ exports.createConsumer = ({
   pollingIntervalMs = 100
 }) => {
   const consumerError = operationError(`${name} consumer`)
+  const prefix = (text) => `${name} consumer: ${text}`
 
   const positionStore = createPositionStore({ store, streamName })
   let positionUpdateCount = 0
@@ -37,18 +38,9 @@ exports.createConsumer = ({
   }
 
   const dispatch = async (messageData) => {
-    const meta = getLogMeta(messageData)
+    await registry.handle(messageData)
 
-    try {
-      await registry.handle(messageData)
-
-      await updatePosition(messageData.globalPosition)
-    } catch (err) {
-      log.error({ ...meta, err }, err.message)
-      throw err
-    }
-
-    log.debug(meta, `${name} consumer: ${messageData.type} message dispatched to handlers`)
+    await updatePosition(messageData.globalPosition)
   }
 
   const updatePosition = async (globalPosition) => {
@@ -57,7 +49,9 @@ exports.createConsumer = ({
       try {
         await positionStore.put(globalPosition)
       } catch (inner) {
-        throw consumerError('error updating consumer position', inner)
+        const message = 'error updating consumer position'
+        log.error({ err: inner, streamName, globalPosition }, prefix(message))
+        throw consumerError(message, inner)
       }
 
       positionUpdateCount = 0
@@ -84,7 +78,7 @@ exports.createConsumer = ({
           result = await fn(...args)
 
           if (errorLoggedTs) {
-            log.info({ streamName, errorCount }, `${name} consumer: reading from stream succeeded after encountering errors`)
+            log.info({ streamName, errorCount }, prefix('reading from stream succeeded after encountering errors'))
           }
           errorLoggedTs = null
           errorCount = 0
@@ -92,7 +86,7 @@ exports.createConsumer = ({
           errorCount++
           if (!errorLoggedTs || tenSecondsSinceLastLogged()) {
             errorLoggedTs = clock()
-            log.error({ streamName, errorCount, err }, `${name} consumer: error reading from stream`)
+            log.error({ streamName, errorCount, err }, prefix('error reading from stream'))
           }
           throw err
         }
@@ -134,7 +128,7 @@ exports.createConsumer = ({
       try {
         await dispatch(messageData)
       } catch (e) {
-        log.warn(getLogMeta(messageData), `${name} consumer: processing paused due to error (errorStrategy = "pause")`)
+        log.warn(getLogMeta(messageData), prefix('processing paused due to error (errorStrategy = "pause")'))
         runner.pause()
         queue.unshift(messageData) // place back in queue for retry if unpaused
       }

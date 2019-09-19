@@ -34,21 +34,6 @@ describe('consumer', () => {
         expect(handler.calls[0]).toBeInstanceOf(HandledMessageClass)
         expect(handler.calls[0]).toMatchObject(messageData.data)
       })
-
-      it('logs success', async () => {
-        const log = createLog()
-        const name = 'MyThing'
-        const { consumer, messageData, streamName } = setupConsumerWithHandler({ name, log })
-
-        await consumer.dispatch(messageData)
-
-        expect(log.debug).toHaveBeenCalledWith({
-          streamName,
-          position: messageData.position,
-          globalPosition: messageData.globalPosition,
-          type: messageData.type
-        }, 'MyThing consumer: HandledMessageClass message dispatched to handlers')
-      })
     })
 
     describe('position', () => {
@@ -138,9 +123,7 @@ describe('consumer', () => {
 
           expect(log.error).toHaveBeenCalledWith({
             streamName: expect.any(String),
-            position: messageData.position,
             globalPosition: messageData.globalPosition,
-            type: messageData.type,
             err: expect.any(Error)
           }, ERROR)
         })

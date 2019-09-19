@@ -58,8 +58,9 @@ describe('consumer-handler-registry', () => {
         expect(log.info).toHaveBeenCalledWith({
           consumerName: 'MyConsumer',
           messageId: messageData.id,
-          messageType: 'HandledMessageClass'
-        }, 'MyConsumer consumer: handled HandledMessageClass message')
+          messageType: 'HandledMessageClass',
+          streamName: messageData.streamName
+        }, 'MyConsumer consumer: dispatched HandledMessageClass message')
       })
     })
 
@@ -81,7 +82,8 @@ describe('consumer-handler-registry', () => {
           expect(log.info).toHaveBeenCalledWith({
             consumerName: 'MyConsumer',
             messageId: messageData.id,
-            messageType: 'UnhandledMessageClass'
+            messageType: 'UnhandledMessageClass',
+            streamName: messageData.streamName
           }, 'MyConsumer consumer: ignored UnhandledMessageClass message')
         })
       })
@@ -115,10 +117,7 @@ describe('consumer-handler-registry', () => {
 
         await expect(promise).rejects.toThrow('MyConsumer consumer: ErrorMessageClass handler raised an error')
         await expect(promise).rejects.toMatchObject({
-          consumerName: 'MyConsumer',
-          inner: error,
-          messageId: messageData.id,
-          messageType: 'ErrorMessageClass'
+          inner: error
         })
       })
     })
