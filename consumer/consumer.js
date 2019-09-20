@@ -167,11 +167,17 @@ exports.createConsumer = ({
       runner.trigger('getBatch', nextVersion)
     }
 
-    const tasks = { batch, fill, getBatch, waitToGetBatch, processMessage }
+    const getPosition = async () => {
+      const position = await positionStore.get()
+      nextVersion = typeof position === 'number' ? position + 1 : 0
+      runner.trigger('getBatch', nextVersion)
+    }
+
+    const tasks = { batch, fill, getBatch, getPosition, waitToGetBatch, processMessage }
     const runner = createRunner({ tasks })
 
-    fill()
     state = 'waitForMessages'
+    runner.trigger('getPosition')
 
     return runner
   }

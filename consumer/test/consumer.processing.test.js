@@ -17,13 +17,13 @@ const HandledMessageClass = exampleMessageClass('HandledMessageClass')
 const setupConsumerWithHandler = (opts = {}) => {
   const log = createLog()
   // log.enableDebugging()
-  const streamName = exampleStreamName()
+  const streamName = opts.streamName || exampleStreamName()
   const handler = opts.handler || exampleHandler()
   const messageData = exampleReadMessageData(HandledMessageClass)
   const registerHandlers = (register) => {
     register(HandledMessageClass, handler)
   }
-  const store = exampleMessageStore()
+  const store = exampleMessageStore({ log })
   const consumer = exampleConsumer({
     log,
     pollingIntervalMs: 20, // keep test fast
@@ -79,6 +79,31 @@ describe('given all messages had been processed and a new message is saved', () 
     await runner.stop()
 
     expect(handler.calls).toMatchObject([first.data, second.data, third.data])
+  })
+})
+
+describe('given some messages had been processed and consumer is restarting', () => {
+  it('continues processing where it left off', async () => {
+    const { consumer, handler, store, streamName } = setupConsumerWithHandler({ positionUpdateInterval: 1 })
+    const first = exampleReadMessageData(HandledMessageClass)
+    const second = exampleReadMessageData(HandledMessageClass)
+
+    await store.write([first, second], streamName)
+
+    // process first message
+    let runner = consumer.start()
+    while (handler.calls.length < 1) {
+      await setImmediateP()
+    }
+    await runner.stop()
+
+    runner = consumer.start()
+    while (handler.calls.length < 2) {
+      await setImmediateP()
+    }
+    runner.stop()
+
+    expect(handler.calls).toMatchObject([first.data, second.data])
   })
 })
 
