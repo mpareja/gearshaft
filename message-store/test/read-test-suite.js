@@ -1,6 +1,6 @@
 const createLog = require('../../test/test-log')
 const {
-  examplePut, exampleStreamName
+  exampleCategory, examplePut, exampleStreamName
 } = require('../examples')
 
 exports.generateReadSuite = ({
@@ -67,6 +67,75 @@ exports.generateReadSuite = ({
 
         expect(found).toHaveLength(10)
         expect(found.map(f => f.data)).toEqual(messages.map(m => m.data))
+      })
+    })
+
+    describe('category with multiple streams', () => {
+      const writeCategoryMessages = async () => {
+        const category = exampleCategory()
+
+        const streamName1 = exampleStreamName(category)
+        const { messages: messages1 } = await examplePut(store, {
+          streamName: streamName1, trackMessages: true, count: 2
+        })
+
+        const streamName2 = exampleStreamName(category)
+        const { messages: messages2 } = await examplePut(store, {
+          streamName: streamName2, trackMessages: true, count: 2
+        })
+
+        return { category, messages1, messages2 }
+      }
+
+      describe('reading from category', () => {
+        it('returns all messages from all streams in category', async () => {
+          setup()
+          const { category, messages1, messages2 } = await writeCategoryMessages()
+
+          const found = await read(category)
+
+          expect(found).toHaveLength(4)
+          expect(found.map(f => f.data)).toEqual([
+            messages1[0].data,
+            messages1[1].data,
+            messages2[0].data,
+            messages2[1].data
+          ])
+        })
+      })
+
+      describe('reading from category with a position specified', () => {
+        it('returns messages starting at the specified global position', async () => {
+          setup()
+          await examplePut(store) // write unrelated message
+
+          const { category, messages1, messages2 } = await writeCategoryMessages()
+          const all = await read(category)
+          const subsetStartPosition = all[1].globalPosition
+
+          const subset = await read(category, subsetStartPosition)
+
+          expect(subset).toHaveLength(3)
+          expect(subset.map(f => f.data)).toEqual([
+            messages1[1].data,
+            messages2[0].data,
+            messages2[1].data
+          ])
+        })
+      })
+
+      describe('get from category', () => {
+        it('reads a batch worth of items', async () => {
+          setup({ batchSize: 1 })
+          const { category, messages1 } = await writeCategoryMessages()
+
+          const batch = await store.get(category)
+
+          expect(batch).toHaveLength(1)
+          expect(batch.map(f => f.data)).toEqual([
+            messages1[0].data
+          ])
+        })
       })
     })
 

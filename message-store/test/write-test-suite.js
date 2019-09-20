@@ -1,5 +1,6 @@
 const createLog = require('../../test/test-log')
 const uuidValidate = require('uuid-validate')
+const { StreamName } = require('../../messaging')
 const {
   exampleStreamName, exampleWriteMessageData
 } = require('../examples')
@@ -83,8 +84,11 @@ exports.generateWriteSuite = ({
           const promise = store.write([writeMessage1, badMessage, writeMessage3], streamName)
           await expect(promise).rejects.toThrow(/error writing to database.*bad uuid/)
 
-          const results = await store.get(streamName)
-          expect(results).toHaveLength(0)
+          const streamResults = await store.get(streamName)
+          expect(streamResults).toHaveLength(0)
+
+          const categoryResults = await store.get(StreamName.getCategory(streamName))
+          expect(categoryResults).toHaveLength(0)
         })
 
         it('preserves previously written messages', async () => {

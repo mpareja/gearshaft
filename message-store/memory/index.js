@@ -1,6 +1,7 @@
 const cloneDeep = require('lodash.clonedeep')
 const operationError = require('../../errors/operation-error')
 const uuidValidate = require('uuid-validate')
+const { StreamName } = require('../../messaging')
 const { uuid } = require('../../identifier')
 
 const EXPECTED_VERSION_ERROR_CODE = 'ExpectedVersionError'
@@ -15,11 +16,20 @@ module.exports.createMessageStore = ({ batchSize = 1000, log }) => {
   const get = async function (streamName, position) {
     position = position || 0
 
-    const subset = messages.filter(m =>
-      m.streamName === streamName &&
-      m.position >= position &&
-      m.position < (position + batchSize)
-    )
+    let subset
+    if (StreamName.isCategory(streamName)) {
+      subset = messages.filter(m =>
+        StreamName.getCategory(m.streamName) === streamName &&
+        m.globalPosition >= position
+      )
+      subset = subset.splice(0, batchSize)
+    } else {
+      subset = messages.filter(m =>
+        m.streamName === streamName &&
+        m.position >= position &&
+        m.position < (position + batchSize)
+      )
+    }
 
     log.info({ batchSize, count: subset.length, position, streamName },
       'message-store get: successful')
@@ -62,7 +72,10 @@ module.exports.createMessageStore = ({ batchSize = 1000, log }) => {
         yield message
       }
 
-      position = subset[subset.length - 1].position + 1
+      const last = subset[subset.length - 1]
+      position = StreamName.isCategory(streamName)
+        ? last.globalPosition + 1
+        : last.position + 1
     }
   }
 
