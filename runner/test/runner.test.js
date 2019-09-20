@@ -40,6 +40,8 @@ describe('trigger', () => {
 
       runner.trigger('task')
 
+      await setImmediateP()
+
       expect(tasks.task.calls).toHaveLength(1)
       expect(tasks.task.calls[0]).toEqual(NO_PARAMETERS)
     })
@@ -54,6 +56,8 @@ describe('trigger', () => {
       const other = 'values'
       runner.trigger('task', some, other)
 
+      await setImmediateP()
+
       expect(tasks.task.calls).toEqual([
         [some, other]
       ])
@@ -61,12 +65,16 @@ describe('trigger', () => {
   })
 
   describe('triggering a sync task', () => {
-    it('runs the task and considers it done immediately', async () => {
+    it('runs the task on a different tick of the event loop', async () => {
       let done = false
       const tasks = { syncTask: () => { done = true } }
       const runner = createRunner({ tasks })
 
       runner.trigger('syncTask')
+
+      expect(done).toBe(false)
+
+      await setImmediateP()
 
       expect(done).toBe(true)
       expect(runner.stats().active).toBe(0)

@@ -9,7 +9,13 @@ exports.createRunner = ({ tasks }) => {
     if (paused) {
       queue.push([name, args])
     } else {
-      triggerTask(name, args)
+      // We don't want to immediately trigger the task because
+      // sync tasks could keep triggering other sync tasks preventing
+      // async tasks from completing (and even preventing the
+      // pausing/stopping of the runner)
+      setImmediate(() => {
+        triggerTask(name, args)
+      })
     }
   }
 
