@@ -44,40 +44,31 @@ describe('given messages in store', () => {
     await store.write([first, second], streamName)
 
     const runner = consumer.start()
-
-    while (handler.calls.length < 2) {
-      await setImmediateP()
-    }
-
+    await handler.waitUntilCalledAtLeast(2)
     await runner.stop()
 
     expect(handler.calls).toMatchObject([first.data, second.data])
   })
 })
 
-describe('given all messages had been processed and a new message is saved', () => {
+describe('given all messages had been processed and a new message is written', () => {
   it('processes the new message', async () => {
     const { consumer, handler, store, streamName } = setupConsumerWithHandler()
     const first = exampleReadMessageData(HandledMessageClass)
     const second = exampleReadMessageData(HandledMessageClass)
 
+    // setup all messages processed
     await store.write([first, second], streamName)
-
     const runner = consumer.start()
+    await handler.waitUntilCalledAtLeast(2)
 
-    while (handler.calls.length < 2) {
-      await setImmediateP()
-    }
-
+    // setup third message written
     const third = exampleReadMessageData(HandledMessageClass)
     await store.write(third, streamName)
 
-    while (handler.calls.length < 3) {
-      await setImmediateP()
-    }
-
+    // assert third message is processed
+    await handler.waitUntilCalledAtLeast(3)
     await runner.stop()
-
     expect(handler.calls).toMatchObject([first.data, second.data, third.data])
   })
 })
@@ -90,19 +81,17 @@ describe('given some messages had been processed and consumer is restarting', ()
 
     await store.write([first, second], streamName)
 
-    // process first message
+    // process first message and stop the consumer
     let runner = consumer.start()
-    while (handler.calls.length < 1) {
-      await setImmediateP()
-    }
+    await handler.waitUntilCalled()
     await runner.stop()
 
+    // restart the consumer
     runner = consumer.start()
-    while (handler.calls.length < 2) {
-      await setImmediateP()
-    }
-    runner.stop()
 
+    // assert it processes the next message
+    await handler.waitUntilCalledAtLeast(2)
+    await runner.stop()
     expect(handler.calls).toMatchObject([first.data, second.data])
   })
 })
@@ -119,12 +108,8 @@ describe('given more messages than the highwater mark', () => {
 
     const runner = consumer.start()
 
-    while (handler.calls.length < 10) {
-      await setImmediateP()
-    }
-
+    await handler.waitUntilCalledAtLeast(10)
     await runner.stop()
-
     expect(handler.calls).toMatchObject(messages.map(m => m.data))
   })
 })
