@@ -3,6 +3,7 @@ const createLog = require('../../test/test-log')
 const promisify = require('util').promisify
 const setImmediateP = promisify(setImmediate)
 const {
+  exampleCategory,
   exampleConsumer,
   exampleHandler,
   exampleHandlerBlocking,
@@ -17,7 +18,7 @@ const HandledMessageClass = exampleMessageClass('HandledMessageClass')
 const setupConsumerWithHandler = (opts = {}) => {
   const log = createLog()
   // log.enableDebugging()
-  const streamName = opts.streamName || exampleStreamName()
+  const category = opts.category || exampleCategory()
   const handler = opts.handler || exampleHandler()
   const messageData = exampleWriteMessageData({ type: HandledMessageClass.name })
   const registerHandlers = (register) => {
@@ -29,19 +30,19 @@ const setupConsumerWithHandler = (opts = {}) => {
     pollingIntervalMs: 20, // keep test fast
     registerHandlers,
     store,
-    streamName,
+    category,
     ...opts
   })
-  return { consumer, handler, log, messageData, store, streamName }
+  return { consumer, handler, log, messageData, store, category }
 }
 
 describe('given messages in store', () => {
   it('processes all messages in store', async () => {
-    const { consumer, handler, store, streamName } = setupConsumerWithHandler()
+    const { consumer, handler, store, category } = setupConsumerWithHandler()
     const first = exampleWriteMessageData({ type: HandledMessageClass.name })
     const second = exampleWriteMessageData({ type: HandledMessageClass.name })
 
-    await store.write([first, second], streamName)
+    await store.write([first, second], exampleStreamName(category))
 
     const runner = consumer.start()
     await handler.waitUntilCalledAtLeast(2)
@@ -53,9 +54,10 @@ describe('given messages in store', () => {
 
 describe('given all messages had been processed and a new message is written', () => {
   it('processes the new message', async () => {
-    const { consumer, handler, store, streamName } = setupConsumerWithHandler()
+    const { consumer, handler, store, category } = setupConsumerWithHandler()
     const first = exampleWriteMessageData({ type: HandledMessageClass.name })
     const second = exampleWriteMessageData({ type: HandledMessageClass.name })
+    const streamName = exampleStreamName(category)
 
     // setup all messages processed
     await store.write([first, second], streamName)
@@ -75,11 +77,11 @@ describe('given all messages had been processed and a new message is written', (
 
 describe('given some messages had been processed and consumer is restarting', () => {
   it('continues processing where it left off', async () => {
-    const { consumer, handler, store, streamName } = setupConsumerWithHandler({ positionUpdateInterval: 1 })
+    const { consumer, handler, store, category } = setupConsumerWithHandler({ positionUpdateInterval: 1 })
     const first = exampleWriteMessageData({ type: HandledMessageClass.name })
     const second = exampleWriteMessageData({ type: HandledMessageClass.name })
 
-    await store.write([first, second], streamName)
+    await store.write([first, second], exampleStreamName(category))
 
     // process first message and stop the consumer
     let runner = consumer.start()
@@ -98,13 +100,13 @@ describe('given some messages had been processed and consumer is restarting', ()
 
 describe('given more messages than the highwater mark', () => {
   it('processes all messages', async () => {
-    const { consumer, handler, store, streamName } = setupConsumerWithHandler({
+    const { consumer, handler, store, category } = setupConsumerWithHandler({
       highWaterMark: 8,
       lowWaterMark: 2
     })
 
     const messages = new Array(10).fill().map(() => exampleWriteMessageData({ type: HandledMessageClass.name }))
-    await store.write(messages, streamName)
+    await store.write(messages, exampleStreamName(category))
 
     const runner = consumer.start()
 
@@ -121,7 +123,7 @@ describe('given a slow message handler', () => {
     const get = store.get
     store.get = jest.fn((...args) => get(...args))
 
-    const { consumer, streamName } = setupConsumerWithHandler({
+    const { consumer, category } = setupConsumerWithHandler({
       handler,
       highWaterMark: 5,
       lowWaterMark: 2,
@@ -129,7 +131,7 @@ describe('given a slow message handler', () => {
     })
 
     const messages = new Array(10).fill().map(() => exampleWriteMessageData({ type: HandledMessageClass.name }))
-    await store.write(messages, streamName)
+    await store.write(messages, exampleStreamName(category))
 
     const runner = consumer.start()
 
@@ -156,9 +158,9 @@ describe('given a handler exception', () => {
   const setupConsumerWithBlockedHandler = async (opts = {}) => {
     const handler = exampleHandlerBlocking()
     const scenario = setupConsumerWithHandler({ handler, ...opts })
-    const { consumer, messageData, store, streamName } = scenario
+    const { consumer, messageData, store, category } = scenario
 
-    await store.write(messageData, streamName)
+    await store.write(messageData, exampleStreamName(category))
     runner = consumer.start()
     await handler.waitUntilCalled()
 
@@ -230,7 +232,7 @@ describe('given an error while fetching messages', () => {
   })
 
   it('logs the error', async () => {
-    const { log, runner, store, streamName } = await setupFetchError({
+    const { log, runner, store, category } = await setupFetchError({
       name: 'MyConsumer'
     })
 
@@ -241,7 +243,7 @@ describe('given an error while fetching messages', () => {
     await runner.stop()
 
     expect(log.error).toHaveBeenCalledWith({
-      streamName,
+      category,
       err: new Error('get error'),
       errorCount: 1
     }, 'MyConsumer consumer: error reading from stream')
@@ -249,7 +251,7 @@ describe('given an error while fetching messages', () => {
 
   it('waits 10s before logging the error again', async () => {
     const clock = createClock()
-    const { log, runner, store, streamName } = await setupFetchError({
+    const { log, runner, store, category } = await setupFetchError({
       name: 'MyConsumer',
       clock
     })
@@ -272,14 +274,14 @@ describe('given an error while fetching messages', () => {
     expect(store.get).toHaveBeenCalledTimes(3)
     expect(log.error).toHaveBeenCalledTimes(2) /// only logged 2 of 3 times
     expect(log.error).toHaveBeenCalledWith({
-      streamName,
+      category,
       err: new Error('get error'),
       errorCount: 3
     }, 'MyConsumer consumer: error reading from stream')
   })
 
   it('logs when fetching starts working again', async () => {
-    const { log, runner, store, streamName } = await setupFetchError({
+    const { log, runner, store, category } = await setupFetchError({
       name: 'MyConsumer'
     })
 
@@ -301,7 +303,7 @@ describe('given an error while fetching messages', () => {
     }
     await runner.stop()
 
-    expect(log.info).toHaveBeenCalledWith({ streamName, errorCount: 1 },
+    expect(log.info).toHaveBeenCalledWith({ category, errorCount: 1 },
       'MyConsumer consumer: reading from stream succeeded after encountering errors')
   })
 })

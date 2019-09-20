@@ -10,7 +10,7 @@ exports.createConsumer = ({
   positionUpdateInterval = 100,
   registerHandlers,
   store,
-  streamName,
+  category,
   strict = false,
   clock = () => new Date(),
 
@@ -22,7 +22,7 @@ exports.createConsumer = ({
   const consumerError = operationError(`${name} consumer`)
   const prefix = (text) => `${name} consumer: ${text}`
 
-  const positionStore = createPositionStore({ store, streamName })
+  const positionStore = createPositionStore({ store, streamName: category })
   let positionUpdateCount = 0
 
   const registry = createConsumerHandlerRegistry({ name, log, strict })
@@ -30,7 +30,7 @@ exports.createConsumer = ({
 
   const getLogMeta = (messageData) => {
     return {
-      streamName,
+      category,
       position: messageData.position,
       globalPosition: messageData.globalPosition,
       type: messageData.type
@@ -50,7 +50,7 @@ exports.createConsumer = ({
         await positionStore.put(globalPosition)
       } catch (inner) {
         const message = 'error updating consumer position'
-        log.error({ err: inner, streamName, globalPosition }, prefix(message))
+        log.error({ err: inner, category, globalPosition }, prefix(message))
         throw consumerError(message, inner)
       }
 
@@ -78,7 +78,7 @@ exports.createConsumer = ({
           result = await fn(...args)
 
           if (errorLoggedTs) {
-            log.info({ streamName, errorCount }, prefix('reading from stream succeeded after encountering errors'))
+            log.info({ category, errorCount }, prefix('reading from stream succeeded after encountering errors'))
           }
           errorLoggedTs = null
           errorCount = 0
@@ -86,7 +86,7 @@ exports.createConsumer = ({
           errorCount++
           if (!errorLoggedTs || tenSecondsSinceLastLogged()) {
             errorLoggedTs = clock()
-            log.error({ streamName, errorCount, err }, prefix('error reading from stream'))
+            log.error({ category, errorCount, err }, prefix('error reading from stream'))
           }
           throw err
         }
@@ -103,7 +103,7 @@ exports.createConsumer = ({
     const getBatch = async (version) => {
       let batch
       try {
-        batch = await get(streamName, version)
+        batch = await get(category, version)
       } catch (err) {
         // wait for next batch (i.e. retry)
         batch = []

@@ -1,25 +1,25 @@
 const createLog = require('../../test/test-log')
 const {
+  exampleCategory,
   exampleConsumer,
   exampleHandler,
   exampleMessageClass,
   exampleMessageStore,
-  exampleReadMessageData,
-  exampleStreamName
+  exampleReadMessageData
 } = require('../examples')
 
 const HandledMessageClass = exampleMessageClass('HandledMessageClass')
 
 const setupConsumerWithHandler = (opts = {}) => {
-  const streamName = exampleStreamName()
+  const category = exampleCategory()
   const handler = exampleHandler()
   const messageData = exampleReadMessageData(HandledMessageClass)
   const registerHandlers = (register) => {
     register(HandledMessageClass, handler)
   }
   const store = exampleMessageStore()
-  const consumer = exampleConsumer({ registerHandlers, store, streamName, ...opts })
-  return { consumer, handler, messageData, store, streamName }
+  const consumer = exampleConsumer({ registerHandlers, store, category, ...opts })
+  return { consumer, handler, messageData, store, category }
 }
 
 describe('consumer', () => {
@@ -122,7 +122,7 @@ describe('consumer', () => {
           })
 
           expect(log.error).toHaveBeenCalledWith({
-            streamName: expect.any(String),
+            category: expect.any(String),
             globalPosition: messageData.globalPosition,
             err: expect.any(Error)
           }, ERROR)

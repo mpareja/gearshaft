@@ -1,14 +1,14 @@
 const { createConsumer } = require('../consumer')
 const { exampleLog } = require('../../examples')
-const { exampleStreamName, exampleRandomValue } = require('../../messaging/examples')
+const { exampleCategory, exampleRandomValue } = require('../../messaging/examples')
 const { exampleMessageStore } = require('../../message-store/examples')
 
-exports.exampleConsumer = ({ name, log, registerHandlers, store, streamName, ...args } = {}) => {
+exports.exampleConsumer = ({ name, log, registerHandlers, store, category, ...args } = {}) => {
   log = log || exampleLog()
   name = name || exampleRandomValue()
   registerHandlers = registerHandlers || (() => {})
   store = store || exampleMessageStore()
-  streamName = streamName || exampleStreamName()
+  category = category || exampleCategory()
 
-  return createConsumer({ log, name, registerHandlers, store, streamName, ...args })
+  return createConsumer({ log, name, registerHandlers, store, category, ...args })
 }
