@@ -8,14 +8,18 @@ const writeError = operationError('message-store write')
 const putError = operationError('message-store put')
 
 module.exports.createMessageStore = ({ batchSize = 1000, log }) => {
-  const streams = {}
+  const messages = []
   const messageIds = {}
   let globalPosition = 0
 
   const get = async function (streamName, position) {
     position = position || 0
-    const stream = streams[streamName] || []
-    const subset = stream.slice(position, position + batchSize)
+
+    const subset = messages.filter(m =>
+      m.streamName === streamName &&
+      m.position >= position &&
+      m.position < (position + batchSize)
+    )
 
     log.info({ batchSize, count: subset.length, position, streamName },
       'message-store get: successful')
@@ -23,16 +27,19 @@ module.exports.createMessageStore = ({ batchSize = 1000, log }) => {
     return subset
   }
 
-  const getLast = async function (streamName) {
-    const stream = streams[streamName] || []
+  const getLast = async (...args) => getLastSync(...args)
 
+  const getLastSync = (streamName) => {
     let count = 0
     let position
-    let result = null
-    if (stream.length) {
-      count = 1
-      position = stream.length - 1
-      result = stream[position]
+    let last = null
+
+    for (var m of messages) {
+      if (m.streamName === streamName) {
+        last = m
+        count = 1
+        position = last.position
+      }
     }
 
     log.info({
@@ -41,7 +48,7 @@ module.exports.createMessageStore = ({ batchSize = 1000, log }) => {
       streamName
     }, 'message-store getLast: successful')
 
-    return result
+    return last
   }
 
   const read = async function * (streamName, position) {
@@ -62,9 +69,9 @@ module.exports.createMessageStore = ({ batchSize = 1000, log }) => {
   const put = async (...args) => putSync(...args)
 
   const putSync = (inputMessage, streamName, expectedVersion) => {
-    const stream = prepareStream(streamName)
+    const last = getLastSync(streamName)
 
-    const currentVersion = stream.length - 1
+    const currentVersion = last ? last.position : -1
     if (typeof expectedVersion === 'number' && expectedVersion !== currentVersion) {
       const e = putError(`Wrong expected version: ${expectedVersion} (Stream: ${streamName}, Stream Version: ${currentVersion})`)
       e.code = EXPECTED_VERSION_ERROR_CODE
@@ -84,22 +91,21 @@ module.exports.createMessageStore = ({ batchSize = 1000, log }) => {
 
     const message = cloneDeep(inputMessage)
     message.id = message.id || uuid()
-    message.position = stream.length
+    message.position = currentVersion + 1
     message.globalPosition = globalPosition++
     message.time = new Date()
     message.streamName = streamName
 
     const lastPosition = message.position
 
-    stream.push(message)
+    messages.push(message)
     messageIds[message.id] = true
 
     return lastPosition
   }
 
   const write = async (msgOrBatch, streamName, expectedVersion) => {
-    const stream = prepareStream(streamName)
-    const originalPosition = stream.length
+    const originalPosition = messages.length
 
     let lastPosition
 
@@ -109,7 +115,7 @@ module.exports.createMessageStore = ({ batchSize = 1000, log }) => {
         // we need syncronous access to array so nothing changes under our feet
         lastPosition = putSync(inputMessage, streamName, expectedVersion)
       } catch (e) {
-        stream.splice(originalPosition)
+        messages.splice(originalPosition)
         throw e
       }
 
@@ -127,15 +133,6 @@ module.exports.createMessageStore = ({ batchSize = 1000, log }) => {
     }, 'message-store write: successful')
 
     return lastPosition
-  }
-
-  const prepareStream = (streamName) => {
-    let stream = streams[streamName]
-    if (!stream) {
-      stream = []
-      streams[streamName] = stream
-    }
-    return stream
   }
 
   const isExpectedVersionError = (err) => {
