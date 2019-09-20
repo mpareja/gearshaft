@@ -8,7 +8,7 @@ const {
   exampleHandlerBlocking,
   exampleMessageClass,
   exampleMessageStore,
-  exampleReadMessageData,
+  exampleWriteMessageData,
   exampleStreamName
 } = require('../examples')
 
@@ -19,7 +19,7 @@ const setupConsumerWithHandler = (opts = {}) => {
   // log.enableDebugging()
   const streamName = opts.streamName || exampleStreamName()
   const handler = opts.handler || exampleHandler()
-  const messageData = exampleReadMessageData(HandledMessageClass)
+  const messageData = exampleWriteMessageData({ type: HandledMessageClass.name })
   const registerHandlers = (register) => {
     register(HandledMessageClass, handler)
   }
@@ -38,8 +38,8 @@ const setupConsumerWithHandler = (opts = {}) => {
 describe('given messages in store', () => {
   it('processes all messages in store', async () => {
     const { consumer, handler, store, streamName } = setupConsumerWithHandler()
-    const first = exampleReadMessageData(HandledMessageClass)
-    const second = exampleReadMessageData(HandledMessageClass)
+    const first = exampleWriteMessageData({ type: HandledMessageClass.name })
+    const second = exampleWriteMessageData({ type: HandledMessageClass.name })
 
     await store.write([first, second], streamName)
 
@@ -54,8 +54,8 @@ describe('given messages in store', () => {
 describe('given all messages had been processed and a new message is written', () => {
   it('processes the new message', async () => {
     const { consumer, handler, store, streamName } = setupConsumerWithHandler()
-    const first = exampleReadMessageData(HandledMessageClass)
-    const second = exampleReadMessageData(HandledMessageClass)
+    const first = exampleWriteMessageData({ type: HandledMessageClass.name })
+    const second = exampleWriteMessageData({ type: HandledMessageClass.name })
 
     // setup all messages processed
     await store.write([first, second], streamName)
@@ -63,7 +63,7 @@ describe('given all messages had been processed and a new message is written', (
     await handler.waitUntilCalledAtLeast(2)
 
     // setup third message written
-    const third = exampleReadMessageData(HandledMessageClass)
+    const third = exampleWriteMessageData({ type: HandledMessageClass.name })
     await store.write(third, streamName)
 
     // assert third message is processed
@@ -76,8 +76,8 @@ describe('given all messages had been processed and a new message is written', (
 describe('given some messages had been processed and consumer is restarting', () => {
   it('continues processing where it left off', async () => {
     const { consumer, handler, store, streamName } = setupConsumerWithHandler({ positionUpdateInterval: 1 })
-    const first = exampleReadMessageData(HandledMessageClass)
-    const second = exampleReadMessageData(HandledMessageClass)
+    const first = exampleWriteMessageData({ type: HandledMessageClass.name })
+    const second = exampleWriteMessageData({ type: HandledMessageClass.name })
 
     await store.write([first, second], streamName)
 
@@ -103,7 +103,7 @@ describe('given more messages than the highwater mark', () => {
       lowWaterMark: 2
     })
 
-    const messages = new Array(10).fill().map(() => exampleReadMessageData(HandledMessageClass))
+    const messages = new Array(10).fill().map(() => exampleWriteMessageData({ type: HandledMessageClass.name }))
     await store.write(messages, streamName)
 
     const runner = consumer.start()
@@ -128,7 +128,7 @@ describe('given a slow message handler', () => {
       store
     })
 
-    const messages = new Array(10).fill().map(() => exampleReadMessageData(HandledMessageClass))
+    const messages = new Array(10).fill().map(() => exampleWriteMessageData({ type: HandledMessageClass.name }))
     await store.write(messages, streamName)
 
     const runner = consumer.start()
