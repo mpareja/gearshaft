@@ -62,6 +62,7 @@
     "pino": "^5.13.3",
     "rc": "^1.2.8",
     "rimraf": "^3.0.0",
-    "standard": "^14.0.2"
+    "standard": "^14.0.2",
+    "systeminformation": "^4.14.8"
   }
 }
