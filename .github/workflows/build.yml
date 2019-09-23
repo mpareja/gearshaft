@@ -35,7 +35,7 @@ jobs:
         evt-pg-recreate-db
         psql -c "alter role message_store with password '$PGPASSWORD';"
       env:
-        PGHOST: postgres
+        PGHOST: localhost
         PGUSER: postgres
         PGPASSWORD: NInAN5t3kJo8d7I3
 
@@ -50,4 +50,3 @@ jobs:
         npm test
       env:
         CI: true
-        gearshaft_tests_db__host: postgres
