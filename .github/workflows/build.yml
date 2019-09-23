@@ -30,7 +30,7 @@ jobs:
         ruby-version: 2.6.x
     - name: Create message-store database
       run: |
-        sudo apt-get -yqq install libpq-dev
+        sudo apt-get -yqq install postgresql-client
         gem install evt-message_store-postgres-database
         evt-pg-recreate-db
         psql -c "alter role message_store with password '$PGPASSWORD';"
