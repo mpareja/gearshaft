@@ -11,6 +11,34 @@ jobs:
       matrix:
         node-version: [10.x, 12.x]
 
+    services:
+      postgres:
+        image: postgres:10.8
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: NInAN5t3kJo8d7I3
+          POSTGRES_DB: message_store
+        ports:
+        - 5432:5432
+        # needed because the postgres container does not provide a healthcheck
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+
+    steps:
+    - name: Set up Ruby 2.6
+      uses: actions/setup-ruby@v1
+      with:
+        ruby-version: 2.6.x
+    - name: Create message-store database
+      run: |
+        sudo apt-get -yqq install libpq-dev
+        gem install evt-message_store-postgres-database --install-dir ./gems
+        ./gems/bin/evt-pg-recreate-db
+        psql -c "alter role message_store with password '$PGPASSWORD';"
+      env:
+        PGHOST: postgres
+        PGUSER: postgres
+        PGPASSWORD: NInAN5t3kJo8d7I3
+        
     steps:
     - uses: actions/checkout@v1
     - name: Use Node.js ${{ matrix.node-version }}
@@ -20,7 +48,7 @@ jobs:
     - name: npm install, build, and test
       run: |
         npm install
-        npm run build --if-present
         npm test
       env:
         CI: true
+        gearshaft_tests_db__host: postgres
