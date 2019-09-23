@@ -31,8 +31,8 @@ jobs:
     - name: Create message-store database
       run: |
         sudo apt-get -yqq install libpq-dev
-        gem install evt-message_store-postgres-database --install-dir ./gems
-        ./gems/bin/evt-pg-recreate-db
+        gem install evt-message_store-postgres-database
+        evt-pg-recreate-db
         psql -c "alter role message_store with password '$PGPASSWORD';"
       env:
         PGHOST: postgres
