@@ -38,8 +38,7 @@ jobs:
         PGHOST: postgres
         PGUSER: postgres
         PGPASSWORD: NInAN5t3kJo8d7I3
-        
-    steps:
+
     - uses: actions/checkout@v1
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v1
