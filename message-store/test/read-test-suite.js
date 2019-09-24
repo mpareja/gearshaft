@@ -32,9 +32,9 @@ exports.generateReadSuite = ({
       })
     })
 
-    describe('single item, one batch', () => {
+    describe('single item, full batch', () => {
       it('reads the item', async () => {
-        setup()
+        setup({ batchSize: 1 })
         const { streamName, messages } = await examplePut(store, { count: 1, trackMessages: true })
 
         const found = await read(streamName, 0)
@@ -58,7 +58,7 @@ exports.generateReadSuite = ({
       })
     })
 
-    describe('many items, many batches', () => {
+    describe('many items, many full batches and final partial batch', () => {
       it('reads the items', async () => {
         setup({ batchSize: 3 })
         const { streamName, messages } = await examplePut(store, { count: 10, trackMessages: true })
