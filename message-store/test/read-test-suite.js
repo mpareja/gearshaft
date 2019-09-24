@@ -44,8 +44,8 @@ exports.generateReadSuite = ({
       })
     })
 
-    describe('many items, one batch', () => {
-      it('reads the item', async () => {
+    describe('many items, partial batch', () => {
+      it('reads the items', async () => {
         setup({ batchSize: 10 })
         const { streamName, messages } = await examplePut(store, { count: 3, trackMessages: true })
 
