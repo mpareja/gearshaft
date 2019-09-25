@@ -1,3 +1,4 @@
+const createRead = require('../read')
 const cloneDeep = require('lodash.clonedeep')
 const operationError = require('../../errors/operation-error')
 const uuidValidate = require('uuid-validate')
@@ -61,23 +62,7 @@ module.exports.createMessageStore = ({ batchSize = 1000, log }) => {
     return last
   }
 
-  const read = async function * (streamName, position) {
-    while (true) {
-      const subset = await get(streamName, position)
-      if (!subset.length) {
-        break
-      }
-
-      for (const message of subset) {
-        yield message
-      }
-
-      const last = subset[subset.length - 1]
-      position = StreamName.isCategory(streamName)
-        ? last.globalPosition + 1
-        : last.position + 1
-    }
-  }
+  const { read } = createRead({ batchSize, get })
 
   const put = async (...args) => putSync(...args)
 

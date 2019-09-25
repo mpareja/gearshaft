@@ -21,111 +21,206 @@ exports.generateReadSuite = ({
   }
 
   describe('read', () => {
-    describe('empty stream', () => {
-      it('returns no records', async () => {
-        setup()
-        const streamNameNoExist = exampleStreamName()
+    describe('entity stream', () => {
+      describe('empty stream', () => {
+        it('returns no records', async () => {
+          setup()
+          const streamNameNoExist = exampleStreamName()
 
-        const found = await read(streamNameNoExist)
+          const found = await read(streamNameNoExist)
 
-        expect(found).toHaveLength(0)
+          expect(found).toHaveLength(0)
+        })
+      })
+
+      describe('single message, full batch', () => {
+        it('reads the message', async () => {
+          setup({ batchSize: 1 })
+          const { streamName, messages } = await examplePut(store, { count: 1, trackMessages: true })
+
+          const found = await read(streamName, 0)
+
+          expect(found).toHaveLength(1)
+          expect(found[0].data).toEqual(messages[0].data)
+        })
+      })
+
+      describe('many messages, partial batch', () => {
+        it('reads the messages', async () => {
+          setup({ batchSize: 10 })
+          const { streamName, messages } = await examplePut(store, { count: 3, trackMessages: true })
+
+          const found = await read(streamName, 0)
+
+          expect(found).toHaveLength(3)
+          expect(found[0].data).toEqual(messages[0].data)
+          expect(found[1].data).toEqual(messages[1].data)
+          expect(found[2].data).toEqual(messages[2].data)
+        })
+      })
+
+      describe('many messages, many full batches and final partial batch', () => {
+        it('reads the messages', async () => {
+          setup({ batchSize: 3 })
+          const { streamName, messages } = await examplePut(store, { count: 10, trackMessages: true })
+
+          const found = await read(streamName, 0)
+
+          expect(found).toHaveLength(10)
+          expect(found.map(f => f.data)).toEqual(messages.map(m => m.data))
+        })
       })
     })
 
-    describe('single item, full batch', () => {
-      it('reads the item', async () => {
-        setup({ batchSize: 1 })
-        const { streamName, messages } = await examplePut(store, { count: 1, trackMessages: true })
+    describe('category stream', () => {
+      describe('empty category', () => {
+        it('returns no records', async () => {
+          setup()
+          const categoryNoExist = exampleCategory()
 
-        const found = await read(streamName, 0)
+          const found = await read(categoryNoExist)
 
-        expect(found).toHaveLength(1)
-        expect(found[0].data).toEqual(messages[0].data)
+          expect(found).toHaveLength(0)
+        })
+      })
+
+      describe('multiple streams with 1 message, full batch', () => {
+        it('reads the message', async () => {
+          setup({ batchSize: 2 })
+          const category = exampleCategory()
+
+          const streamName1 = exampleStreamName(category)
+          const { messages: [message1] } = await examplePut(store, { streamName: streamName1, trackMessages: true })
+
+          const streamName2 = exampleStreamName(category)
+          const { messages: [message2] } = await examplePut(store, { streamName: streamName2, trackMessages: true })
+
+          const found = await read(category, 0)
+
+          expect(found).toHaveLength(2)
+          expect(found.map(f => f.data)).toEqual([
+            message1.data,
+            message2.data
+          ])
+        })
+      })
+
+      describe('multiple streams, partial batch', () => {
+        it('reads the messages', async () => {
+          setup({ batchSize: 10 })
+          const category = exampleCategory()
+
+          const { messages: messages1 } = await examplePut(store,
+            { streamName: category, count: 2, trackMessages: true })
+          const { messages: messages2 } = await examplePut(store,
+            { streamName: category, count: 2, trackMessages: true })
+          const { messages: messages3 } = await examplePut(store,
+            { streamName: category, count: 2, trackMessages: true })
+
+          const found = await read(category, 0)
+
+          expect(found.map(f => f.data)).toEqual([
+            ...messages1,
+            ...messages2,
+            ...messages3
+          ].map(m => m.data))
+        })
+      })
+
+      describe('multiple streams, many full batches and final partial batch', () => {
+        it('reads the messages', async () => {
+          setup({ batchSize: 3 })
+          const category = exampleCategory()
+
+          const { messages: messages1 } = await examplePut(store,
+            { streamName: category, count: 2, trackMessages: true })
+          const { messages: messages2 } = await examplePut(store,
+            { streamName: category, count: 2, trackMessages: true })
+          const { messages: messages3 } = await examplePut(store,
+            { streamName: category, count: 3, trackMessages: true })
+          const { messages: messages4 } = await examplePut(store,
+            { streamName: category, count: 3, trackMessages: true })
+
+          const found = await read(category, 0)
+
+          expect(found).toHaveLength(10)
+          expect(found.map(f => f.data)).toEqual([
+            ...messages1,
+            ...messages2,
+            ...messages3,
+            ...messages4
+          ].map(m => m.data))
+        })
       })
     })
 
-    describe('many items, partial batch', () => {
-      it('reads the items', async () => {
-        setup({ batchSize: 10 })
-        const { streamName, messages } = await examplePut(store, { count: 3, trackMessages: true })
+    describe('category with multiple interleaving streams', () => {
+      const examplePutSingle = async (streamName) => {
+        const { messages } = await examplePut(store, {
+          streamName, trackMessages: true
+        })
+        return messages[0]
+      }
 
-        const found = await read(streamName, 0)
-
-        expect(found).toHaveLength(3)
-        expect(found[0].data).toEqual(messages[0].data)
-        expect(found[1].data).toEqual(messages[1].data)
-        expect(found[2].data).toEqual(messages[2].data)
-      })
-    })
-
-    describe('many items, many full batches and final partial batch', () => {
-      it('reads the items', async () => {
-        setup({ batchSize: 3 })
-        const { streamName, messages } = await examplePut(store, { count: 10, trackMessages: true })
-
-        const found = await read(streamName, 0)
-
-        expect(found).toHaveLength(10)
-        expect(found.map(f => f.data)).toEqual(messages.map(m => m.data))
-      })
-    })
-
-    describe('category with multiple streams', () => {
       const writeCategoryMessages = async () => {
         const category = exampleCategory()
 
+        const messages1 = []
         const streamName1 = exampleStreamName(category)
-        const { messages: messages1 } = await examplePut(store, {
-          streamName: streamName1, trackMessages: true, count: 2
-        })
 
+        const messages2 = []
         const streamName2 = exampleStreamName(category)
-        const { messages: messages2 } = await examplePut(store, {
-          streamName: streamName2, trackMessages: true, count: 2
-        })
+
+        messages1.push(await examplePutSingle(streamName1))
+        messages2.push(await examplePutSingle(streamName2))
+        messages2.push(await examplePutSingle(streamName2))
+
+        messages1.push(await examplePutSingle(streamName1))
+        messages2.push(await examplePutSingle(streamName2))
 
         return { category, messages1, messages2 }
       }
 
       describe('reading from category', () => {
         it('returns all messages from all streams in category', async () => {
-          setup()
+          setup({ batchSize: 1 })
           const { category, messages1, messages2 } = await writeCategoryMessages()
 
           const found = await read(category)
 
-          expect(found).toHaveLength(4)
+          expect(found).toHaveLength(5)
           expect(found.map(f => f.data)).toEqual([
             messages1[0].data,
-            messages1[1].data,
             messages2[0].data,
-            messages2[1].data
+            messages2[1].data,
+            messages1[1].data,
+            messages2[2].data
           ])
         })
       })
 
       describe('reading from category with a position specified', () => {
         it('returns messages starting at the specified global position', async () => {
-          setup()
+          setup({ batchSize: 1 })
           await examplePut(store) // write unrelated message
 
           const { category, messages1, messages2 } = await writeCategoryMessages()
           const all = await read(category)
-          const subsetStartPosition = all[1].globalPosition
+          const subsetStartPosition = all[2].globalPosition
 
           const subset = await read(category, subsetStartPosition)
 
           expect(subset).toHaveLength(3)
           expect(subset.map(f => f.data)).toEqual([
+            messages2[1].data,
             messages1[1].data,
-            messages2[0].data,
-            messages2[1].data
+            messages2[2].data
           ])
         })
       })
 
       describe('get from category', () => {
-        it('reads a batch worth of items', async () => {
+        it('reads a batch worth of messages', async () => {
           setup({ batchSize: 1 })
           const { category, messages1 } = await writeCategoryMessages()
 
