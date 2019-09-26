@@ -2,14 +2,14 @@ const createRead = require('../read')
 const cloneDeep = require('lodash.clonedeep')
 const operationError = require('../../errors/operation-error')
 const uuidValidate = require('uuid-validate')
-const { StreamName } = require('../../messaging')
+const { createNullLog, StreamName } = require('../../messaging')
 const { uuid } = require('../../identifier')
 
 const EXPECTED_VERSION_ERROR_CODE = 'ExpectedVersionError'
 const writeError = operationError('message-store write')
 const putError = operationError('message-store put')
 
-module.exports.createMessageStore = ({ batchSize = 1000, log }) => {
+module.exports.createMessageStore = ({ batchSize = 1000, log = createNullLog() } = {}) => {
   const messages = []
   const messageIds = {}
   let globalPosition = 0

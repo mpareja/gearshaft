@@ -86,4 +86,22 @@ describe('message-store-memory', () => {
         `message-store write: duplicate message id: ${message.id}`))
     })
   })
+
+  describe('dependencies', () => {
+    describe('given no options', () => {
+      it('uses null log', async () => {
+        const store = createMessageStore()
+
+        await store.get(exampleStreamName())
+      })
+    })
+
+    describe('given options without log', () => {
+      it('uses null log', async () => {
+        const store = createMessageStore({})
+
+        await store.get(exampleStreamName())
+      })
+    })
+  })
 })
