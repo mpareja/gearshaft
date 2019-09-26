@@ -3,7 +3,7 @@ const { toWriteMessageData } = require('./message-transforms')
 
 const writeError = operationError('messaging write')
 
-module.exports = ({ log, store }) => {
+exports.createWriter = ({ log, store }) => {
   const write = async (messageOrBatch, streamName, { expectedVersion } = {}) => {
     const messages = Array.isArray(messageOrBatch) ? messageOrBatch : [messageOrBatch]
     const info = {

@@ -1,5 +1,5 @@
 const createLog = require('../../test/test-log')
-const createWrite = require('../write')
+const { createWriter } = require('../write')
 const { toWriteMessageData } = require('../message-transforms')
 const {
   exampleMessage,
@@ -13,7 +13,7 @@ describe('write', () => {
   beforeEach(() => {
     log = createLog()
     store = { write: jest.fn().mockResolvedValue(A_POSITION), isExpectedVersionError: jest.fn() }
-    write = createWrite({ log, store })
+    write = createWriter({ log, store })
   })
 
   describe('single message', () => {
