@@ -137,4 +137,16 @@ describe('write', () => {
       expect(store.isExpectedVersionError).toHaveBeenCalledWith(err)
     })
   })
+
+  describe('dependencies', () => {
+    describe('given log dependency not specified', () => {
+      it('null log is used', async () => {
+        const message = exampleMessage()
+        const streamName = exampleStreamName()
+
+        const write = createWriter({ store })
+        await write(message, streamName)
+      })
+    })
+  })
 })

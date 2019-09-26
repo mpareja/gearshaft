@@ -1,9 +1,10 @@
 const operationError = require('../errors/operation-error')
+const { createNullLog } = require('./null')
 const { toWriteMessageData } = require('./message-transforms')
 
 const writeError = operationError('messaging write')
 
-exports.createWriter = ({ log, store }) => {
+exports.createWriter = ({ log = createNullLog(), store }) => {
   const write = async (messageOrBatch, streamName, { expectedVersion } = {}) => {
     const messages = Array.isArray(messageOrBatch) ? messageOrBatch : [messageOrBatch]
     const info = {
