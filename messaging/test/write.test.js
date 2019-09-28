@@ -3,8 +3,9 @@ const { createWriter } = require('../write')
 const { toWriteMessageData } = require('../message-transforms')
 const {
   exampleMessage,
+  examplePosition,
   exampleStreamName
-} = require('../../message-store/examples')
+} = require('..//examples')
 
 const A_POSITION = 666
 
@@ -146,6 +147,28 @@ describe('write', () => {
 
         const write = createWriter({ store })
         await write(message, streamName)
+      })
+    })
+  })
+
+  describe('EventEmitter', () => {
+    describe('when a message is written', () => {
+      it('emits "written" event for the message', async () => {
+        const streamName = exampleStreamName()
+        const write = createWriter({ store })
+        const spy = jest.fn()
+        write.emitter.on('written', spy)
+
+        const message = exampleMessage()
+        const expectedVersion = examplePosition()
+        await write(message, streamName, { expectedVersion })
+
+        expect(spy).toHaveBeenCalledWith({
+          duration: expect.anything(),
+          expectedVersion,
+          message,
+          streamName
+        })
       })
     })
   })
