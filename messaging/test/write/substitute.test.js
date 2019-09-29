@@ -26,7 +26,7 @@ const catchError = (fn) => {
 describe('write-substitute', () => {
   describe('assertOnlyWrite', () => {
     describe('given no writes', () => {
-      it('raises an error', () => {
+      it('throws an error', () => {
         const write = createWriterSubstitute()
         const streamName = 'SomeStream'
 
@@ -42,7 +42,7 @@ describe('write-substitute', () => {
 
     describe('assertion limited to stream name', () => {
       describe('given a single write with the expected stream name', () => {
-        it('no error is raised', async () => {
+        it('no error is thrown', async () => {
           const write = await setupWrite()
 
           const error = catchError(() => write.assertOnlyWrite(WRITEN_STREAM_NAME))
@@ -52,7 +52,7 @@ describe('write-substitute', () => {
       })
 
       describe('given a single write with an unexpected stream name', () => {
-        it('raises an error', async () => {
+        it('throws an error', async () => {
           const write = await setupWrite()
 
           const error = catchError(() => write.assertOnlyWrite('expectedStreamName'))
@@ -68,7 +68,7 @@ describe('write-substitute', () => {
 
     describe('assertion includes expected version', () => {
       describe('given a single write with the expected version', () => {
-        it('no error is raised', async () => {
+        it('no error is thrown', async () => {
           const write = await setupWrite()
 
           const error = catchError(() => write.assertOnlyWrite(WRITEN_STREAM_NAME, WRITEN_EXPECTED_VERSION))
@@ -78,7 +78,7 @@ describe('write-substitute', () => {
       })
 
       describe('given a single write with an unexpected version', () => {
-        it('raises an error', async () => {
+        it('throws an error', async () => {
           const write = await setupWrite()
 
           const error = catchError(() => write.assertOnlyWrite(WRITEN_STREAM_NAME, 666))
@@ -94,7 +94,7 @@ describe('write-substitute', () => {
 
     describe('assertion includes supplied assertion function', () => {
       describe('given a single write with the expected stream name and no assertion errors', () => {
-        it('no error is raised', async () => {
+        it('no error is thrown', async () => {
           const write = await setupWrite()
 
           const error = catchError(() => write.assertOnlyWrite(WRITEN_STREAM_NAME, () => {}))
@@ -115,7 +115,7 @@ describe('write-substitute', () => {
       })
 
       describe('given a single write with the expected stream name and assertion errors', () => {
-        it('assertion errors are raised', async () => {
+        it('assertion errors are thrown', async () => {
           const write = await setupWrite()
           const exampleError = new Error('bogus error')
 
@@ -129,7 +129,7 @@ describe('write-substitute', () => {
       })
 
       describe('given a single write with the expected stream name, expectedVersion, and assertion errors', () => {
-        it('assertion errors are raised', async () => {
+        it('assertion errors are thrown', async () => {
           const write = await setupWrite()
           const exampleError = new Error('bogus error')
 
@@ -145,7 +145,7 @@ describe('write-substitute', () => {
 
   describe('assertOnlyWriteInitial', () => {
     describe('given a single write with an unexpected version', () => {
-      it('raises an error', async () => {
+      it('throws an error', async () => {
         const write = await setupWrite()
 
         const error = catchError(() => write.assertOnlyWriteInitial(WRITEN_STREAM_NAME))
@@ -159,7 +159,7 @@ describe('write-substitute', () => {
     })
 
     describe('given a single write to initialize a stream', () => {
-      it('no error is raised', async () => {
+      it('no error is thrown', async () => {
         const write = createWriterSubstitute()
         await write.initial(WRITEN_MESSAGE, WRITEN_STREAM_NAME)
 
@@ -170,9 +170,9 @@ describe('write-substitute', () => {
     })
   })
 
-  describe('raiseError', () => {
-    describe('given an error to raise and a subsequent write', () => {
-      it('raises the supplied error', async () => {
+  describe('stubError', () => {
+    describe('given an error to throw and a subsequent write', () => {
+      it('throws the supplied error', async () => {
         const write = createWriterSubstitute()
         const expectedError = new Error('bogus error')
 
