@@ -74,4 +74,14 @@ describe('follow', () => {
       expect(next.some.numArray).toEqual(previous.some.numArray)
     })
   })
+
+  describe('message with no metadata', () => {
+    it('followed messages has new metadata ', () => {
+      const someField = exampleRandomValue()
+      const previous = { someField }
+      const next = follow(previous, SomeMessage)
+
+      expect(next.metadata).toBeDefined()
+    })
+  })
 })
