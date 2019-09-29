@@ -5,5 +5,6 @@ module.exports = {
   ...require('./null'),
   ...require('./stream-name'),
   ...require('./write'),
+  ...require('./write/substitute'),
   createEventRegistry: require('./event-registry')
 }
