@@ -169,4 +169,24 @@ describe('write-substitute', () => {
       })
     })
   })
+
+  describe('raiseError', () => {
+    describe('given an error to raise and a subsequent write', () => {
+      it('raises the supplied error', async () => {
+        const write = createWriterSubstitute()
+        const expectedError = new Error('bogus error')
+
+        write.stubError(expectedError)
+
+        let error
+        try {
+          await write(WRITEN_MESSAGE, WRITEN_STREAM_NAME)
+        } catch (e) {
+          error = e
+        }
+
+        expect(error).toBe(expectedError)
+      })
+    })
+  })
 })

@@ -49,7 +49,15 @@ exports.createWriterSubstitute = () => {
     }
   }
 
+  let errorToThrow
+  write.stubError = (error) => {
+    errorToThrow = error
+  }
+
   write.emitter.on('written', (written) => {
+    if (errorToThrow) {
+      throw errorToThrow
+    }
     calls.push(written)
   })
   return write
