@@ -142,4 +142,31 @@ describe('write-substitute', () => {
       })
     })
   })
+
+  describe('assertOnlyWriteInitial', () => {
+    describe('given a single write with an unexpected version', () => {
+      it('raises an error', async () => {
+        const write = await setupWrite()
+
+        const error = catchError(() => write.assertOnlyWriteInitial(WRITEN_STREAM_NAME))
+
+        expect(error).toBeDefined()
+        expect(error).toBeInstanceOf(AssertionError)
+        expect(error.message).toBe('Expected write to stream "SomeStream" with expectedVersion of -1')
+        expect(error.expected).toBe(-1)
+        expect(error.actual).toBe(WRITEN_EXPECTED_VERSION)
+      })
+    })
+
+    describe('given a single write to initialize a stream', () => {
+      it('no error is raised', async () => {
+        const write = createWriterSubstitute()
+        await write.initial(WRITEN_MESSAGE, WRITEN_STREAM_NAME)
+
+        const error = catchError(() => write.assertOnlyWriteInitial(WRITEN_STREAM_NAME))
+
+        expect(error).not.toBeDefined()
+      })
+    })
+  })
 })
