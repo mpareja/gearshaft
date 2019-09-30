@@ -36,7 +36,7 @@ exports.generateReadSuite = ({
       describe('single message, full batch', () => {
         it('reads the message', async () => {
           setup({ batchSize: 1 })
-          const { streamName, messages } = await examplePut(store, { count: 1, trackMessages: true })
+          const { streamName, messages } = await examplePut(store, { count: 1 })
 
           const found = await read(streamName, 0)
 
@@ -48,7 +48,7 @@ exports.generateReadSuite = ({
       describe('many messages, partial batch', () => {
         it('reads the messages', async () => {
           setup({ batchSize: 10 })
-          const { streamName, messages } = await examplePut(store, { count: 3, trackMessages: true })
+          const { streamName, messages } = await examplePut(store, { count: 3 })
 
           const found = await read(streamName, 0)
 
@@ -62,7 +62,7 @@ exports.generateReadSuite = ({
       describe('many messages, many full batches and final partial batch', () => {
         it('reads the messages', async () => {
           setup({ batchSize: 3 })
-          const { streamName, messages } = await examplePut(store, { count: 10, trackMessages: true })
+          const { streamName, messages } = await examplePut(store, { count: 10 })
 
           const found = await read(streamName, 0)
 
@@ -90,10 +90,10 @@ exports.generateReadSuite = ({
           const category = exampleCategory()
 
           const streamName1 = exampleStreamName(category)
-          const { messages: [message1] } = await examplePut(store, { streamName: streamName1, trackMessages: true })
+          const { messages: [message1] } = await examplePut(store, { streamName: streamName1 })
 
           const streamName2 = exampleStreamName(category)
-          const { messages: [message2] } = await examplePut(store, { streamName: streamName2, trackMessages: true })
+          const { messages: [message2] } = await examplePut(store, { streamName: streamName2 })
 
           const found = await read(category, 0)
 
@@ -111,11 +111,11 @@ exports.generateReadSuite = ({
           const category = exampleCategory()
 
           const { messages: messages1 } = await examplePut(store,
-            { streamName: category, count: 2, trackMessages: true })
+            { streamName: category, count: 2 })
           const { messages: messages2 } = await examplePut(store,
-            { streamName: category, count: 2, trackMessages: true })
+            { streamName: category, count: 2 })
           const { messages: messages3 } = await examplePut(store,
-            { streamName: category, count: 2, trackMessages: true })
+            { streamName: category, count: 2 })
 
           const found = await read(category, 0)
 
@@ -133,13 +133,13 @@ exports.generateReadSuite = ({
           const category = exampleCategory()
 
           const { messages: messages1 } = await examplePut(store,
-            { streamName: category, count: 2, trackMessages: true })
+            { streamName: category, count: 2 })
           const { messages: messages2 } = await examplePut(store,
-            { streamName: category, count: 2, trackMessages: true })
+            { streamName: category, count: 2 })
           const { messages: messages3 } = await examplePut(store,
-            { streamName: category, count: 3, trackMessages: true })
+            { streamName: category, count: 3 })
           const { messages: messages4 } = await examplePut(store,
-            { streamName: category, count: 3, trackMessages: true })
+            { streamName: category, count: 3 })
 
           const found = await read(category, 0)
 
@@ -156,9 +156,7 @@ exports.generateReadSuite = ({
 
     describe('category with multiple interleaving streams', () => {
       const examplePutSingle = async (streamName) => {
-        const { messages } = await examplePut(store, {
-          streamName, trackMessages: true
-        })
+        const { messages } = await examplePut(store, { streamName })
         return messages[0]
       }
 
@@ -238,7 +236,7 @@ exports.generateReadSuite = ({
       let streamName, messages
       beforeAll(async () => {
         setup()
-        const saved = await examplePut(store, { count: 5, trackMessages: true })
+        const saved = await examplePut(store, { count: 5 })
         streamName = saved.streamName
         messages = saved.messages
       })

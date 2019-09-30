@@ -200,4 +200,13 @@ exports.generatePutSuite = ({
       })
     })
   })
+
+  describe('example-put', () => {
+    describe('when trackMessages is false', () => {
+      it('does not track messages', async () => {
+        const { messages } = await examplePut(store, { trackMessages: false })
+        expect(messages).toHaveLength(0)
+      })
+    })
+  })
 }

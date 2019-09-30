@@ -15,7 +15,7 @@ exports.generateGetLastSuite = ({
 
     describe('stream with multiple messages', () => {
       it('returns last message', async () => {
-        const { streamName, messages } = await examplePut(store, { count: 2, trackMessages: true })
+        const { streamName, messages } = await examplePut(store, { count: 2 })
         const writeMessage = messages[1]
 
         const lastMessage = await store.getLast(streamName)
