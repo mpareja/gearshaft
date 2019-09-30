@@ -38,26 +38,26 @@ module.exports.createMessageStore = ({ batchSize = 1000, log = createNullLog() }
     return subset
   }
 
-  const getLast = async (...args) => getLastSync(...args)
+  const getLast = async (streamName) => {
+    const last = getLastSync(streamName)
+
+    log.info({
+      count: last ? 1 : 0,
+      position: last ? last.position : undefined,
+      streamName
+    }, 'message-store getLast: successful')
+
+    return last
+  }
 
   const getLastSync = (streamName) => {
-    let count = 0
-    let position
     let last = null
 
     for (var m of messages) {
       if (m.streamName === streamName) {
         last = m
-        count = 1
-        position = last.position
       }
     }
-
-    log.info({
-      count,
-      position,
-      streamName
-    }, 'message-store getLast: successful')
 
     return last
   }
@@ -98,6 +98,14 @@ module.exports.createMessageStore = ({ batchSize = 1000, log = createNullLog() }
 
     messages.push(message)
     messageIds[message.id] = true
+
+    log.info({
+      expectedVersion,
+      id: message.id,
+      position: lastPosition,
+      streamName,
+      type: message.type
+    }, 'message-store put: successful')
 
     return lastPosition
   }

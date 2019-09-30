@@ -2,6 +2,7 @@ const createLog = require('../../../test/test-log')
 const { createMessageStore } = require('../index')
 const { generateGetLastSuite } = require('../../test/get-last-test-suite')
 const { generateGetSuite } = require('../../test/get-test-suite')
+const { generatePutSuite } = require('../../test/put-test-suite')
 const { generateReadSuite } = require('../../test/read-test-suite')
 const { generateWriteSuite } = require('../../test/write-test-suite')
 const {
@@ -12,6 +13,7 @@ const {
 describe('message-store-memory', () => {
   generateGetLastSuite({ createMessageStore })
   generateGetSuite({ createMessageStore })
+  generatePutSuite({ createMessageStore })
   generateReadSuite({ createMessageStore })
   generateWriteSuite({ createMessageStore })
 
