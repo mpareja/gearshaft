@@ -1,5 +1,6 @@
 const { AssertionError } = require('assert')
 const { createWriterSubstitute } = require('../../write/substitute')
+const { ExpectedVersionError } = require('../../../message-store')
 const {
   exampleMessage,
   examplePosition
@@ -170,6 +171,14 @@ describe('write-substitute', () => {
     })
   })
 
+  const asyncCatchError = async (fn) => {
+    try {
+      await fn()
+    } catch (error) {
+      return error
+    }
+  }
+
   describe('stubError', () => {
     describe('given an error to throw and a subsequent write', () => {
       it('throws the supplied error', async () => {
@@ -178,14 +187,26 @@ describe('write-substitute', () => {
 
         write.stubError(expectedError)
 
-        let error
-        try {
-          await write(WRITEN_MESSAGE, WRITEN_STREAM_NAME)
-        } catch (e) {
-          error = e
-        }
+        const error = await asyncCatchError(() =>
+          write(WRITEN_MESSAGE, WRITEN_STREAM_NAME))
 
         expect(error).toBe(expectedError)
+      })
+    })
+  })
+
+  describe('stubExpectedVersionError', () => {
+    describe('given stubbed to throw expected version error and a subsequent write', () => {
+      it('throws expected version error', async () => {
+        const write = createWriterSubstitute()
+
+        write.stubExpectedVersionError()
+
+        const error = await asyncCatchError(() =>
+          write(WRITEN_MESSAGE, WRITEN_STREAM_NAME))
+
+        expect(error).toBeDefined()
+        expect(error).toBeInstanceOf(ExpectedVersionError)
       })
     })
   })

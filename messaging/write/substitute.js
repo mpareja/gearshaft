@@ -1,5 +1,6 @@
 const { AssertionError } = require('assert')
 const { createWriter } = require('../write')
+const { ExpectedVersionError } = require('../../message-store')
 
 exports.createWriterSubstitute = () => {
   const calls = []
@@ -52,6 +53,10 @@ exports.createWriterSubstitute = () => {
   let errorToThrow
   write.stubError = (error) => {
     errorToThrow = error
+  }
+
+  write.stubExpectedVersionError = () => {
+    errorToThrow = new ExpectedVersionError()
   }
 
   write.emitter.on('written', (written) => {
