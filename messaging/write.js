@@ -43,8 +43,6 @@ exports.createWriter = ({ log = createNullLog(), store }) => {
     return write(messageOrBatch, streamName, { expectedVersion: -1 })
   }
 
-  write.isExpectedVersionError = store.isExpectedVersionError
-
   return write
 }
 

@@ -1,7 +1,6 @@
 const operationError = require('../../errors/operation-error')
+const { ExpectedVersionError } = require('../expected-version-error')
 const { uuid } = require('../../identifier')
-
-const EXPECTED_VERSION_ERROR_CODE = 'ExpectedVersionError'
 
 module.exports = ({ db: globalDb, log }) => {
   const putError = operationError('message-store put')
@@ -46,16 +45,11 @@ module.exports = ({ db: globalDb, log }) => {
   const transformError = (error) => {
     if (error.message.indexOf('Wrong expected version') >= 0) {
       const msg = error.message.replace('ERROR:', '')
-      const e = putError(msg)
-      e.code = EXPECTED_VERSION_ERROR_CODE
+      const e = new ExpectedVersionError(`message-store put: ${msg}`)
       return e
     }
     return putError(`error writing to database: ${error.message}`, error)
   }
 
-  const isExpectedVersionError = (err) => {
-    return err.code === EXPECTED_VERSION_ERROR_CODE
-  }
-
-  return { put, isExpectedVersionError }
+  return { put }
 }

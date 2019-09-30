@@ -13,7 +13,7 @@ describe('write', () => {
   let log, store, write
   beforeEach(() => {
     log = createLog()
-    store = { write: jest.fn().mockResolvedValue(A_POSITION), isExpectedVersionError: jest.fn() }
+    store = { write: jest.fn().mockResolvedValue(A_POSITION) }
     write = createWriter({ log, store })
   })
 
@@ -128,14 +128,6 @@ describe('write', () => {
       } catch (e) {}
 
       expect(log.info).not.toHaveBeenCalled()
-    })
-  })
-
-  describe('isExpectedVersionError', () => {
-    it('defers to store implementation', () => {
-      const err = new Error('bogus')
-      write.isExpectedVersionError(err)
-      expect(store.isExpectedVersionError).toHaveBeenCalledWith(err)
     })
   })
 

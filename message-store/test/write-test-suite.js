@@ -1,6 +1,7 @@
 const createLog = require('../../test/test-log')
 const uuidValidate = require('uuid-validate')
 const { StreamName } = require('../../messaging')
+const { ExpectedVersionError } = require('../expected-version-error')
 const {
   exampleStreamName, exampleWriteMessageData
 } = require('../examples')
@@ -159,7 +160,7 @@ exports.generateWriteSuite = ({
         it('results in an error', async () => {
           const expectedMessage = `message-store put: Wrong expected version: 0 (Stream: ${streamName}, Stream Version: 1)`
           expect(error).toEqual(new Error(expectedMessage))
-          expect(store.isExpectedVersionError(error)).toBe(true)
+          expect(error).toBeInstanceOf(ExpectedVersionError)
         })
 
         it('does not write new message', async () => {
@@ -202,7 +203,7 @@ exports.generateWriteSuite = ({
           }
 
           expect(error).toBeDefined()
-          expect(store.isExpectedVersionError(error)).toBe(true)
+          expect(error).toBeInstanceOf(ExpectedVersionError)
         })
       })
     })

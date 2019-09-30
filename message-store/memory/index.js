@@ -3,11 +3,10 @@ const cloneDeep = require('lodash.clonedeep')
 const operationError = require('../../errors/operation-error')
 const uuidValidate = require('uuid-validate')
 const { createNullLog, StreamName } = require('../../messaging')
+const { ExpectedVersionError } = require('../expected-version-error')
 const { uuid } = require('../../identifier')
 
-const EXPECTED_VERSION_ERROR_CODE = 'ExpectedVersionError'
 const writeError = operationError('message-store write')
-const putError = operationError('message-store put')
 
 module.exports.createMessageStore = ({ batchSize = 1000, log = createNullLog() } = {}) => {
   const messages = []
@@ -71,8 +70,8 @@ module.exports.createMessageStore = ({ batchSize = 1000, log = createNullLog() }
 
     const currentVersion = last ? last.position : -1
     if (typeof expectedVersion === 'number' && expectedVersion !== currentVersion) {
-      const e = putError(`Wrong expected version: ${expectedVersion} (Stream: ${streamName}, Stream Version: ${currentVersion})`)
-      e.code = EXPECTED_VERSION_ERROR_CODE
+      const msg = `Wrong expected version: ${expectedVersion} (Stream: ${streamName}, Stream Version: ${currentVersion})`
+      const e = new ExpectedVersionError(`message-store put: ${msg}`)
       throw e
     }
 
@@ -141,9 +140,5 @@ module.exports.createMessageStore = ({ batchSize = 1000, log = createNullLog() }
     return lastPosition
   }
 
-  const isExpectedVersionError = (err) => {
-    return err.code === EXPECTED_VERSION_ERROR_CODE
-  }
-
-  return { get, getLast, isExpectedVersionError, put, read, write }
+  return { get, getLast, put, read, write }
 }

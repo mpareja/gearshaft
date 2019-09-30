@@ -1,3 +1,5 @@
+const { ExpectedVersionError } = require('../message-store')
+
 module.exports = {
   ...require('./examples'),
   ...require('./follow'),
@@ -6,5 +8,6 @@ module.exports = {
   ...require('./stream-name'),
   ...require('./write'),
   ...require('./write/substitute'),
-  createEventRegistry: require('./event-registry')
+  createEventRegistry: require('./event-registry'),
+  ExpectedVersionError
 }
