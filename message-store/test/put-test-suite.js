@@ -1,7 +1,7 @@
 const createLog = require('../../test/test-log')
 const uuidValidate = require('uuid-validate')
 const {
-  exampleStreamName, exampleWriteMessageData
+  examplePut, exampleStreamName, exampleWriteMessageData
 } = require('../examples')
 
 exports.generatePutSuite = ({
@@ -11,31 +11,26 @@ exports.generatePutSuite = ({
   const setup = async () => {
     log = createLog()
     store = createMessageStore({ log })
+    return { log, store }
   }
 
+  beforeEach(setup)
+
   describe('put', () => {
-    beforeEach(setup)
-
     describe('single message', () => {
-      let sharedLog, position, streamName, writeMessage
-
-      beforeAll(async () => {
-        await setup()
-        sharedLog = log // preserve log used for assertions below
-        streamName = exampleStreamName()
-        writeMessage = exampleWriteMessageData()
-
-        position = await store.put(writeMessage, streamName)
-      })
-
-      it('returns position as first message in stream', () => {
+      it('returns position as first message in stream', async () => {
+        const { store } = await setup()
+        const { position } = await examplePut(store)
         expect(position).toBe(0)
       })
 
-      it('logs success', () => {
-        expect(sharedLog.info).toHaveBeenCalledWith({
+      it('logs success', async () => {
+        const { log, store } = await setup()
+        const { messages: [message], streamName } = await examplePut(store)
+
+        expect(log.info).toHaveBeenCalledWith({
           expectedVersion: undefined,
-          id: writeMessage.id,
+          id: message.id,
           position: 0,
           streamName: streamName,
           type: 'SomeType'
@@ -43,15 +38,19 @@ exports.generatePutSuite = ({
       })
 
       it('can be retrieved', async () => {
+        const { store } = await setup()
+        const { messages: [message], streamName } = await examplePut(store)
+
         const results = await store.get(streamName)
+
         expect(results).toHaveLength(1)
         expect(results[0]).toEqual({
-          id: writeMessage.id,
-          type: writeMessage.type,
-          data: writeMessage.data,
-          metadata: writeMessage.metadata,
+          id: message.id,
+          type: message.type,
+          data: message.data,
+          metadata: message.metadata,
           streamName,
-          position,
+          position: 0,
           globalPosition: expect.any(Number),
           time: expect.any(Date)
         })
@@ -150,26 +149,31 @@ exports.generatePutSuite = ({
       })
 
       describe('writing message with stale version', () => {
-        let streamName, error
-        beforeAll(async () => {
-          streamName = exampleStreamName()
-          const oldPosition = await store.put(exampleWriteMessageData(), streamName)
-          await store.put(exampleWriteMessageData(), streamName)
+        const performStaleWrite = async () => {
+          const { position: oldPosition, streamName } = await examplePut(store)
+          await examplePut(store, { streamName })
 
+          let error
           try {
             await store.put(exampleWriteMessageData(), streamName, oldPosition)
           } catch (e) {
             error = e
           }
-        })
+
+          return { error, store, streamName }
+        }
 
         it('results in an error', async () => {
+          const { error, store, streamName } = await performStaleWrite()
+
           const expectedMessage = `message-store put: Wrong expected version: 0 (Stream: ${streamName}, Stream Version: 1)`
           expect(error).toEqual(new Error(expectedMessage))
           expect(store.isExpectedVersionError(error)).toBe(true)
         })
 
         it('does not write new message', async () => {
+          const { store, streamName } = await performStaleWrite()
+
           const results = await store.get(streamName)
           expect(results.length).toBe(2)
         })
