@@ -1,10 +1,7 @@
 const { AssertionError } = require('assert')
 const { createWriterSubstitute } = require('../../write/substitute')
-const { ExpectedVersionError } = require('../../../message-store')
-const {
-  exampleMessage,
-  examplePosition
-} = require('../../../messaging/examples')
+const { examplePosition, ExpectedVersionError } = require('../../../message-store')
+const { exampleMessage } = require('../../../messaging/examples')
 
 const WRITEN_STREAM_NAME = 'SomeStream'
 const WRITEN_EXPECTED_VERSION = examplePosition()

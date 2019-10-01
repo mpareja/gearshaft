@@ -1,8 +1,6 @@
 const createRegistry = require('../event-registry')
-const {
-  exampleReadMessageData,
-  exampleMessageClass
-} = require('../examples')
+const { exampleMessageClass } = require('../examples')
+const { exampleReadMessageData } = require('../../message-store')
 
 describe('event-registry', () => {
   describe('no message classes registered', () => {

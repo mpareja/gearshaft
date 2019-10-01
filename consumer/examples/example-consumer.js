@@ -1,7 +1,6 @@
 const { createConsumer } = require('../consumer')
 const { exampleLog } = require('../../examples')
-const { exampleCategory, exampleRandomValue } = require('../../messaging/examples')
-const { exampleMessageStore } = require('../../message-store/examples')
+const { exampleCategory, exampleMessageStore, exampleRandomValue } = require('../../message-store')
 
 exports.exampleConsumer = ({ name, log, registerHandlers, store, category, ...args } = {}) => {
   log = log || exampleLog()
