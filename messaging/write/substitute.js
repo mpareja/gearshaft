@@ -1,6 +1,6 @@
 const { AssertionError } = require('assert')
 const { createWriter } = require('../write')
-const { ExpectedVersionError } = require('../../message-store')
+const { ExpectedVersionError } = require('../../message-store/expected-version-error')
 
 exports.createWriterSubstitute = () => {
   const calls = []
