@@ -1,3 +1,5 @@
 module.exports = {
-  ...require('./expected-version-error')
+  ...require('./examples'),
+  ...require('./expected-version-error'),
+  ...require('./stream-name')
 }

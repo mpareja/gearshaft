@@ -18,14 +18,14 @@ describe('write-message-data', () => {
             someAttribute: expect.stringMatching(/^[0-9a-f]{32}$/)
           },
           metadata: {
-            streamName: expect.stringMatching(/^[0-9a-f]{32}$/),
-            position: expect.any(Number),
-            globalPosition: expect.any(Number),
-            causationMessageGlobalPosition: expect.any(Number),
-            causationMessageStreamName: expect.stringMatching(/^[0-9a-f]{32}$/),
-            causationMessagePosition: expect.any(Number),
-            correlationStreamName: expect.stringMatching(/^[0-9a-f]{32}$/),
-            replyStreamName: expect.stringMatching(/^[0-9a-f]{32}$/),
+            // streamName: expect.stringMatching(/^[0-9a-f]{32}$/),
+            // position: expect.any(Number),
+            // globalPosition: expect.any(Number),
+            // causationMessageGlobalPosition: expect.any(Number),
+            // causationMessageStreamName: expect.stringMatching(/^[0-9a-f]{32}$/),
+            // causationMessagePosition: expect.any(Number),
+            // correlationStreamName: expect.stringMatching(/^[0-9a-f]{32}$/),
+            // replyStreamName: expect.stringMatching(/^[0-9a-f]{32}$/),
             someMetaAttribute: expect.stringMatching(/^[0-9a-f]{32}$/)
           }
         })

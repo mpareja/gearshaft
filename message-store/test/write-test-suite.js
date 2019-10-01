@@ -1,10 +1,7 @@
 const createLog = require('../../test/test-log')
 const uuidValidate = require('uuid-validate')
-const { StreamName } = require('../../messaging')
+const { exampleStreamName, exampleWriteMessageData, StreamName } = require('../../messaging')
 const { ExpectedVersionError } = require('../expected-version-error')
-const {
-  exampleStreamName, exampleWriteMessageData
-} = require('../examples')
 
 exports.generateWriteSuite = ({
   createMessageStore

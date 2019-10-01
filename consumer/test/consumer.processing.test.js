@@ -3,15 +3,10 @@ const createLog = require('../../test/test-log')
 const promisify = require('util').promisify
 const setImmediateP = promisify(setImmediate)
 const {
-  exampleCategory,
-  exampleConsumer,
-  exampleHandler,
-  exampleHandlerBlocking,
-  exampleMessageClass,
-  exampleMessageStore,
-  exampleWriteMessageData,
-  exampleStreamName
-} = require('../examples')
+  exampleCategory, exampleMessageStore, exampleWriteMessageData, exampleStreamName
+} = require('../../message-store')
+const { exampleConsumer, exampleHandler, exampleHandlerBlocking } = require('../examples')
+const { exampleMessageClass } = require('../../messaging')
 
 const HandledMessageClass = exampleMessageClass('HandledMessageClass')
 

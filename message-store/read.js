@@ -1,4 +1,4 @@
-const { StreamName } = require('../messaging')
+const { StreamName } = require('./stream-name')
 
 module.exports = ({ batchSize, get }) => {
   const read = async function * (streamName, position) {

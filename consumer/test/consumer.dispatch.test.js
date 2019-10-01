@@ -1,12 +1,7 @@
 const createLog = require('../../test/test-log')
-const {
-  exampleCategory,
-  exampleConsumer,
-  exampleHandler,
-  exampleMessageClass,
-  exampleMessageStore,
-  exampleReadMessageData
-} = require('../examples')
+const { exampleMessageClass } = require('../../messaging')
+const { exampleCategory, exampleMessageStore, exampleReadMessageData } = require('../../message-store')
+const { exampleConsumer, exampleHandler } = require('../examples')
 
 const HandledMessageClass = exampleMessageClass('HandledMessageClass')
 

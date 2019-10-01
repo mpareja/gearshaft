@@ -1,6 +1,8 @@
 const createLog = require('../../test/test-log')
 const { createConsumerHandlerRegistry } = require('../consumer-handler-registry')
-const { exampleHandler, exampleMessageClass, exampleReadMessageData } = require('../examples')
+const { exampleHandler } = require('../examples')
+const { exampleMessageClass } = require('../../messaging')
+const { exampleReadMessageData } = require('../../message-store')
 
 const HandledMessageClass = exampleMessageClass('HandledMessageClass')
 const UnhandledMessageClass = exampleMessageClass('UnhandledMessageClass')
