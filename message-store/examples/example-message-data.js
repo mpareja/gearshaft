@@ -3,7 +3,7 @@ const { exampleRandomValue } = require('./example-random-value')
 const { exampleStreamName } = require('./example-stream-name')
 const { uuid } = require('../../identifier')
 
-exports.exampleMessageMetadata = () => {
+exports.exampleMessageDataMetadata = () => {
   return { someMetaAttribute: exampleRandomValue() }
 }
 
@@ -11,7 +11,7 @@ exports.exampleWriteMessageData = ({ id, type, data, metadata } = {}) => {
   id = id || uuid()
   type = type || 'SomeType'
   data = data || { someAttribute: exampleRandomValue() }
-  metadata = metadata || exports.exampleMessageMetadata()
+  metadata = metadata || exports.exampleMessageDataMetadata()
   return { id, type, data, metadata }
 }
 
@@ -19,7 +19,7 @@ exports.exampleReadMessageData = (MessageClass) => {
   const id = uuid()
   const type = (MessageClass && MessageClass.name) || 'SomeType'
   const data = { someAttribute: exampleRandomValue() }
-  const metadata = exports.exampleMessageMetadata()
+  const metadata = exports.exampleMessageDataMetadata()
 
   const streamName = exampleStreamName()
   const position = examplePosition()
