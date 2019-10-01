@@ -1,5 +1,5 @@
 /* istanbul ignore next */
-exports.createNullLog = () => {
+exports.createLog = () => {
   const log = { info: () => {}, warn: () => {}, error: () => {}, debug: () => {} }
   return log
 }

@@ -1,11 +1,11 @@
 const operationError = require('../errors/operation-error')
-const { createNullLog } = require('./null')
+const { createLog } = require('../logging')
 const { EventEmitter } = require('events')
 const { toWriteMessageData } = require('./message-transforms')
 
 const writeError = operationError('messaging write')
 
-exports.createWriter = ({ log = createNullLog(), store }) => {
+exports.createWriter = ({ log = createLog(), store }) => {
   const emitter = new EventEmitter()
 
   const write = async (messageOrBatch, streamName, { expectedVersion } = {}) => {
