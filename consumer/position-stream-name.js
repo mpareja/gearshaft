@@ -1,4 +1,4 @@
-const { StreamName } = require('../messaging')
+const { StreamName } = require('../message-store')
 const TYPE = 'position'
 
 exports.getPositionStreamName = (streamName, consumerId) => {

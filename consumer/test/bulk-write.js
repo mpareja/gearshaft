@@ -1,6 +1,6 @@
 const delay = require('util').promisify(setTimeout)
 const { cycle } = require('./cycle')
-const { exampleWriteMessageData, StreamName } = require('../../messaging')
+const { exampleWriteMessageData, StreamName } = require('../../message-store')
 
 exports.bulkWrite = async ({ category, concurrency, total, store, streams, delayMilliseconds }) => {
   let count = 0

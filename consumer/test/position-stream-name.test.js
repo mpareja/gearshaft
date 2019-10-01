@@ -1,9 +1,6 @@
 const { getPositionStreamName } = require('../position-stream-name')
-const { StreamName } = require('../../messaging')
-const {
-  exampleConsumerId,
-  exampleStreamName
-} = require('../examples')
+const { exampleConsumerId } = require('../examples')
+const { exampleStreamName, StreamName } = require('../../message-store')
 
 describe('position-stream-name', () => {
   describe('given a stream without an id', () => {

@@ -1,10 +1,5 @@
-const {
-  exampleConsumerId,
-  examplePosition,
-  examplePositionStore,
-  exampleMessageStore,
-  exampleStreamName
-} = require('../examples')
+const { exampleConsumerId, examplePositionStore } = require('../examples')
+const { exampleMessageStore, examplePosition, exampleStreamName } = require('../../message-store')
 
 describe('position-store', () => {
   describe('get and put', () => {

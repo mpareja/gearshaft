@@ -1,6 +1,6 @@
 const operationError = require('../../errors/operation-error')
 const { deserialize } = require('./deserialize')
-const { StreamName } = require('../../messaging')
+const { StreamName } = require('../stream-name')
 
 module.exports = ({ db, log, batchSize = 1000 }) => {
   const getError = operationError('message-store get')

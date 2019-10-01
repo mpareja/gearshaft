@@ -1,11 +1,8 @@
 const createLog = require('../../test/test-log')
 const { createWriter } = require('../write')
 const { toWriteMessageData } = require('../message-transforms')
-const {
-  exampleMessage,
-  examplePosition,
-  exampleStreamName
-} = require('..//examples')
+const { exampleMessage } = require('../examples')
+const { examplePosition, exampleStreamName } = require('../../message-store')
 
 const A_POSITION = 666
 

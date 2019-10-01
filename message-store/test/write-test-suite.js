@@ -1,7 +1,8 @@
 const createLog = require('../../test/test-log')
 const uuidValidate = require('uuid-validate')
-const { exampleStreamName, exampleWriteMessageData, StreamName } = require('../../messaging')
+const { exampleStreamName, exampleWriteMessageData } = require('../examples')
 const { ExpectedVersionError } = require('../expected-version-error')
+const { StreamName } = require('../stream-name')
 
 exports.generateWriteSuite = ({
   createMessageStore
@@ -135,8 +136,8 @@ exports.generateWriteSuite = ({
           const readMessage = await store.getLast(streamName)
 
           expect(readMessage.data).toEqual(wm1.data)
-          expect(readMessage.metadata.position).toEqual(position2)
-          expect(readMessage.metadata.position).toEqual(1)
+          expect(readMessage.position).toEqual(1)
+          expect(readMessage.position).toEqual(position2)
         })
       })
 

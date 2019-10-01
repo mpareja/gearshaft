@@ -1,7 +1,5 @@
 const createLog = require('../../test/test-log')
-const {
-  examplePut, exampleStreamName
-} = require('../examples')
+const { examplePut, exampleStreamName } = require('../examples')
 
 exports.generateGetLastSuite = ({
   createMessageStore

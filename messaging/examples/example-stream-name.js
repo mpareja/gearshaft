@@ -8,9 +8,7 @@ const exampleStreamName = (category, id, extra) => {
     id = null
   }
 
-  if (id === 'none') {
-    id = null
-  } else if (!id) {
+  if (!id) {
     id = exampleRandomValue()
   }
 
