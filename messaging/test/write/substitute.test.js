@@ -1,10 +1,10 @@
 const { AssertionError } = require('assert')
 const { createWriterSubstitute } = require('../../write/substitute')
-const { examplePosition, ExpectedVersionError } = require('../../../message-store')
 const { exampleMessage } = require('../../../messaging/examples')
+const { ExpectedVersionError } = require('../../../message-store')
 
 const WRITEN_STREAM_NAME = 'SomeStream'
-const WRITEN_EXPECTED_VERSION = examplePosition()
+const WRITEN_EXPECTED_VERSION = -1
 const WRITEN_MESSAGE = exampleMessage()
 
 const setupWrite = async () => {
@@ -144,7 +144,8 @@ describe('write-substitute', () => {
   describe('assertOnlyWriteInitial', () => {
     describe('given a single write with an unexpected version', () => {
       it('throws an error', async () => {
-        const write = await setupWrite()
+        const write = createWriterSubstitute()
+        await write(WRITEN_MESSAGE, WRITEN_STREAM_NAME)
 
         const error = catchError(() => write.assertOnlyWriteInitial(WRITEN_STREAM_NAME))
 
@@ -152,7 +153,7 @@ describe('write-substitute', () => {
         expect(error).toBeInstanceOf(AssertionError)
         expect(error.message).toBe('Expected write to stream "SomeStream" with expectedVersion of -1')
         expect(error.expected).toBe(-1)
-        expect(error.actual).toBe(WRITEN_EXPECTED_VERSION)
+        expect(error.actual).toBe(undefined)
       })
     })
 
