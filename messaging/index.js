@@ -1,4 +1,4 @@
-const { ExpectedVersionError } = require('../message-store/expected-version-error')
+const { ExpectedVersionError } = require('../message-store')
 
 module.exports = {
   ...require('./examples'),
