@@ -16,6 +16,10 @@ exports.createWriterSubstitute = () => {
     return assertOnlyWrite(write.assertOnlyWriteInitial, expectedStreamName, -1, assertions)
   }
 
+  write.assertStreamWrites = (...args) => {
+    return assertStreamWrites(write.assertStreamWrites, ...args)
+  }
+
   const assertEqual = (actual, expected, stackStartFn, message) => {
     if (actual !== expected) {
       throw new AssertionError({
@@ -25,6 +29,34 @@ exports.createWriterSubstitute = () => {
         stackStartFn
       })
     }
+  }
+
+  const assertStreamWrites = (assertFn, expectedStreamName, expectedExpectedVersion, assertions) => {
+    const streamCalls = calls.filter(c => c.streamName === expectedStreamName)
+    if (Array.isArray(expectedExpectedVersion)) {
+      assertions = expectedExpectedVersion
+      expectedExpectedVersion = undefined
+    }
+
+    if (typeof expectedExpectedVersion === 'number') {
+      const { expectedVersion } = streamCalls[0]
+      assertEqual(expectedVersion, expectedExpectedVersion, assertFn,
+        `Expected write to stream "${expectedStreamName}" with expectedVersion of ${expectedExpectedVersion}`)
+    }
+
+    // perform assertions, even on subsets, so user can get feedback on the
+    // messages that _were_ written
+    assertions.forEach((assertion, ix) => {
+      const call = streamCalls[ix]
+      if (call) {
+        assertion(call.message)
+      }
+    })
+
+    const msg = assertions.length === 1
+      ? `Expected exactly ${assertions.length} write to stream "${expectedStreamName}"`
+      : `Expected exactly ${assertions.length} writes to stream "${expectedStreamName}"`
+    assertEqual(streamCalls.length, assertions.length, assertFn, msg)
   }
 
   const assertOnlyWrite = (assertFn, expectedStreamName, expectedExpectedVersion, assertions) => {

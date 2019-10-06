@@ -3,13 +3,14 @@ const { createWriterSubstitute } = require('../../write/substitute')
 const { exampleMessage } = require('../../../messaging/examples')
 const { ExpectedVersionError } = require('../../../message-store')
 
-const WRITEN_STREAM_NAME = 'SomeStream'
-const WRITEN_EXPECTED_VERSION = -1
-const WRITEN_MESSAGE = exampleMessage()
+const WRITTEN_STREAM_NAME = 'SomeStream'
+const WRITTEN_EXPECTED_VERSION = -1
+const WRITTEN_MESSAGE = exampleMessage()
+const WRITTEN_MESSAGE_2 = exampleMessage()
 
 const setupWrite = async () => {
   const write = createWriterSubstitute()
-  await write(WRITEN_MESSAGE, WRITEN_STREAM_NAME, { expectedVersion: WRITEN_EXPECTED_VERSION })
+  await write(WRITTEN_MESSAGE, WRITTEN_STREAM_NAME, { expectedVersion: WRITTEN_EXPECTED_VERSION })
   return write
 }
 
@@ -26,9 +27,8 @@ describe('write-substitute', () => {
     describe('given no writes', () => {
       it('throws an error', () => {
         const write = createWriterSubstitute()
-        const streamName = 'SomeStream'
 
-        const error = catchError(() => write.assertOnlyWrite(streamName))
+        const error = catchError(() => write.assertOnlyWrite(WRITTEN_STREAM_NAME))
 
         expect(error).toBeDefined()
         expect(error).toBeInstanceOf(AssertionError)
@@ -43,7 +43,7 @@ describe('write-substitute', () => {
         it('no error is thrown', async () => {
           const write = await setupWrite()
 
-          const error = catchError(() => write.assertOnlyWrite(WRITEN_STREAM_NAME))
+          const error = catchError(() => write.assertOnlyWrite(WRITTEN_STREAM_NAME))
 
           expect(error).not.toBeDefined()
         })
@@ -59,7 +59,7 @@ describe('write-substitute', () => {
           expect(error).toBeInstanceOf(AssertionError)
           expect(error.message).toBe('Expected exactly 1 write to stream "expectedStreamName"')
           expect(error.expected).toBe('expectedStreamName')
-          expect(error.actual).toBe(WRITEN_STREAM_NAME)
+          expect(error.actual).toBe(WRITTEN_STREAM_NAME)
         })
       })
     })
@@ -69,7 +69,7 @@ describe('write-substitute', () => {
         it('no error is thrown', async () => {
           const write = await setupWrite()
 
-          const error = catchError(() => write.assertOnlyWrite(WRITEN_STREAM_NAME, WRITEN_EXPECTED_VERSION))
+          const error = catchError(() => write.assertOnlyWrite(WRITTEN_STREAM_NAME, WRITTEN_EXPECTED_VERSION))
 
           expect(error).not.toBeDefined()
         })
@@ -79,13 +79,13 @@ describe('write-substitute', () => {
         it('throws an error', async () => {
           const write = await setupWrite()
 
-          const error = catchError(() => write.assertOnlyWrite(WRITEN_STREAM_NAME, 666))
+          const error = catchError(() => write.assertOnlyWrite(WRITTEN_STREAM_NAME, 666))
 
           expect(error).toBeDefined()
           expect(error).toBeInstanceOf(AssertionError)
           expect(error.message).toBe('Expected write to stream "SomeStream" with expectedVersion of 666')
           expect(error.expected).toBe(666)
-          expect(error.actual).toBe(WRITEN_EXPECTED_VERSION)
+          expect(error.actual).toBe(WRITTEN_EXPECTED_VERSION)
         })
       })
     })
@@ -95,7 +95,7 @@ describe('write-substitute', () => {
         it('no error is thrown', async () => {
           const write = await setupWrite()
 
-          const error = catchError(() => write.assertOnlyWrite(WRITEN_STREAM_NAME, () => {}))
+          const error = catchError(() => write.assertOnlyWrite(WRITTEN_STREAM_NAME, () => {}))
 
           expect(error).not.toBeDefined()
         })
@@ -104,11 +104,11 @@ describe('write-substitute', () => {
           const write = await setupWrite()
 
           let receivedMessage
-          write.assertOnlyWrite(WRITEN_STREAM_NAME, m => {
+          write.assertOnlyWrite(WRITTEN_STREAM_NAME, m => {
             receivedMessage = m
           })
 
-          expect(receivedMessage).toBe(WRITEN_MESSAGE)
+          expect(receivedMessage).toBe(WRITTEN_MESSAGE)
         })
       })
 
@@ -117,7 +117,7 @@ describe('write-substitute', () => {
           const write = await setupWrite()
           const exampleError = new Error('bogus error')
 
-          const error = catchError(() => write.assertOnlyWrite(WRITEN_STREAM_NAME, () => {
+          const error = catchError(() => write.assertOnlyWrite(WRITTEN_STREAM_NAME, () => {
             throw exampleError
           }))
 
@@ -131,7 +131,7 @@ describe('write-substitute', () => {
           const write = await setupWrite()
           const exampleError = new Error('bogus error')
 
-          const error = catchError(() => write.assertOnlyWrite(WRITEN_STREAM_NAME, WRITEN_EXPECTED_VERSION, () => {
+          const error = catchError(() => write.assertOnlyWrite(WRITTEN_STREAM_NAME, WRITTEN_EXPECTED_VERSION, () => {
             throw exampleError
           }))
 
@@ -145,9 +145,9 @@ describe('write-substitute', () => {
     describe('given a single write with an unexpected version', () => {
       it('throws an error', async () => {
         const write = createWriterSubstitute()
-        await write(WRITEN_MESSAGE, WRITEN_STREAM_NAME)
+        await write(WRITTEN_MESSAGE, WRITTEN_STREAM_NAME)
 
-        const error = catchError(() => write.assertOnlyWriteInitial(WRITEN_STREAM_NAME))
+        const error = catchError(() => write.assertOnlyWriteInitial(WRITTEN_STREAM_NAME))
 
         expect(error).toBeDefined()
         expect(error).toBeInstanceOf(AssertionError)
@@ -160,11 +160,188 @@ describe('write-substitute', () => {
     describe('given a single write to initialize a stream', () => {
       it('no error is thrown', async () => {
         const write = createWriterSubstitute()
-        await write.initial(WRITEN_MESSAGE, WRITEN_STREAM_NAME)
+        await write.initial(WRITTEN_MESSAGE, WRITTEN_STREAM_NAME)
 
-        const error = catchError(() => write.assertOnlyWriteInitial(WRITEN_STREAM_NAME))
+        const error = catchError(() => write.assertOnlyWriteInitial(WRITTEN_STREAM_NAME))
 
         expect(error).not.toBeDefined()
+      })
+    })
+  })
+
+  describe('assertStreamWrites', () => {
+    const setupTwoWrites = async () => {
+      const write = createWriterSubstitute()
+      const batch = [WRITTEN_MESSAGE, WRITTEN_MESSAGE_2]
+      await write(batch, WRITTEN_STREAM_NAME, { expectedVersion: WRITTEN_EXPECTED_VERSION })
+      return write
+    }
+
+    describe('given the expected writes', () => {
+      it('no error is thrown', async () => {
+        const write = await setupTwoWrites()
+
+        const error = catchError(() => write.assertStreamWrites(WRITTEN_STREAM_NAME, [
+          () => {},
+          () => {}
+        ]))
+
+        expect(error).toBeUndefined()
+      })
+
+      it('message is provided to assertion function', async () => {
+        const write = await setupWrite()
+
+        const assertions = []
+        write.assertStreamWrites(WRITTEN_STREAM_NAME, [
+          (message) => { assertions.push(message) }
+        ])
+
+        expect(assertions).toHaveLength(1)
+        expect(assertions[0]).toEqual(WRITTEN_MESSAGE)
+      })
+    })
+
+    describe('given 0 of 1 expected write', () => {
+      it('throws an error', () => {
+        const write = createWriterSubstitute()
+
+        const error = catchError(() => write.assertStreamWrites(WRITTEN_STREAM_NAME, [() => {}]))
+
+        expect(error).toBeDefined()
+        expect(error).toBeInstanceOf(AssertionError)
+        expect(error.message).toBe('Expected exactly 1 write to stream "SomeStream"')
+        expect(error.expected).toBe(1)
+        expect(error.actual).toBe(0)
+      })
+    })
+
+    describe('given 0 of 2 expected writes', () => {
+      it('throws an error', () => {
+        const write = createWriterSubstitute()
+
+        const error = catchError(() => write.assertStreamWrites(WRITTEN_STREAM_NAME, [() => {}, () => {}]))
+
+        expect(error).toBeDefined()
+        expect(error).toBeInstanceOf(AssertionError)
+        expect(error.message).toBe('Expected exactly 2 writes to stream "SomeStream"')
+        expect(error.expected).toBe(2)
+        expect(error.actual).toBe(0)
+      })
+    })
+
+    describe('given a 1 of 2 expected writes', () => {
+      it('throws error noting the number of missing messages', async () => {
+        const write = await setupWrite()
+
+        const error = catchError(() => write.assertStreamWrites(WRITTEN_STREAM_NAME, [
+          () => {},
+          () => {}
+        ]))
+
+        expect(error).toBeDefined()
+        expect(error).toBeInstanceOf(AssertionError)
+        expect(error.message).toBe('Expected exactly 2 writes to stream "SomeStream"')
+        expect(error.expected).toBe(2)
+        expect(error.actual).toBe(1)
+      })
+    })
+
+    describe('given a 1 of 2 expected writes', () => {
+      it('2nd assertion is not attempted', async () => {
+        const write = await setupWrite()
+
+        let called = false
+        catchError(() => write.assertStreamWrites(WRITTEN_STREAM_NAME, [
+          () => {},
+          () => { called = true }
+        ]))
+
+        expect(called).toBe(false)
+      })
+    })
+
+    describe('given a 1 of 2 expected writes and assertion fails', () => {
+      it('propagates the assertion error (rather than number of writes error)', async () => {
+        const write = await setupWrite()
+
+        const assertionError = new Error()
+        const error = catchError(() => write.assertStreamWrites(WRITTEN_STREAM_NAME, [
+          () => { throw assertionError },
+          () => {}
+        ]))
+
+        expect(error).toBe(assertionError)
+      })
+    })
+
+    describe('assertion includes expected version', () => {
+      describe('given a write with the expected version', () => {
+        it('no error is thrown', async () => {
+          const write = await setupWrite()
+
+          const error = catchError(() =>
+            write.assertStreamWrites(WRITTEN_STREAM_NAME, WRITTEN_EXPECTED_VERSION, [() => {}]))
+
+          expect(error).toBeUndefined()
+        })
+
+        it('written message is provided to assertion function', async () => {
+          const write = await setupWrite()
+
+          let receivedMessage
+          write.assertOnlyWrite(WRITTEN_STREAM_NAME, m => {
+            receivedMessage = m
+          })
+
+          expect(receivedMessage).toBe(WRITTEN_MESSAGE)
+        })
+      })
+
+      describe('given a write with an unexpected version', () => {
+        it('throws error noting the unexpected version', async () => {
+          const write = await setupWrite()
+
+          const error = catchError(() =>
+            write.assertStreamWrites(WRITTEN_STREAM_NAME, 666, [() => {}]))
+
+          expect(error).toBeDefined()
+          expect(error).toBeInstanceOf(AssertionError)
+          expect(error.message).toBe('Expected write to stream "SomeStream" with expectedVersion of 666')
+          expect(error.expected).toBe(666)
+          expect(error.actual).toBe(WRITTEN_EXPECTED_VERSION)
+        })
+      })
+
+      describe('given a write with the expected version and an assertion error', () => {
+        it('propagates the assertion error', async () => {
+          const write = await setupWrite()
+
+          const assertionError = new Error()
+          const error = catchError(() =>
+            write.assertStreamWrites(WRITTEN_STREAM_NAME, WRITTEN_EXPECTED_VERSION, [
+              () => { throw assertionError },
+              () => {}
+            ]))
+
+          expect(error).toBe(assertionError)
+        })
+      })
+    })
+
+    describe('given writes to multiple streams', () => {
+      it('only considers writes to the asserted on stream', async () => {
+        const write = createWriterSubstitute()
+        await write(WRITTEN_MESSAGE, 'OTHER_STREAM')
+        await write(WRITTEN_MESSAGE_2, WRITTEN_STREAM_NAME, { expectedVersion: WRITTEN_EXPECTED_VERSION })
+
+        const assertions = []
+        write.assertStreamWrites(WRITTEN_STREAM_NAME, WRITTEN_EXPECTED_VERSION, [
+          (message) => { assertions.push(message) }
+        ])
+
+        expect(assertions).toHaveLength(1)
+        expect(assertions[0]).toEqual(WRITTEN_MESSAGE_2)
       })
     })
   })
@@ -186,7 +363,7 @@ describe('write-substitute', () => {
         write.stubError(expectedError)
 
         const error = await asyncCatchError(() =>
-          write(WRITEN_MESSAGE, WRITEN_STREAM_NAME))
+          write(WRITTEN_MESSAGE, WRITTEN_STREAM_NAME))
 
         expect(error).toBe(expectedError)
       })
@@ -201,7 +378,7 @@ describe('write-substitute', () => {
         write.stubExpectedVersionError()
 
         const error = await asyncCatchError(() =>
-          write(WRITEN_MESSAGE, WRITEN_STREAM_NAME))
+          write(WRITTEN_MESSAGE, WRITTEN_STREAM_NAME))
 
         expect(error).toBeDefined()
         expect(error).toBeInstanceOf(ExpectedVersionError)
