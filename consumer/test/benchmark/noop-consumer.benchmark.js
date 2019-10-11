@@ -11,15 +11,15 @@ const { promisify } = require('util')
 benchmark()
 
 async function benchmark () {
-  const store = initializeStore()
+  const messageStore = initializeStore()
   const category = exampleCategory('NoOpConsumerBenchmark', { randomize: true })
   const total = 1e6
-  await bulkWrite({ category, concurrency: 3, total, store, streams: 3 })
+  await bulkWrite({ category, concurrency: 3, total, messageStore, streams: 3 })
 
   console.log('done writing messages')
   console.log('starting consumer')
 
-  const { count, startTime, lastProcessedTime } = await consume(store, category, total)
+  const { count, startTime, lastProcessedTime } = await consume(messageStore, category, total)
 
   const stats = await computeStats(count, startTime, lastProcessedTime)
 
@@ -28,7 +28,7 @@ async function benchmark () {
   await writeStatsFile(stats)
 }
 
-async function consume (store, category, total) {
+async function consume (messageStore, category, total) {
   let count = 0
   let lastProcessedTime
   let done
@@ -45,7 +45,7 @@ async function consume (store, category, total) {
     })
   }
 
-  const consumer = createConsumer({ category, log, name: 'interactive', registerHandlers, store })
+  const consumer = createConsumer({ category, log, name: 'interactive', registerHandlers, messageStore })
 
   const startTime = process.hrtime.bigint()
   const runner = consumer.start()

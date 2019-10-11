@@ -26,15 +26,15 @@ describe('position-store', () => {
     describe('different consumer ids', () => {
       it('return different positions', async () => {
         const streamName = exampleStreamName()
-        const store = exampleMessageStore()
+        const messageStore = exampleMessageStore()
 
         const consumerIdA = exampleConsumerId()
-        const positionStoreA = examplePositionStore({ store, streamName, consumerId: consumerIdA })
+        const positionStoreA = examplePositionStore({ messageStore, streamName, consumerId: consumerIdA })
         const writePositionA = 11
         await positionStoreA.put(writePositionA)
 
         const consumerIdB = exampleConsumerId()
-        const positionStoreB = examplePositionStore({ store, streamName, consumerId: consumerIdB })
+        const positionStoreB = examplePositionStore({ messageStore, streamName, consumerId: consumerIdB })
         const writePositionB = 22
         await positionStoreB.put(writePositionB)
 
@@ -49,15 +49,15 @@ describe('position-store', () => {
     describe('different stream names', () => {
       it('return different positions', async () => {
         const consumerId = exampleConsumerId()
-        const store = exampleMessageStore()
+        const messageStore = exampleMessageStore()
 
         const streamNameA = exampleStreamName()
-        const positionStoreA = examplePositionStore({ store, streamName: streamNameA, consumerId })
+        const positionStoreA = examplePositionStore({ messageStore, streamName: streamNameA, consumerId })
         const writePositionA = 11
         await positionStoreA.put(writePositionA)
 
         const streamNameB = exampleStreamName()
-        const positionStoreB = examplePositionStore({ store, streamName: streamNameB, consumerId })
+        const positionStoreB = examplePositionStore({ messageStore, streamName: streamNameB, consumerId })
         const writePositionB = 22
         await positionStoreB.put(writePositionB)
 

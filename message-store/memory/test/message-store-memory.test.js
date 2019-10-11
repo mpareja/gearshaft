@@ -17,14 +17,14 @@ describe('message-store-memory', () => {
   generateReadSuite({ createMessageStore })
   generateWriteSuite({ createMessageStore })
 
-  let store, log
+  let messageStore, log
   beforeEach(() => {
     log = createLog()
-    store = createMessageStore({ log })
+    messageStore = createMessageStore({ log })
   })
 
   const read = (...args) => {
-    return readFrom(store, ...args)
+    return readFrom(messageStore, ...args)
   }
 
   const readFrom = async (aStore, streamName, position) => {
@@ -40,7 +40,7 @@ describe('message-store-memory', () => {
       let found
       beforeEach(async () => {
         const streamName = exampleStreamName()
-        await store.write([exampleWriteMessageData(), exampleWriteMessageData()], streamName)
+        await messageStore.write([exampleWriteMessageData(), exampleWriteMessageData()], streamName)
 
         found = await read(streamName)
       })
@@ -58,11 +58,11 @@ describe('message-store-memory', () => {
       let found
       beforeEach(async () => {
         const streamName1 = exampleStreamName()
-        await store.write([exampleWriteMessageData(), exampleWriteMessageData()],
+        await messageStore.write([exampleWriteMessageData(), exampleWriteMessageData()],
           streamName1)
 
         const streamName2 = exampleStreamName()
-        await store.write([exampleWriteMessageData(), exampleWriteMessageData()],
+        await messageStore.write([exampleWriteMessageData(), exampleWriteMessageData()],
           streamName2)
 
         found = await read(streamName2)
@@ -82,9 +82,9 @@ describe('message-store-memory', () => {
     it('is an error', async () => {
       const streamName = exampleStreamName()
       const message = exampleWriteMessageData()
-      await store.write(message, streamName)
+      await messageStore.write(message, streamName)
 
-      await expect(store.write(message, streamName)).rejects.toEqual(new Error(
+      await expect(messageStore.write(message, streamName)).rejects.toEqual(new Error(
         `message-store write: duplicate message id: ${message.id}`))
     })
   })
@@ -92,17 +92,17 @@ describe('message-store-memory', () => {
   describe('dependencies', () => {
     describe('given no options', () => {
       it('uses null log', async () => {
-        const store = createMessageStore()
+        const messageStore = createMessageStore()
 
-        await store.get(exampleStreamName())
+        await messageStore.get(exampleStreamName())
       })
     })
 
     describe('given options without log', () => {
       it('uses null log', async () => {
-        const store = createMessageStore({})
+        const messageStore = createMessageStore({})
 
-        await store.get(exampleStreamName())
+        await messageStore.get(exampleStreamName())
       })
     })
   })

@@ -2,7 +2,7 @@ const delay = require('util').promisify(setTimeout)
 const { cycle } = require('./cycle')
 const { exampleWriteMessageData, StreamName } = require('../../message-store')
 
-exports.bulkWrite = async ({ category, concurrency, total, store, streams, delayMilliseconds }) => {
+exports.bulkWrite = async ({ category, concurrency, total, messageStore, streams, delayMilliseconds }) => {
   let count = 0
   const go = async () => {
     for (const streamId of cycle(1, streams)) {
@@ -10,7 +10,7 @@ exports.bulkWrite = async ({ category, concurrency, total, store, streams, delay
 
       const streamName = StreamName.create(category, streamId)
       const messageData = exampleWriteMessageData({ type: 'InteractiveMessage' })
-      await store.put(messageData, streamName)
+      await messageStore.put(messageData, streamName)
 
       if (count >= total) {
         break

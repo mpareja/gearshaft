@@ -25,13 +25,13 @@ describe('message-store-postgres', () => {
     describe('connection error', () => {
       it('propagates error', async () => {
         const log = exampleLog()
-        const store = createMessageStore({ log })
+        const messageStore = createMessageStore({ log })
 
         // disconnect db used by _this_ test, but reset db used for other tests
         await db.end()
         db = await db.recreate()
 
-        const promise = store.get(exampleStreamName())
+        const promise = messageStore.get(exampleStreamName())
 
         await expect(promise).rejects.toMatchObject({
           message: 'message-store get: error reading from database',
@@ -45,13 +45,13 @@ describe('message-store-postgres', () => {
     describe('connection error', () => {
       it('propagates error', async () => {
         const log = exampleLog()
-        const store = createMessageStore({ log })
+        const messageStore = createMessageStore({ log })
 
         // disconnect db used by _this_ test, but reset db used for other tests
         await db.end()
         db = await db.recreate()
 
-        const promise = store.getLast(exampleStreamName())
+        const promise = messageStore.getLast(exampleStreamName())
 
         await expect(promise).rejects.toMatchObject({
           message: 'message-store getLast: error reading from database',
@@ -65,14 +65,14 @@ describe('message-store-postgres', () => {
     describe('connection error', () => {
       it('propagates error', async () => {
         const log = exampleLog()
-        const store = createMessageStore({ log })
+        const messageStore = createMessageStore({ log })
 
         // disconnect db used by _this_ test, but reset db used for other tests
         await db.end()
         db = await db.recreate()
 
         const message = exampleWriteMessageData()
-        const promise = store.put(message, exampleStreamName())
+        const promise = messageStore.put(message, exampleStreamName())
 
         await expect(promise).rejects.toMatchObject({
           message: 'message-store put: error writing to database: Cannot use a pool after calling end on the pool',

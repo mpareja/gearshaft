@@ -7,11 +7,11 @@ const { examplePosition, exampleStreamName } = require('../../message-store')
 const A_POSITION = 666
 
 describe('write', () => {
-  let log, store, write
+  let log, messageStore, write
   beforeEach(() => {
     log = createLog()
-    store = { write: jest.fn().mockResolvedValue(A_POSITION) }
-    write = createWriter({ log, store })
+    messageStore = { write: jest.fn().mockResolvedValue(A_POSITION) }
+    write = createWriter({ log, messageStore })
   })
 
   describe('single message', () => {
@@ -25,7 +25,7 @@ describe('write', () => {
       await write(message, streamName)
 
       const messageData = toWriteMessageData(message)
-      expect(store.write).toHaveBeenCalledWith([messageData], streamName, undefined)
+      expect(messageStore.write).toHaveBeenCalledWith([messageData], streamName, undefined)
     })
 
     it('returns position', async () => {
@@ -47,7 +47,7 @@ describe('write', () => {
         await write(message, streamName, { expectedVersion })
 
         const messageData = toWriteMessageData(message)
-        expect(store.write).toHaveBeenCalledWith(
+        expect(messageStore.write).toHaveBeenCalledWith(
           [messageData], streamName, expectedVersion)
       })
     })
@@ -69,7 +69,7 @@ describe('write', () => {
         toWriteMessageData(messages[1])
       ]
 
-      expect(store.write).toHaveBeenCalledWith(messageDataBatch, streamName, undefined)
+      expect(messageStore.write).toHaveBeenCalledWith(messageDataBatch, streamName, undefined)
     })
   })
 
@@ -95,7 +95,7 @@ describe('write', () => {
 
       await write.initial(message, streamName)
 
-      expect(store.write).toHaveBeenCalledWith([messageData], streamName, -1)
+      expect(messageStore.write).toHaveBeenCalledWith([messageData], streamName, -1)
     })
   })
 
@@ -105,7 +105,7 @@ describe('write', () => {
       const message = exampleMessage()
 
       const error = new Error('bogus write error')
-      store.write = jest.fn().mockRejectedValue(error)
+      messageStore.write = jest.fn().mockRejectedValue(error)
 
       const promise = write.initial(message, streamName)
       return { error, promise }
@@ -134,7 +134,7 @@ describe('write', () => {
         const message = exampleMessage()
         const streamName = exampleStreamName()
 
-        const write = createWriter({ store })
+        const write = createWriter({ messageStore })
         await write(message, streamName)
       })
     })
@@ -144,7 +144,7 @@ describe('write', () => {
     describe('when a message is written', () => {
       it('emits "written" event for the message', async () => {
         const streamName = exampleStreamName()
-        const write = createWriter({ store })
+        const write = createWriter({ messageStore })
         const spy = jest.fn()
         write.emitter.on('written', spy)
 

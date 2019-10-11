@@ -8,11 +8,11 @@ const {
 exports.generatePutSuite = ({
   createMessageStore
 }) => {
-  let store, log
+  let messageStore, log
   const setup = async () => {
     log = createLog()
-    store = createMessageStore({ log })
-    return { log, store }
+    messageStore = createMessageStore({ log })
+    return { log, messageStore }
   }
 
   beforeEach(setup)
@@ -20,14 +20,14 @@ exports.generatePutSuite = ({
   describe('put', () => {
     describe('single message', () => {
       it('returns position as first message in stream', async () => {
-        const { store } = await setup()
-        const { position } = await examplePut(store)
+        const { messageStore } = await setup()
+        const { position } = await examplePut(messageStore)
         expect(position).toBe(0)
       })
 
       it('logs success', async () => {
-        const { log, store } = await setup()
-        const { messages: [message], streamName } = await examplePut(store)
+        const { log, messageStore } = await setup()
+        const { messages: [message], streamName } = await examplePut(messageStore)
 
         expect(log.info).toHaveBeenCalledWith({
           expectedVersion: undefined,
@@ -39,10 +39,10 @@ exports.generatePutSuite = ({
       })
 
       it('can be retrieved', async () => {
-        const { store } = await setup()
-        const { messages: [message], streamName } = await examplePut(store)
+        const { messageStore } = await setup()
+        const { messages: [message], streamName } = await examplePut(messageStore)
 
-        const results = await store.get(streamName)
+        const results = await messageStore.get(streamName)
 
         expect(results).toHaveLength(1)
         expect(results[0]).toEqual({
@@ -64,9 +64,9 @@ exports.generatePutSuite = ({
         const writeMessage = exampleWriteMessageData()
         writeMessage.data = null
 
-        const position = await store.put(writeMessage, streamName)
+        const position = await messageStore.put(writeMessage, streamName)
 
-        const results = await store.get(streamName, position)
+        const results = await messageStore.get(streamName, position)
         const readMessage = results[0]
 
         expect(readMessage.data).toBeNull()
@@ -80,9 +80,9 @@ exports.generatePutSuite = ({
         const writeMessage = exampleWriteMessageData()
         writeMessage.metadata = null
 
-        const position = await store.put(writeMessage, streamName)
+        const position = await messageStore.put(writeMessage, streamName)
 
-        const results = await store.get(streamName, position)
+        const results = await messageStore.get(streamName, position)
         const readMessage = results[0]
 
         expect(readMessage.metadata).toBeNull()
@@ -93,9 +93,9 @@ exports.generatePutSuite = ({
     describe('stream without id', () => {
       it('writes the category as the stream name', async () => {
         const streamName = exampleStreamName(null, 'none')
-        await store.put(exampleWriteMessageData(), streamName)
+        await messageStore.put(exampleWriteMessageData(), streamName)
 
-        const readMessage = (await store.get(streamName))[0]
+        const readMessage = (await messageStore.get(streamName))[0]
 
         expect(readMessage.streamName).toBe(streamName)
       })
@@ -106,9 +106,9 @@ exports.generatePutSuite = ({
         const streamName = exampleStreamName()
         const writeMessage = exampleWriteMessageData()
         delete writeMessage.id
-        await store.put(writeMessage, streamName)
+        await messageStore.put(writeMessage, streamName)
 
-        const readMessage = (await store.get(streamName))[0]
+        const readMessage = (await messageStore.get(streamName))[0]
 
         expect(uuidValidate(readMessage.id)).toBe(true)
       })
@@ -120,12 +120,12 @@ exports.generatePutSuite = ({
           const streamName = exampleStreamName()
 
           const wm0 = exampleWriteMessageData()
-          await store.put(wm0, streamName)
+          await messageStore.put(wm0, streamName)
 
           const wm1 = exampleWriteMessageData()
-          await store.put(wm1, streamName)
+          await messageStore.put(wm1, streamName)
 
-          const readMessage = (await store.get(streamName, 1))[0]
+          const readMessage = (await messageStore.get(streamName, 1))[0]
 
           expect(readMessage.data).toEqual(wm1.data)
         })
@@ -135,33 +135,33 @@ exports.generatePutSuite = ({
         it('messages are written with expected versions', async () => {
           const streamName0 = exampleStreamName(null, 'none')
           const wm0 = exampleWriteMessageData()
-          await store.put(wm0, streamName0)
+          await messageStore.put(wm0, streamName0)
 
           const streamName1 = exampleStreamName(null, 'none')
           const wm1 = exampleWriteMessageData()
-          await store.put(wm1, streamName1)
+          await messageStore.put(wm1, streamName1)
 
-          const rm0 = (await store.get(streamName0, 0))[0]
+          const rm0 = (await messageStore.get(streamName0, 0))[0]
           expect(rm0.data).toEqual(wm0.data)
 
-          const rm1 = (await store.get(streamName1, 0))[0]
+          const rm1 = (await messageStore.get(streamName1, 0))[0]
           expect(rm1.data).toEqual(wm1.data)
         })
       })
 
       describe('writing message with stale version', () => {
         const performStaleWrite = async () => {
-          const { position: oldPosition, streamName } = await examplePut(store)
-          await examplePut(store, { streamName })
+          const { position: oldPosition, streamName } = await examplePut(messageStore)
+          await examplePut(messageStore, { streamName })
 
           let error
           try {
-            await store.put(exampleWriteMessageData(), streamName, oldPosition)
+            await messageStore.put(exampleWriteMessageData(), streamName, oldPosition)
           } catch (e) {
             error = e
           }
 
-          return { error, store, streamName }
+          return { error, messageStore, streamName }
         }
 
         it('results in an error', async () => {
@@ -173,9 +173,9 @@ exports.generatePutSuite = ({
         })
 
         it('does not write new message', async () => {
-          const { store, streamName } = await performStaleWrite()
+          const { messageStore, streamName } = await performStaleWrite()
 
-          const results = await store.get(streamName)
+          const results = await messageStore.get(streamName)
           expect(results.length).toBe(2)
         })
       })
@@ -184,13 +184,13 @@ exports.generatePutSuite = ({
         it('results in an error', async () => {
           const streamName = exampleStreamName()
           const wm0 = exampleWriteMessageData()
-          await store.put(wm0, streamName)
+          await messageStore.put(wm0, streamName)
 
           const wm1 = exampleWriteMessageData()
 
           let error
           try {
-            await store.put(wm1, streamName, -1)
+            await messageStore.put(wm1, streamName, -1)
           } catch (e) {
             error = e
           }
@@ -205,7 +205,7 @@ exports.generatePutSuite = ({
   describe('example-put', () => {
     describe('when trackMessages is false', () => {
       it('does not track messages', async () => {
-        const { messages } = await examplePut(store, { trackMessages: false })
+        const { messages } = await examplePut(messageStore, { trackMessages: false })
         expect(messages).toHaveLength(0)
       })
     })

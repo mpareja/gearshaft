@@ -5,7 +5,7 @@ const { toWriteMessageData } = require('./message-transforms')
 
 const writeError = operationError('messaging write')
 
-exports.createWriter = ({ log = createLog(), store }) => {
+exports.createWriter = ({ log = createLog(), messageStore }) => {
   const emitter = new EventEmitter()
 
   const write = async (messageOrBatch, streamName, { expectedVersion } = {}) => {
@@ -20,7 +20,7 @@ exports.createWriter = ({ log = createLog(), store }) => {
 
     const data = transformMessages(messages)
 
-    const position = await store.write(data, streamName, expectedVersion)
+    const position = await messageStore.write(data, streamName, expectedVersion)
 
     log.info({
       ...info,

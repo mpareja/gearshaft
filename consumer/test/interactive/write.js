@@ -7,5 +7,5 @@ const total = Number(process.env.TOTAL || 1e6)
 const streams = Number(process.env.STREAMS || 4)
 const delayMilliseconds = Number(process.env.DELAY || 0)
 
-const store = initializeStore()
-bulkWrite({ category, concurrency, total, store, streams, delayMilliseconds })
+const messageStore = initializeStore()
+bulkWrite({ category, concurrency, total, messageStore, streams, delayMilliseconds })

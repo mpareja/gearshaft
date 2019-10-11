@@ -9,7 +9,7 @@ exports.createConsumer = ({
   name,
   positionUpdateInterval = 100,
   registerHandlers,
-  store,
+  messageStore,
   category,
   strict = false,
   clock = () => new Date(),
@@ -22,7 +22,7 @@ exports.createConsumer = ({
   const consumerError = operationError(`${name} consumer`)
   const prefix = (text) => `${name} consumer: ${text}`
 
-  const positionStore = createPositionStore({ store, streamName: category })
+  const positionStore = createPositionStore({ messageStore, streamName: category })
   let positionUpdateCount = 0
 
   const registry = createConsumerHandlerRegistry({ name, log, strict })
@@ -97,7 +97,7 @@ exports.createConsumer = ({
 
     // --- BATCH FETCHING ----
     const get = throttleErrorLogging(async (...args) => {
-      return store.get(...args)
+      return messageStore.get(...args)
     })
 
     const getBatch = async (version) => {

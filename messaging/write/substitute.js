@@ -5,8 +5,8 @@ const { createMessageStore } = require('../../message-store/memory')
 
 exports.createWriterSubstitute = () => {
   const calls = []
-  const store = createMessageStore()
-  const write = createWriter({ store })
+  const messageStore = createMessageStore()
+  const write = createWriter({ messageStore })
 
   write.assertOnlyWrite = (...args) => {
     return assertOnlyWrite(write.assertOnlyWrite, ...args)

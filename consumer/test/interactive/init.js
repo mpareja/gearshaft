@@ -9,7 +9,7 @@ exports.initializeStore = () => {
   const postgresTestConfig = require('../../../message-store/postgres/test/config')().db
   const db = createPostgresGateway(postgresTestConfig)
 
-  const store = createMessageStore({ db, log })
+  const messageStore = createMessageStore({ db, log })
 
-  return store
+  return messageStore
 }

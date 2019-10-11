@@ -19,25 +19,25 @@ const setupConsumerWithHandler = (opts = {}) => {
   const registerHandlers = (register) => {
     register(HandledMessageClass, handler)
   }
-  const store = exampleMessageStore({ log })
+  const messageStore = exampleMessageStore({ log })
   const consumer = exampleConsumer({
     log,
     pollingIntervalMs: 20, // keep test fast
     registerHandlers,
-    store,
+    messageStore,
     category,
     ...opts
   })
-  return { consumer, handler, log, messageData, store, category }
+  return { consumer, handler, log, messageData, messageStore, category }
 }
 
 describe('given messages in store', () => {
   it('processes all messages in store', async () => {
-    const { consumer, handler, store, category } = setupConsumerWithHandler()
+    const { consumer, handler, messageStore, category } = setupConsumerWithHandler()
     const first = exampleWriteMessageData({ type: HandledMessageClass.name })
     const second = exampleWriteMessageData({ type: HandledMessageClass.name })
 
-    await store.write([first, second], exampleStreamName(category))
+    await messageStore.write([first, second], exampleStreamName(category))
 
     const runner = consumer.start()
     await handler.waitUntilCalledAtLeast(2)
@@ -49,19 +49,19 @@ describe('given messages in store', () => {
 
 describe('given all messages had been processed and a new message is written', () => {
   it('processes the new message', async () => {
-    const { consumer, handler, store, category } = setupConsumerWithHandler()
+    const { consumer, handler, messageStore, category } = setupConsumerWithHandler()
     const first = exampleWriteMessageData({ type: HandledMessageClass.name })
     const second = exampleWriteMessageData({ type: HandledMessageClass.name })
     const streamName = exampleStreamName(category)
 
     // setup all messages processed
-    await store.write([first, second], streamName)
+    await messageStore.write([first, second], streamName)
     const runner = consumer.start()
     await handler.waitUntilCalledAtLeast(2)
 
     // setup third message written
     const third = exampleWriteMessageData({ type: HandledMessageClass.name })
-    await store.write(third, streamName)
+    await messageStore.write(third, streamName)
 
     // assert third message is processed
     await handler.waitUntilCalledAtLeast(3)
@@ -72,11 +72,11 @@ describe('given all messages had been processed and a new message is written', (
 
 describe('given some messages had been processed and consumer is restarting', () => {
   it('continues processing where it left off', async () => {
-    const { consumer, handler, store, category } = setupConsumerWithHandler({ positionUpdateInterval: 1 })
+    const { consumer, handler, messageStore, category } = setupConsumerWithHandler({ positionUpdateInterval: 1 })
     const first = exampleWriteMessageData({ type: HandledMessageClass.name })
     const second = exampleWriteMessageData({ type: HandledMessageClass.name })
 
-    await store.write([first, second], exampleStreamName(category))
+    await messageStore.write([first, second], exampleStreamName(category))
 
     // process first message and stop the consumer
     let runner = consumer.start()
@@ -95,13 +95,13 @@ describe('given some messages had been processed and consumer is restarting', ()
 
 describe('given more messages than the highwater mark', () => {
   it('processes all messages', async () => {
-    const { consumer, handler, store, category } = setupConsumerWithHandler({
+    const { consumer, handler, messageStore, category } = setupConsumerWithHandler({
       highWaterMark: 8,
       lowWaterMark: 2
     })
 
     const messages = new Array(10).fill().map(() => exampleWriteMessageData({ type: HandledMessageClass.name }))
-    await store.write(messages, exampleStreamName(category))
+    await messageStore.write(messages, exampleStreamName(category))
 
     const runner = consumer.start()
 
@@ -114,23 +114,23 @@ describe('given more messages than the highwater mark', () => {
 describe('given a slow message handler', () => {
   it('continue fetching batches until the highwater mark', async () => {
     const handler = exampleHandlerBlocking()
-    const store = exampleMessageStore({ batchSize: 2 })
-    const get = store.get
-    store.get = jest.fn((...args) => get(...args))
+    const messageStore = exampleMessageStore({ batchSize: 2 })
+    const get = messageStore.get
+    messageStore.get = jest.fn((...args) => get(...args))
 
     const { consumer, category } = setupConsumerWithHandler({
       handler,
       highWaterMark: 5,
       lowWaterMark: 2,
-      store
+      messageStore
     })
 
     const messages = new Array(10).fill().map(() => exampleWriteMessageData({ type: HandledMessageClass.name }))
-    await store.write(messages, exampleStreamName(category))
+    await messageStore.write(messages, exampleStreamName(category))
 
     const runner = consumer.start()
 
-    while (store.get.mock.calls.length < 3) {
+    while (messageStore.get.mock.calls.length < 3) {
       await setImmediateP()
     }
 
@@ -138,7 +138,7 @@ describe('given a slow message handler', () => {
 
     await runner.stop()
 
-    expect(store.get).toHaveBeenCalledTimes(3)
+    expect(messageStore.get).toHaveBeenCalledTimes(3)
   })
 })
 
@@ -153,9 +153,9 @@ describe('given a handler exception', () => {
   const setupConsumerWithBlockedHandler = async (opts = {}) => {
     const handler = exampleHandlerBlocking()
     const scenario = setupConsumerWithHandler({ handler, ...opts })
-    const { consumer, messageData, store, category } = scenario
+    const { consumer, messageData, messageStore, category } = scenario
 
-    await store.write(messageData, exampleStreamName(category))
+    await messageStore.write(messageData, exampleStreamName(category))
     runner = consumer.start()
     await handler.waitUntilCalled()
 
@@ -206,8 +206,8 @@ describe('given a handler exception', () => {
 describe('given an error while fetching messages', () => {
   const setupFetchError = async (opts) => {
     const scenario = await setupConsumerWithHandler(opts)
-    const { consumer, store } = scenario
-    store.get = jest.fn(async () => {
+    const { consumer, messageStore } = scenario
+    messageStore.get = jest.fn(async () => {
       await setImmediateP()
       throw new Error('get error')
     })
@@ -217,9 +217,9 @@ describe('given an error while fetching messages', () => {
   }
 
   it('retries the fetch', async () => {
-    const { runner, store } = await setupFetchError()
+    const { runner, messageStore } = await setupFetchError()
 
-    while (store.get.mock.calls.length < 2) {
+    while (messageStore.get.mock.calls.length < 2) {
       await setImmediateP()
     }
 
@@ -227,11 +227,11 @@ describe('given an error while fetching messages', () => {
   })
 
   it('logs the error', async () => {
-    const { log, runner, store, category } = await setupFetchError({
+    const { log, runner, messageStore, category } = await setupFetchError({
       name: 'MyConsumer'
     })
 
-    while (store.get.mock.calls.length < 1) {
+    while (messageStore.get.mock.calls.length < 1) {
       await setImmediateP()
     }
 
@@ -246,27 +246,27 @@ describe('given an error while fetching messages', () => {
 
   it('waits 10s before logging the error again', async () => {
     const clock = createClock()
-    const { log, runner, store, category } = await setupFetchError({
+    const { log, runner, messageStore, category } = await setupFetchError({
       name: 'MyConsumer',
       clock
     })
 
-    while (store.get.mock.calls.length < 2) {
+    while (messageStore.get.mock.calls.length < 2) {
       await setImmediateP()
     }
-    await runner.pause() // wait for inflight store.get call to complete
+    await runner.pause() // wait for inflight messageStore.get call to complete
 
     clock.plusSeconds(10)
 
     runner.unpause()
 
-    while (store.get.mock.calls.length < 3) {
+    while (messageStore.get.mock.calls.length < 3) {
       await setImmediateP()
     }
     await runner.stop()
 
     // expect: log failure, no log, log failure
-    expect(store.get).toHaveBeenCalledTimes(3)
+    expect(messageStore.get).toHaveBeenCalledTimes(3)
     expect(log.error).toHaveBeenCalledTimes(2) /// only logged 2 of 3 times
     expect(log.error).toHaveBeenCalledWith({
       category,
@@ -276,24 +276,24 @@ describe('given an error while fetching messages', () => {
   })
 
   it('logs when fetching starts working again', async () => {
-    const { log, runner, store, category } = await setupFetchError({
+    const { log, runner, messageStore, category } = await setupFetchError({
       name: 'MyConsumer'
     })
 
-    while (store.get.mock.calls.length < 1) {
+    while (messageStore.get.mock.calls.length < 1) {
       await setImmediateP()
     }
-    await runner.pause() // wait for inflight store.get call to complete
+    await runner.pause() // wait for inflight messageStore.get call to complete
 
-    // setup store to no longer raise error
-    store.get = jest.fn(async () => {
+    // setup messageStore to no longer raise error
+    messageStore.get = jest.fn(async () => {
       await setImmediateP()
       return []
     })
 
     runner.unpause()
 
-    while (store.get.mock.calls.length < 1) { // new store.get instance
+    while (messageStore.get.mock.calls.length < 1) { // new messageStore.get instance
       await setImmediateP()
     }
     await runner.stop()

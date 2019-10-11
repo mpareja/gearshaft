@@ -5,26 +5,26 @@ exports.generateGetLastSuite = ({
   createMessageStore
 }) => {
   describe('get-last', () => {
-    let log, store
+    let log, messageStore
     beforeEach(() => {
       log = createLog()
-      store = createMessageStore({ log })
+      messageStore = createMessageStore({ log })
     })
 
     describe('stream with multiple messages', () => {
       it('returns last message', async () => {
-        const { streamName, messages } = await examplePut(store, { count: 2 })
+        const { streamName, messages } = await examplePut(messageStore, { count: 2 })
         const writeMessage = messages[1]
 
-        const lastMessage = await store.getLast(streamName)
+        const lastMessage = await messageStore.getLast(streamName)
 
         expect(lastMessage.data).toEqual(writeMessage.data)
       })
 
       it('logs success', async () => {
-        const { streamName } = await examplePut(store, { count: 2 })
+        const { streamName } = await examplePut(messageStore, { count: 2 })
 
-        await store.getLast(streamName)
+        await messageStore.getLast(streamName)
 
         expect(log.info).toHaveBeenCalledWith({
           count: 1,
@@ -38,7 +38,7 @@ exports.generateGetLastSuite = ({
       let lastMessage, streamName
       beforeEach(async () => {
         streamName = exampleStreamName()
-        lastMessage = await store.getLast(streamName)
+        lastMessage = await messageStore.getLast(streamName)
       })
 
       it('returns null', async () => {

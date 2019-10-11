@@ -1,7 +1,7 @@
 const { exampleStreamName } = require('./example-stream-name')
 const { exampleWriteMessageData } = require('./example-message-data')
 
-const examplePut = async (store, { streamName, count, trackMessages = true } = {}) => {
+const examplePut = async (messageStore, { streamName, count, trackMessages = true } = {}) => {
   count = count || 1
   streamName = streamName || exampleStreamName()
 
@@ -12,7 +12,7 @@ const examplePut = async (store, { streamName, count, trackMessages = true } = {
     if (trackMessages) {
       messages.push(message)
     }
-    position = await store.put(message, streamName)
+    position = await messageStore.put(message, streamName)
   }
   return { streamName, position, messages }
 }

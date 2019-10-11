@@ -7,10 +7,10 @@ const { StreamName } = require('../stream-name')
 exports.generateWriteSuite = ({
   createMessageStore
 }) => {
-  let store, log
+  let messageStore, log
   const setup = async () => {
     log = createLog()
-    store = createMessageStore({ log })
+    messageStore = createMessageStore({ log })
   }
 
   describe('write', () => {
@@ -20,11 +20,11 @@ exports.generateWriteSuite = ({
         setup()
         streamName = exampleStreamName()
         writeMessage = exampleWriteMessageData()
-        position = await store.write(writeMessage, streamName)
+        position = await messageStore.write(writeMessage, streamName)
       })
 
       it('is written', async () => {
-        const [readMessage] = await store.get(streamName, position)
+        const [readMessage] = await messageStore.get(streamName, position)
         expect(readMessage).toBeDefined()
         expect(readMessage).toEqual({
           id: writeMessage.id,
@@ -61,11 +61,11 @@ exports.generateWriteSuite = ({
         writeMessage1 = exampleWriteMessageData()
         writeMessage2 = exampleWriteMessageData()
 
-        await store.write([writeMessage1, writeMessage2], streamName)
+        await messageStore.write([writeMessage1, writeMessage2], streamName)
       })
 
       it('all messages are written', async () => {
-        const results = await store.get(streamName)
+        const results = await messageStore.get(streamName)
         expect(results).toHaveLength(2)
         expect(results.map(m => m.data)).toEqual([writeMessage1.data, writeMessage2.data])
       })
@@ -80,13 +80,13 @@ exports.generateWriteSuite = ({
           const badMessage = { id: 'bad uuid', type: writeMessage1.type }
           const writeMessage3 = exampleWriteMessageData()
 
-          const promise = store.write([writeMessage1, badMessage, writeMessage3], streamName)
+          const promise = messageStore.write([writeMessage1, badMessage, writeMessage3], streamName)
           await expect(promise).rejects.toThrow(/error writing to database.*bad uuid/)
 
-          const streamResults = await store.get(streamName)
+          const streamResults = await messageStore.get(streamName)
           expect(streamResults).toHaveLength(0)
 
-          const categoryResults = await store.get(StreamName.getCategory(streamName))
+          const categoryResults = await messageStore.get(StreamName.getCategory(streamName))
           expect(categoryResults).toHaveLength(0)
         })
 
@@ -94,16 +94,16 @@ exports.generateWriteSuite = ({
           setup()
           const streamName = exampleStreamName()
           const writeMessageBefore = exampleWriteMessageData()
-          await store.write([writeMessageBefore], streamName)
+          await messageStore.write([writeMessageBefore], streamName)
 
           const writeMessage1 = exampleWriteMessageData()
           const badMessage = { id: 'bad uuid', type: writeMessage1.type }
           const writeMessage3 = exampleWriteMessageData()
 
-          const promise = store.write([writeMessage1, badMessage, writeMessage3], streamName)
+          const promise = messageStore.write([writeMessage1, badMessage, writeMessage3], streamName)
           await expect(promise).rejects.toThrow(/error writing to database.*bad uuid/)
 
-          const results = await store.get(streamName)
+          const results = await messageStore.get(streamName)
           expect(results).toHaveLength(1)
         })
       })
@@ -115,9 +115,9 @@ exports.generateWriteSuite = ({
         const writeMessage = exampleWriteMessageData()
         delete writeMessage.id
 
-        await store.write(writeMessage, streamName)
+        await messageStore.write(writeMessage, streamName)
 
-        const readMessage = (await store.get(streamName))[0]
+        const readMessage = (await messageStore.get(streamName))[0]
         expect(uuidValidate(readMessage.id)).toBe(true)
       })
     })
@@ -128,12 +128,12 @@ exports.generateWriteSuite = ({
           const streamName = exampleStreamName()
 
           const wm0 = exampleWriteMessageData()
-          const position1 = await store.write(wm0, streamName)
+          const position1 = await messageStore.write(wm0, streamName)
 
           const wm1 = exampleWriteMessageData()
-          const position2 = await store.write(wm1, streamName, position1)
+          const position2 = await messageStore.write(wm1, streamName, position1)
 
-          const readMessage = await store.getLast(streamName)
+          const readMessage = await messageStore.getLast(streamName)
 
           expect(readMessage.data).toEqual(wm1.data)
           expect(readMessage.position).toEqual(1)
@@ -145,11 +145,11 @@ exports.generateWriteSuite = ({
         let streamName, error
         beforeAll(async () => {
           streamName = exampleStreamName()
-          const oldPosition = await store.write(exampleWriteMessageData(), streamName)
-          await store.write(exampleWriteMessageData(), streamName)
+          const oldPosition = await messageStore.write(exampleWriteMessageData(), streamName)
+          await messageStore.write(exampleWriteMessageData(), streamName)
 
           try {
-            await store.write(exampleWriteMessageData(), streamName, oldPosition)
+            await messageStore.write(exampleWriteMessageData(), streamName, oldPosition)
           } catch (e) {
             error = e
           }
@@ -162,7 +162,7 @@ exports.generateWriteSuite = ({
         })
 
         it('does not write new message', async () => {
-          const results = await store.get(streamName)
+          const results = await messageStore.get(streamName)
           expect(results.length).toBe(2)
         })
       })
@@ -171,16 +171,16 @@ exports.generateWriteSuite = ({
         it('messages are written with expected versions', async () => {
           const streamName0 = exampleStreamName(null, 'none')
           const wm0 = exampleWriteMessageData()
-          await store.write(wm0, streamName0)
+          await messageStore.write(wm0, streamName0)
 
           const streamName1 = exampleStreamName(null, 'none')
           const wm1 = exampleWriteMessageData()
-          await store.write(wm1, streamName1)
+          await messageStore.write(wm1, streamName1)
 
-          const rm0 = (await store.get(streamName0, 0))[0]
+          const rm0 = (await messageStore.get(streamName0, 0))[0]
           expect(rm0.data).toEqual(wm0.data)
 
-          const rm1 = (await store.get(streamName1, 0))[0]
+          const rm1 = (await messageStore.get(streamName1, 0))[0]
           expect(rm1.data).toEqual(wm1.data)
         })
       })
@@ -189,13 +189,13 @@ exports.generateWriteSuite = ({
         it('results in an error', async () => {
           const streamName = exampleStreamName()
           const wm0 = exampleWriteMessageData()
-          await store.put(wm0, streamName)
+          await messageStore.put(wm0, streamName)
 
           const wm1 = exampleWriteMessageData()
 
           let error
           try {
-            await store.put(wm1, streamName, -1)
+            await messageStore.put(wm1, streamName, -1)
           } catch (e) {
             error = e
           }

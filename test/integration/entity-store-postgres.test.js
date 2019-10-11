@@ -9,8 +9,8 @@ afterAll(async () => { await db.close() })
 
 const createMessageStore = () => {
   const log = createLog()
-  const store = createStore({ db, log })
-  return store
+  const messageStore = createStore({ db, log })
+  return messageStore
 }
 
 generateEntityStoreSuite({

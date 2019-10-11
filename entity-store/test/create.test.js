@@ -18,8 +18,8 @@ describe('entity-store', () => {
     })
 
     it('returns entity store', () => {
-      const store = createEntityStore(options)
-      expect(store).toBeDefined()
+      const entityStore = createEntityStore(options)
+      expect(entityStore).toBeDefined()
     })
 
     it('calls registerHandlers with registry', () => {

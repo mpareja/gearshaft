@@ -12,9 +12,9 @@ const setupConsumerWithHandler = (opts = {}) => {
   const registerHandlers = (register) => {
     register(HandledMessageClass, handler)
   }
-  const store = exampleMessageStore()
-  const consumer = exampleConsumer({ registerHandlers, store, category, ...opts })
-  return { consumer, handler, messageData, store, category }
+  const messageStore = exampleMessageStore()
+  const consumer = exampleConsumer({ registerHandlers, messageStore, category, ...opts })
+  return { consumer, handler, messageData, messageStore, category }
 }
 
 describe('consumer', () => {
@@ -104,9 +104,9 @@ describe('consumer', () => {
         it('propagates the error', async () => {
           const log = createLog()
           const name = 'MyThing'
-          const { consumer, messageData, store } = setupConsumerWithHandler({ log, name, positionUpdateInterval: 1 })
+          const { consumer, messageData, messageStore } = setupConsumerWithHandler({ log, name, positionUpdateInterval: 1 })
           const error = new Error('bogus put error')
-          store.write = () => { throw error }
+          messageStore.write = () => { throw error }
 
           const promise = consumer.dispatch(messageData)
 

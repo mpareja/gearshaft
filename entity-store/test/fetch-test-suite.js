@@ -29,7 +29,7 @@ module.exports.generateEntityStoreSuite = ({
       beforeEach(() => {
         const log = createLog()
         messageStore = createMessageStore({ log })
-        write = createWriter({ log, store: messageStore })
+        write = createWriter({ log, messageStore })
         options = {
           category: A_CATEGORY,
           entity: ExampleEntityClass,

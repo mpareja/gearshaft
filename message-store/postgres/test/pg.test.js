@@ -24,8 +24,8 @@ describe('pg', () => {
           await examplePut(transactionStore, { streamName })
         })
 
-        const store = createStore({ db, log })
-        const results = await store.get(streamName)
+        const messageStore = createStore({ db, log })
+        const results = await messageStore.get(streamName)
 
         expect(results).toHaveLength(2)
       })
@@ -46,8 +46,8 @@ describe('pg', () => {
       it('message is not written (roll back)', async () => {
         await expect(promise).rejects.toBeDefined()
 
-        const store = createStore({ db, log })
-        const results = await store.get(streamName)
+        const messageStore = createStore({ db, log })
+        const results = await messageStore.get(streamName)
 
         expect(results).toHaveLength(0)
       })
@@ -75,9 +75,9 @@ describe('pg', () => {
           await examplePut(store1, { streamName: streamName1 })
         })
 
-        const store = createStore({ db, log })
-        const results1 = await store.get(streamName1)
-        const results2 = await store.get(streamName2)
+        const messageStore = createStore({ db, log })
+        const results1 = await messageStore.get(streamName1)
+        const results2 = await messageStore.get(streamName2)
 
         expect(results1).toHaveLength(3)
         expect(results2).toHaveLength(1)
@@ -115,8 +115,8 @@ describe('pg', () => {
         states.push('after delay')
 
         // show that a write ought to have finished
-        const store = createStore({ db, log })
-        await examplePut(store)
+        const messageStore = createStore({ db, log })
+        await examplePut(messageStore)
         states.push('unblocked stream written')
 
         resolveBlock()
@@ -133,7 +133,7 @@ describe('pg', () => {
           'blocked stream written'
         ])
 
-        const results = await store.get(streamName)
+        const results = await messageStore.get(streamName)
         expect(results).toHaveLength(2)
       })
     })
