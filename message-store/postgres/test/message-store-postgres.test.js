@@ -1,4 +1,5 @@
 const createTestLog = require('../../../test/test-log')
+const getConfig = require('./config')
 const { generateGetLastSuite } = require('../../test/get-last-test-suite')
 const { generateGetSuite } = require('../../test/get-test-suite')
 const { generatePutSuite } = require('../../test/put-test-suite')
@@ -85,10 +86,8 @@ describe('message-store-postgres', () => {
 
   describe('given connection settings rather than a connection object', () => {
     it('creates own usable connection', async () => {
-      const log = createTestLog()
-      const getConfig = require('./config')
-      const settings = getConfig().db
-      const messageStore = require('../').createMessageStore({ ...settings, log })
+      const databaseSettings = getConfig().db
+      const messageStore = require('../').createMessageStore(databaseSettings)
 
       await messageStore.getLast(exampleStreamName())
     })
