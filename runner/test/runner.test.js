@@ -1,56 +1,37 @@
-const { createRunner } = require('../runner')
+const { createRunner, exampleRunner } = require('../')
 const { promisify } = require('util')
 const setImmediateP = promisify(setImmediate)
 
 const NO_PARAMETERS = []
 
-const exampleTasks = () => {
-  const taskCalls = []
-  const task = async (...args) => taskCalls.push(args)
-  task.calls = taskCalls
-
-  let blockedResolve, blockedReject
-  const blockedTask = () => new Promise((resolve, reject) => {
-    blockedResolve = resolve
-    blockedReject = reject
-  })
-  blockedTask.unblock = () => blockedResolve()
-  blockedTask.unblockWithError = () => blockedReject(new Error('bogus'))
-
-  return { blockedTask, task }
-}
-
 const setupRunBlockedTask = async () => {
-  const tasks = exampleTasks()
-  const runner = createRunner({ tasks })
+  const runner = exampleRunner()
 
   runner.trigger('blockedTask')
 
   await setImmediateP()
 
-  const { unblock, unblockWithError } = tasks.blockedTask
+  const { unblock, unblockWithError } = runner.tasks.blockedTask
   return { runner, unblock, unblockWithError }
 }
 
 describe('trigger', () => {
   describe('triggering a task without parameters', () => {
     it('runs the task with no parameters', async () => {
-      const tasks = exampleTasks()
-      const runner = createRunner({ tasks })
+      const runner = exampleRunner()
 
       runner.trigger('task')
 
       await setImmediateP()
 
-      expect(tasks.task.calls).toHaveLength(1)
-      expect(tasks.task.calls[0]).toEqual(NO_PARAMETERS)
+      expect(runner.tasks.task.calls).toHaveLength(1)
+      expect(runner.tasks.task.calls[0]).toEqual(NO_PARAMETERS)
     })
   })
 
   describe('triggering a task with parameters', () => {
     it('runs the task with supplied parameters', async () => {
-      const tasks = exampleTasks()
-      const runner = createRunner({ tasks })
+      const runner = exampleRunner()
 
       const some = 'value'
       const other = 'values'
@@ -58,7 +39,7 @@ describe('trigger', () => {
 
       await setImmediateP()
 
-      expect(tasks.task.calls).toEqual([
+      expect(runner.tasks.task.calls).toEqual([
         [some, other]
       ])
     })
@@ -85,8 +66,7 @@ describe('trigger', () => {
 describe('stats', () => {
   describe('given no tasks triggered', () => {
     it('active tasks is 0', () => {
-      const tasks = exampleTasks()
-      const runner = createRunner({ tasks })
+      const runner = exampleRunner()
 
       expect(runner.stats().active).toEqual(0)
     })
@@ -113,8 +93,7 @@ describe('stats', () => {
 
   describe('given a paused runner with a single queued task', () => {
     it('queued tasks is 1', async () => {
-      const tasks = exampleTasks()
-      const runner = createRunner({ tasks })
+      const runner = exampleRunner()
 
       runner.pause()
       runner.trigger('task')
@@ -128,20 +107,18 @@ describe('stats', () => {
 describe('pause / unpause', () => {
   describe('when a task is triggered while paused', () => {
     it('it does not run the task', async () => {
-      const tasks = exampleTasks()
-      const runner = createRunner({ tasks })
+      const runner = exampleRunner()
 
       runner.pause()
       runner.trigger('task')
 
-      expect(tasks.task.calls).toHaveLength(0)
+      expect(runner.tasks.task.calls).toHaveLength(0)
     })
   })
 
   describe('unpausing after tasks were triggered while paused', () => {
     it('runs the previously triggered tasks in order', async () => {
-      const tasks = exampleTasks()
-      const runner = createRunner({ tasks })
+      const runner = exampleRunner()
       runner.pause()
       runner.trigger('task', 'first')
       runner.trigger('task', 'second')
@@ -150,7 +127,7 @@ describe('pause / unpause', () => {
 
       await setImmediateP()
 
-      expect(tasks.task.calls).toEqual([
+      expect(runner.tasks.task.calls).toEqual([
         ['first'],
         ['second']
       ])
@@ -159,15 +136,14 @@ describe('pause / unpause', () => {
 
   describe('unpausing multiple times', () => {
     it('does not retrigger previously paused tasks', async () => {
-      const tasks = exampleTasks()
-      const runner = createRunner({ tasks })
+      const runner = exampleRunner()
       runner.pause()
       runner.trigger('task')
 
       runner.unpause()
       runner.unpause()
 
-      expect(tasks.task.calls).toHaveLength(1)
+      expect(runner.tasks.task.calls).toHaveLength(1)
     })
   })
 
@@ -231,20 +207,18 @@ describe('stop', () => {
 
   describe('triggering a task on a stopped runner', () => {
     it('does not run the task', () => {
-      const tasks = exampleTasks()
-      const runner = createRunner({ tasks })
+      const runner = exampleRunner()
 
       runner.stop()
       runner.trigger('task')
 
-      expect(tasks.task.calls).toHaveLength(0)
+      expect(runner.tasks.task.calls).toHaveLength(0)
     })
   })
 
   describe('unpausing a stopped runner', () => {
     it('does not run queued tasks', () => {
-      const tasks = exampleTasks()
-      const runner = createRunner({ tasks })
+      const runner = exampleRunner()
 
       runner.pause()
       runner.trigger('task')
@@ -252,7 +226,7 @@ describe('stop', () => {
 
       runner.unpause()
 
-      expect(tasks.task.calls).toHaveLength(0)
+      expect(runner.tasks.task.calls).toHaveLength(0)
     })
   })
 })
