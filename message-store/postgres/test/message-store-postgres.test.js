@@ -1,10 +1,11 @@
+const createTestLog = require('../../../test/test-log')
 const { generateGetLastSuite } = require('../../test/get-last-test-suite')
 const { generateGetSuite } = require('../../test/get-test-suite')
 const { generatePutSuite } = require('../../test/put-test-suite')
 const { generateReadSuite } = require('../../test/read-test-suite')
 const { generateWriteSuite } = require('../../test/write-test-suite')
 const {
-  createStore, createMessageStoreDb, exampleLog, exampleStreamName,
+  createStore, createMessageStoreDb, exampleStreamName,
   exampleWriteMessageData
 } = require('./init-message-store')
 
@@ -24,7 +25,7 @@ describe('message-store-postgres', () => {
   describe('get', () => {
     describe('connection error', () => {
       it('propagates error', async () => {
-        const log = exampleLog()
+        const log = createTestLog()
         const messageStore = createMessageStore({ log })
 
         // disconnect db used by _this_ test, but reset db used for other tests
@@ -44,7 +45,7 @@ describe('message-store-postgres', () => {
   describe('get-last', () => {
     describe('connection error', () => {
       it('propagates error', async () => {
-        const log = exampleLog()
+        const log = createTestLog()
         const messageStore = createMessageStore({ log })
 
         // disconnect db used by _this_ test, but reset db used for other tests
@@ -64,7 +65,7 @@ describe('message-store-postgres', () => {
   describe('put', () => {
     describe('connection error', () => {
       it('propagates error', async () => {
-        const log = exampleLog()
+        const log = createTestLog()
         const messageStore = createMessageStore({ log })
 
         // disconnect db used by _this_ test, but reset db used for other tests
@@ -79,6 +80,17 @@ describe('message-store-postgres', () => {
           inner: expect.anything()
         })
       })
+    })
+  })
+
+  describe('given connection settings rather than a connection object', () => {
+    it('creates own usable connection', async () => {
+      const log = createTestLog()
+      const getConfig = require('./config')
+      const settings = getConfig().db
+      const messageStore = require('../').createMessageStore({ ...settings, log })
+
+      await messageStore.getLast(exampleStreamName())
     })
   })
 })

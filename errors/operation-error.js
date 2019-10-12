@@ -3,5 +3,8 @@ module.exports = (operationName) => (detail, inner) => {
   if (inner) {
     error.inner = inner
   }
+
+  Error.captureStackTrace(error, module.exports)
+
   return error
 }
