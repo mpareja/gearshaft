@@ -1,4 +1,4 @@
-exports.startHost = (fn, systemProcess = process) => {
+exports.startHost = (fn, /* istanbul ignore next */ systemProcess = process) => {
   const consumers = []
 
   const register = (consumer) => consumers.push(consumer)
