@@ -5,25 +5,22 @@ exports.startHost = (fn, /* istanbul ignore next */ systemProcess = process) => 
 
   fn({ register })
 
-  hostConsumers(consumers, systemProcess)
+  const host = createHost(consumers, systemProcess)
+
+  return host
 }
 
-const hostConsumers = (consumers, systemProcess) => {
+const createHost = (consumers, systemProcess) => {
   const runners = consumers.map(consumer => consumer.start())
 
-  systemProcess.on('SIGCONT', () => {
-    runners.forEach(runner => runner.unpause())
-  })
+  const pause = () => runners.forEach(runner => runner.pause())
+  const unpause = () => runners.forEach(runner => runner.unpause())
+  const stop = () => runners.forEach(runner => runner.stop())
 
-  systemProcess.on('SIGINT', () => {
-    runners.forEach(runner => runner.stop())
-  })
+  systemProcess.on('SIGCONT', unpause)
+  systemProcess.on('SIGINT', stop)
+  systemProcess.on('SIGTERM', stop)
+  systemProcess.on('SIGTSTP', pause)
 
-  systemProcess.on('SIGTERM', () => {
-    runners.forEach(runner => runner.stop())
-  })
-
-  systemProcess.on('SIGTSTP', () => {
-    runners.forEach(runner => runner.pause())
-  })
+  return { stop, pause, unpause }
 }

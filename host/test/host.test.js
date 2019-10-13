@@ -19,48 +19,82 @@ describe('host', () => {
       const { consumer } = setupHostWithConsumer()
 
       expect(consumer.started).toBe(true)
+      expect(consumer.runner.stats().paused).toBe(false)
       expect(consumer.runner.stats().stopped).toBe(false)
     })
   })
 
-  const setupSignalReceived = (signal) => {
-    const scenario = setupHostWithConsumer()
+  describe('stopping the host', () => {
+    it('stops the consumer', () => {
+      const { consumer, host } = setupHostWithConsumer()
 
-    scenario.systemProcess.emit(signal)
+      host.stop()
 
-    return scenario
-  }
+      expect(consumer.runner.stats().stopped).toBe(true)
+    })
+  })
 
-  describe('upon receiving SIGCONT', () => {
-    it('resumes the stopped consumer', () => {
-      const { consumer, systemProcess } = setupSignalReceived('SIGTSTP')
-      systemProcess.emit('SIGCONT')
+  describe('pausing the host', () => {
+    it('pauses the consumer', () => {
+      const { consumer, host } = setupHostWithConsumer()
+
+      host.pause()
+
+      expect(consumer.runner.stats().paused).toBe(true)
+    })
+  })
+
+  describe('unpausing a paused host', () => {
+    it('unpauses the consumer', () => {
+      const { consumer, host } = setupHostWithConsumer()
+
+      host.pause()
+      host.unpause()
 
       expect(consumer.runner.stats().paused).toBe(false)
     })
   })
 
-  describe('upon receiving SIGINT', () => {
-    it('stops the consumer', () => {
-      const { consumer } = setupSignalReceived('SIGINT')
+  describe('process signals', () => {
+    const setupSignalReceived = (signal) => {
+      const scenario = setupHostWithConsumer()
 
-      expect(consumer.runner.stats().stopped).toBe(true)
+      scenario.systemProcess.emit(signal)
+
+      return scenario
+    }
+
+    describe('upon receiving SIGCONT', () => {
+      it('resumes the stopped consumer', () => {
+        const { consumer, systemProcess } = setupSignalReceived('SIGTSTP')
+        systemProcess.emit('SIGCONT')
+
+        expect(consumer.runner.stats().paused).toBe(false)
+      })
     })
-  })
 
-  describe('upon receiving SIGTERM', () => {
-    it('stops the consumers', () => {
-      const { consumer } = setupSignalReceived('SIGTERM')
+    describe('upon receiving SIGINT', () => {
+      it('stops the consumer', () => {
+        const { consumer } = setupSignalReceived('SIGINT')
 
-      expect(consumer.runner.stats().stopped).toBe(true)
+        expect(consumer.runner.stats().stopped).toBe(true)
+      })
     })
-  })
 
-  describe('upon receiving SIGTSTP', () => {
-    it('resumes the stopped consumer', () => {
-      const { consumer } = setupSignalReceived('SIGTSTP')
+    describe('upon receiving SIGTERM', () => {
+      it('stops the consumers', () => {
+        const { consumer } = setupSignalReceived('SIGTERM')
 
-      expect(consumer.runner.stats().paused).toBe(true)
+        expect(consumer.runner.stats().stopped).toBe(true)
+      })
+    })
+
+    describe('upon receiving SIGTSTP', () => {
+      it('resumes the stopped consumer', () => {
+        const { consumer } = setupSignalReceived('SIGTSTP')
+
+        expect(consumer.runner.stats().paused).toBe(true)
+      })
     })
   })
 })
