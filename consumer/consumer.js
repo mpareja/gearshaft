@@ -3,6 +3,7 @@ const delay = require('util').promisify(setTimeout)
 const { createConsumerHandlerRegistry } = require('./consumer-handler-registry')
 const { createPositionStore } = require('./position-store')
 const { createRunner } = require('../runner')
+const { throttleErrorLogging } = require('../logging')
 
 exports.createConsumer = ({
   log,
@@ -12,7 +13,6 @@ exports.createConsumer = ({
   messageStore,
   category,
   strict = false,
-  clock = () => new Date(),
 
   // TUNING
   highWaterMark = 500,
@@ -63,42 +63,16 @@ exports.createConsumer = ({
     let nextVersion = 0
     let queue = []
 
-    const throttleErrorLogging = (fn) => {
-      let errorLoggedTs = null
-      let errorCount = 0
-
-      const tenSecondsSinceLastLogged = () => {
-        const spanMs = clock() - errorLoggedTs
-        return spanMs >= (10 * 1000)
-      }
-
-      return async (...args) => {
-        let result
-        try {
-          result = await fn(...args)
-
-          if (errorLoggedTs) {
-            log.info({ category, errorCount }, prefix('reading from stream succeeded after encountering errors'))
-          }
-          errorLoggedTs = null
-          errorCount = 0
-        } catch (err) {
-          errorCount++
-          if (!errorLoggedTs || tenSecondsSinceLastLogged()) {
-            errorLoggedTs = clock()
-            log.error({ category, errorCount, err }, prefix('error reading from stream'))
-          }
-          throw err
-        }
-
-        return result
-      }
-    }
-
     // --- BATCH FETCHING ----
-    const get = throttleErrorLogging(async (...args) => {
-      return messageStore.get(...args)
-    })
+    const get = throttleErrorLogging(
+      log,
+      { category },
+      prefix('error reading from stream'),
+      prefix('reading from stream succeeded after encountering errors'),
+      async (...args) => {
+        return messageStore.get(...args)
+      }
+    )
 
     const getBatch = async (version) => {
       let batch

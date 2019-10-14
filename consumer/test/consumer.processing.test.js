@@ -1,4 +1,3 @@
-const createClock = require('./fake-clock')
 const createLog = require('../../test/test-log')
 const promisify = require('util').promisify
 const setImmediateP = promisify(setImmediate)
@@ -242,63 +241,5 @@ describe('given an error while fetching messages', () => {
       err: new Error('get error'),
       errorCount: 1
     }, 'MyConsumer consumer: error reading from stream')
-  })
-
-  it('waits 10s before logging the error again', async () => {
-    const clock = createClock()
-    const { log, runner, messageStore, category } = await setupFetchError({
-      name: 'MyConsumer',
-      clock
-    })
-
-    while (messageStore.get.mock.calls.length < 2) {
-      await setImmediateP()
-    }
-    await runner.pause() // wait for inflight messageStore.get call to complete
-
-    clock.plusSeconds(10)
-
-    runner.unpause()
-
-    while (messageStore.get.mock.calls.length < 3) {
-      await setImmediateP()
-    }
-    await runner.stop()
-
-    // expect: log failure, no log, log failure
-    expect(messageStore.get).toHaveBeenCalledTimes(3)
-    expect(log.error).toHaveBeenCalledTimes(2) /// only logged 2 of 3 times
-    expect(log.error).toHaveBeenCalledWith({
-      category,
-      err: new Error('get error'),
-      errorCount: 3
-    }, 'MyConsumer consumer: error reading from stream')
-  })
-
-  it('logs when fetching starts working again', async () => {
-    const { log, runner, messageStore, category } = await setupFetchError({
-      name: 'MyConsumer'
-    })
-
-    while (messageStore.get.mock.calls.length < 1) {
-      await setImmediateP()
-    }
-    await runner.pause() // wait for inflight messageStore.get call to complete
-
-    // setup messageStore to no longer raise error
-    messageStore.get = jest.fn(async () => {
-      await setImmediateP()
-      return []
-    })
-
-    runner.unpause()
-
-    while (messageStore.get.mock.calls.length < 1) { // new messageStore.get instance
-      await setImmediateP()
-    }
-    await runner.stop()
-
-    expect(log.info).toHaveBeenCalledWith({ category, errorCount: 1 },
-      'MyConsumer consumer: reading from stream succeeded after encountering errors')
   })
 })

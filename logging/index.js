@@ -1,3 +1,4 @@
 module.exports = {
-  ...require('./log')
+  ...require('./log'),
+  ...require('./throttle')
 }
