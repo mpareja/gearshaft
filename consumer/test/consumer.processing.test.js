@@ -243,3 +243,44 @@ describe('given an error while fetching messages', () => {
     }, 'MyConsumer consumer: error reading from stream')
   })
 })
+
+describe('given an error fetching initial consumer position', () => {
+  const setupGetPositionError = async (opts) => {
+    const scenario = await setupConsumerWithHandler(opts)
+    const { consumer, messageStore } = scenario
+    messageStore.getLast = jest.fn(async () => {
+      await setImmediateP()
+      throw new Error('getLast error')
+    })
+
+    const runner = consumer.start()
+    return { ...scenario, runner }
+  }
+
+  it('logs the error', async () => {
+    const name = 'MyConsumer'
+    const { category, log, messageStore, runner } = await setupGetPositionError({
+      name
+    })
+
+    while (messageStore.getLast.mock.calls.length < 1) {
+      await setImmediateP()
+    }
+
+    await runner.stop()
+
+    expect(log.error).toHaveBeenCalledWith(
+      { category, err: expect.anything(), errorCount: 1, name },
+      'MyConsumer consumer: error reading consumer start position')
+  })
+
+  it('retries the fetch', async () => {
+    const { messageStore, runner } = await setupGetPositionError()
+
+    while (messageStore.getLast.mock.calls.length < 2) {
+      await setImmediateP()
+    }
+
+    await runner.stop()
+  }, 500) // fail if doesn't happen very quickly
+})

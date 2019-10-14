@@ -141,10 +141,23 @@ exports.createConsumer = ({
       runner.trigger('getBatch', nextVersion)
     }
 
+    const positionStoreGet = throttleErrorLogging(
+      log,
+      { name, category },
+      prefix('error reading consumer start position'),
+      prefix('reading consumer start position succeeded after encountering errors'),
+      () => positionStore.get()
+    )
+
     const getPosition = async () => {
-      const position = await positionStore.get()
-      nextVersion = typeof position === 'number' ? position + 1 : 0
-      runner.trigger('getBatch', nextVersion)
+      try {
+        const position = await positionStoreGet()
+        nextVersion = typeof position === 'number' ? position + 1 : 0
+        runner.trigger('getBatch', nextVersion)
+      } catch (err) {
+        await delay(pollingIntervalMs)
+        runner.trigger('getPosition')
+      }
     }
 
     const tasks = { batch, fill, getBatch, getPosition, waitToGetBatch, processMessage }
