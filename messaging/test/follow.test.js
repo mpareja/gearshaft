@@ -1,7 +1,7 @@
 const { follow } = require('../follow')
 const { Metadata } = require('../metadata')
 const {
-  exampleMessageMetadata,
+  exampleMessage,
   exampleRandomValue
 } = require('../examples')
 
@@ -9,7 +9,7 @@ class SomeMessage {}
 
 describe('follow', () => {
   describe('metadata', () => {
-    const previous = { metadata: exampleMessageMetadata() }
+    const previous = exampleMessage()
     const next = follow(previous, SomeMessage)
 
     it('next message metadata follows previous', () => {
@@ -20,12 +20,15 @@ describe('follow', () => {
   })
 
   describe('message with simple top-level field', () => {
-    const someField = exampleRandomValue()
-    const previous = { someField, metadata: exampleMessageMetadata() }
+    const previous = exampleMessage()
     const next = follow(previous, SomeMessage)
 
     it('field is copied', () => {
-      expect(next.someField).toBe(someField)
+      expect(next.someAttribute).toBe(previous.someAttribute)
+    })
+
+    it('id is not copied', () => {
+      expect(next.id).toBe(null)
     })
 
     it('creates instance of desired type', () => {
@@ -34,31 +37,26 @@ describe('follow', () => {
   })
 
   describe('message with nested field', () => {
-    const value = exampleRandomValue()
-    const previous = {
-      metadata: exampleMessageMetadata(),
-      parent: { child: value }
-    }
+    const previous = exampleMessage.nestedField()
     const next = follow(previous, SomeMessage)
 
     it('includes nested field', () => {
-      expect(next.parent.child).toBe(previous.parent.child)
+      expect(next.nested.netedField).toBe(previous.nested.netedField)
     })
 
     it('creates new parent object', () => {
-      expect(next.parent).not.toBe(previous.parent)
+      expect(next.nested).not.toBe(previous.nested)
     })
   })
 
   describe('message with array field', () => {
     const value = exampleRandomValue()
-    const previous = {
-      metadata: exampleMessageMetadata(),
-      some: {
-        array: [{ value }],
-        numArray: [1, 6, 12]
-      }
+    const previous = exampleMessage()
+    previous.some = {
+      array: [{ value }],
+      numArray: [1, 6, 12]
     }
+
     const next = follow(previous, SomeMessage)
 
     it('includes array field', () => {
@@ -77,8 +75,8 @@ describe('follow', () => {
 
   describe('message with no metadata', () => {
     it('followed messages has new metadata ', () => {
-      const someField = exampleRandomValue()
-      const previous = { someField }
+      const previous = exampleMessage()
+      delete previous.metadata
       const next = follow(previous, SomeMessage)
 
       expect(next.metadata).toBeDefined()

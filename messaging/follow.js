@@ -6,6 +6,8 @@ exports.follow = (previous, ClassOfNext) => {
   const next = new ClassOfNext()
   Object.assign(next, data)
 
+  next.id = null
+
   next.metadata = new Metadata()
   next.metadata.follow(previous.metadata)
 
