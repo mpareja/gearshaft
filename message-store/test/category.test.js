@@ -70,4 +70,38 @@ describe('category', () => {
       })
     })
   })
+
+  describe('commandCategory', () => {
+    describe('no other types specified', () => {
+      it('returns category with just command type added', () => {
+        const category = createCategory(A_CATEGORY)
+
+        const commandCategory = category.commandCategory()
+
+        expect(commandCategory).toBe('SomeCategory:command')
+      })
+    })
+
+    describe('given types specified', () => {
+      it('adds "command" and the specified types to category name', () => {
+        const category = createCategory(A_CATEGORY)
+
+        const types = ['other', 'thang']
+        const streamName = category.commandCategory({ types })
+
+        expect(streamName).toBe('SomeCategory:command+other+thang')
+      })
+    })
+
+    describe('given a type is specified', () => {
+      it('adds "command" and the specified type to category name', () => {
+        const category = createCategory(A_CATEGORY)
+
+        const type = 'other'
+        const streamName = category.commandCategory({ type })
+
+        expect(streamName).toBe('SomeCategory:command+other')
+      })
+    })
+  })
 })

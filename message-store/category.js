@@ -2,6 +2,16 @@ const { AssertionError } = require('assert')
 const { StreamName } = require('./stream-name')
 
 exports.createCategory = (category) => {
+  const commandCategory = (extra = {}) => {
+    const types = extra.types || []
+    if (extra.type) {
+      types.unshift(extra.type)
+    }
+    types.unshift('command')
+
+    return StreamName.create(category, { types })
+  }
+
   const commandStreamName = (id, extra = {}) => {
     if (id === null || id === undefined) {
       throw new AssertionError({
@@ -20,5 +30,5 @@ exports.createCategory = (category) => {
     return StreamName.create(category, id, { types })
   }
 
-  return { commandStreamName }
+  return { commandCategory, commandStreamName }
 }
