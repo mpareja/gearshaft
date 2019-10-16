@@ -8,7 +8,7 @@ exports.generateWriteSuite = ({
   createMessageStore
 }) => {
   let messageStore, log
-  const setup = async () => {
+  const setup = () => {
     log = createLog()
     messageStore = createMessageStore({ log })
   }
@@ -203,6 +203,18 @@ exports.generateWriteSuite = ({
           expect(error).toBeDefined()
           expect(error).toBeInstanceOf(ExpectedVersionError)
         })
+      })
+    })
+
+    describe('when called without await', () => {
+      it('does not operate during the same tick of the event loop', () => {
+        setup()
+        const streamName = exampleStreamName()
+        const writeMessage = exampleWriteMessageData()
+
+        messageStore.write(writeMessage, streamName)
+
+        expect(log.info).not.toHaveBeenCalled()
       })
     })
   })

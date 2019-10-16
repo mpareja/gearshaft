@@ -66,5 +66,16 @@ exports.generateGetSuite = ({
         })
       })
     })
+
+    describe('when called without await', () => {
+      it('does not operate during the same tick of the event loop', () => {
+        //        setup()
+        const streamName = exampleStreamName()
+
+        messageStore.get(streamName)
+
+        expect(log.info).not.toHaveBeenCalled()
+      })
+    })
   })
 }

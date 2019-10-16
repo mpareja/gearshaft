@@ -200,6 +200,17 @@ exports.generatePutSuite = ({
         })
       })
     })
+
+    describe('when called without await', () => {
+      it('does not operate during the same tick of the event loop', () => {
+        const streamName = exampleStreamName()
+        const message = exampleWriteMessageData()
+
+        messageStore.put(message, streamName)
+
+        expect(log.info).not.toHaveBeenCalled()
+      })
+    })
   })
 
   describe('example-put', () => {

@@ -4,9 +4,11 @@ const operationError = require('../../errors/operation-error')
 const uuidValidate = require('uuid-validate')
 const { createLog } = require('../../logging')
 const { ExpectedVersionError } = require('../expected-version-error')
+const { promisify } = require('util')
 const { StreamName } = require('../stream-name')
 const { uuid } = require('../../identifier')
 
+const setImmediateP = promisify(setImmediate)
 const writeError = operationError('message-store write')
 
 module.exports.createMessageStore = ({ batchSize = 1000, log = createLog() } = {}) => {
@@ -15,6 +17,8 @@ module.exports.createMessageStore = ({ batchSize = 1000, log = createLog() } = {
   let globalPosition = 0
 
   const get = async function (streamName, position) {
+    await setImmediateP() // mimic async IO
+
     position = position || 0
 
     let subset
@@ -39,6 +43,8 @@ module.exports.createMessageStore = ({ batchSize = 1000, log = createLog() } = {
   }
 
   const getLast = async (streamName) => {
+    await setImmediateP() // mimic async IO
+
     const last = getLastSync(streamName)
 
     log.info({
@@ -64,7 +70,10 @@ module.exports.createMessageStore = ({ batchSize = 1000, log = createLog() } = {
 
   const { read } = createRead({ batchSize, get })
 
-  const put = async (...args) => putSync(...args)
+  const put = async (...args) => {
+    await setImmediateP() // mimic async IO
+    return putSync(...args)
+  }
 
   const putSync = (inputMessage, streamName, expectedVersion) => {
     const last = getLastSync(streamName)
@@ -110,7 +119,12 @@ module.exports.createMessageStore = ({ batchSize = 1000, log = createLog() } = {
     return lastPosition
   }
 
-  const write = async (msgOrBatch, streamName, expectedVersion) => {
+  const write = async (...args) => {
+    await setImmediateP() // mimic async IO
+    return writeSync(...args)
+  }
+
+  const writeSync = (msgOrBatch, streamName, expectedVersion) => {
     const originalPosition = messages.length
 
     let lastPosition
