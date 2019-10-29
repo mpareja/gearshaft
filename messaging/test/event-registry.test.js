@@ -1,11 +1,10 @@
-const createRegistry = require('../event-registry')
-const { exampleMessageClass } = require('../examples')
+const { createEventRegistry, exampleMessageClass } = require('../')
 const { exampleReadMessageData } = require('../../message-store')
 
 describe('event-registry', () => {
   describe('no message classes registered', () => {
     it('returns no handler', () => {
-      const registry = createRegistry()
+      const registry = createEventRegistry()
 
       const found = registry.get(exampleReadMessageData())
 
@@ -14,7 +13,7 @@ describe('event-registry', () => {
   })
 
   describe('single message class registered', () => {
-    const registry = createRegistry()
+    const registry = createEventRegistry()
     const Class = exampleMessageClass()
     const handler = () => {}
     const messageData = exampleReadMessageData(Class)
@@ -44,7 +43,7 @@ describe('event-registry', () => {
   })
 
   describe('multiple message classes regsitered', () => {
-    const registry = createRegistry()
+    const registry = createEventRegistry()
     const Class1 = exampleMessageClass()
     const Class2 = exampleMessageClass()
     const handler1 = () => {}

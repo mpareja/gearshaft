@@ -1,4 +1,4 @@
-module.exports = () => {
+module.exports.createEventRegistry = () => {
   const handlers = []
 
   const register = (messageClass, handler) => {

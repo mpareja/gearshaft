@@ -1,6 +1,5 @@
 const assert = require('assert')
-const createRegistry = require('../messaging/event-registry')
-const { fromReadMessageData } = require('../messaging')
+const { createEventRegistry, fromReadMessageData } = require('../messaging')
 const { StreamName } = require('../message-store')
 
 const m = (msg) => `entity-store create: ${msg}`
@@ -15,7 +14,7 @@ module.exports = (options) => {
     registerHandlers
   } = options
 
-  const registry = createRegistry()
+  const registry = createEventRegistry()
   registerHandlers(registry.register)
 
   const fetch = async (id) => {
