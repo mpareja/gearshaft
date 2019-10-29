@@ -1,9 +1,6 @@
 const createEntityStore = require('../entity-store')
-const {
-  exampleCategory,
-  exampleMessageStore,
-  ExampleEntityClass
-} = require('../examples')
+const { exampleCategory, exampleMessageStore } = require('../../message-store')
+const { ExampleEntityClass } = require('../../entity-projection')
 
 describe('entity-store', () => {
   describe('create', () => {

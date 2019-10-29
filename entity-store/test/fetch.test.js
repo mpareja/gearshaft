@@ -1,4 +1,4 @@
-const { exampleMessageStore } = require('../examples')
+const { exampleMessageStore } = require('../../message-store')
 const { generateEntityStoreSuite } = require('./fetch-test-suite')
 
 generateEntityStoreSuite({
