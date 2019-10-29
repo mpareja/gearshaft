@@ -17,7 +17,7 @@ exports.createConsumerHandlerRegistry = ({ name, log, registerHandlers, strict }
     const { id, streamName, type } = messageData
     const meta = { consumerName: name, messageId: id, messageType: type, streamName }
 
-    const { handler, messageClass } = registry.get(messageData)
+    const { handler, messageClass } = registry.get(type)
 
     if (handler) {
       log.debug({ ...meta, payload: messageData }, `${name} consumer: start dispatching ${type} message`)

@@ -5,10 +5,9 @@ module.exports.createEventRegistry = () => {
     handlers.push([messageClass, handler])
   }
 
-  const get = (messageData) => {
-    const { type } = messageData
+  const get = (className) => {
     const found = handlers
-      .filter(([aClass]) => aClass.name === type)[0] || []
+      .filter(([aClass]) => aClass.name === className)[0] || []
 
     const [messageClass, handler] = found
 
