@@ -4,7 +4,7 @@ const { StreamName } = require('../message-store')
 
 const m = (msg) => `entity-store create: ${msg}`
 
-module.exports = (options) => {
+exports.createEntityStore = (options) => {
   validateOptions(options)
 
   const {

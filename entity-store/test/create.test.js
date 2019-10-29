@@ -1,4 +1,4 @@
-const createEntityStore = require('../entity-store')
+const { createEntityStore } = require('../entity-store')
 const { exampleCategory, exampleMessageStore } = require('../../message-store')
 const { ExampleEntityClass } = require('../../entity-projection')
 

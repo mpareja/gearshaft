@@ -1,1 +1,3 @@
-module.exports = require('./entity-store')
+module.exports = {
+  ...require('./entity-store')
+}

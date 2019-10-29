@@ -1,5 +1,5 @@
-const createEntityStore = require('../entity-store')
 const createLog = require('../../test/test-log')
+const { createEntityStore } = require('../entity-store')
 const { createWriter } = require('../../messaging')
 const { exampleCategory, exampleStreamName, StreamName } = require('../../message-store')
 const { ExampleEntityClass, ExampleEntityProjection } = require('../../entity-projection')
