@@ -2,21 +2,12 @@ const createEntityStore = require('../entity-store')
 const createLog = require('../../test/test-log')
 const { createWriter } = require('../../messaging')
 const { exampleCategory, exampleStreamName, StreamName } = require('../../message-store')
-const { ExampleEntityClass } = require('../../entity-projection')
-const { exampleMessage, exampleMessageClass } = require('../../messaging')
+const { ExampleEntityClass, ExampleEntityProjection } = require('../../entity-projection')
+const { exampleMessage } = require('../../messaging')
 
 const A_CATEGORY = exampleCategory()
-const MessageClassA = exampleMessageClass()
-const MessageClassB = exampleMessageClass()
-
-const registerHandlers = (register) => {
-  register(MessageClassA, (entity, input) => {
-    entity.methodA(input)
-  })
-  register(MessageClassB, (entity, input) => {
-    entity.methodB(input)
-  })
-}
+const MessageClassA = ExampleEntityProjection.MessageClassA
+const MessageClassB = ExampleEntityProjection.MessageClassB
 
 module.exports.generateEntityStoreSuite = ({
   suiteName,
@@ -34,7 +25,7 @@ module.exports.generateEntityStoreSuite = ({
           category: A_CATEGORY,
           entity: ExampleEntityClass,
           messageStore,
-          registerHandlers
+          projection: ExampleEntityProjection
         }
         entityStore = createEntityStore(options)
       })

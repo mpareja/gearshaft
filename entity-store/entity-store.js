@@ -11,11 +11,11 @@ module.exports = (options) => {
     category,
     entity: EntityClass,
     messageStore,
-    registerHandlers
+    projection
   } = options
 
   const registry = createEventRegistry()
-  registerHandlers(registry.register)
+  projection.registerHandlers(registry.register)
 
   const fetch = async (id) => {
     const entity = new EntityClass()
@@ -40,7 +40,8 @@ function validateOptions (options) {
   assert(typeof options === 'object', m('options object required'))
   assert(typeof options.category === 'string', m('category required'))
   assert(typeof options.entity === 'function', m('entity required'))
-  assert(typeof options.registerHandlers === 'function', m('registerHandlers required'))
+  assert(typeof options.projection === 'object', m('projection required'))
+  assert(typeof options.projection.registerHandlers === 'function', m('projection required'))
   assert(options.messageStore, m('messageStore required'))
   assert(typeof options.messageStore.read === 'function', m('messageStore missing read'))
 }

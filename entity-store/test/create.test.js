@@ -10,7 +10,7 @@ describe('entity-store', () => {
         category: exampleCategory(),
         entity: ExampleEntityClass,
         messageStore: exampleMessageStore(),
-        registerHandlers: jest.fn()
+        projection: { registerHandlers: jest.fn() }
       }
     })
 
@@ -19,9 +19,9 @@ describe('entity-store', () => {
       expect(entityStore).toBeDefined()
     })
 
-    it('calls registerHandlers with registry', () => {
+    it('calls projection.registerHandlers with registry', () => {
       createEntityStore(options)
-      expect(options.registerHandlers).toHaveBeenCalledWith(
+      expect(options.projection.registerHandlers).toHaveBeenCalledWith(
         expect.any(Function)
       )
     })
@@ -47,11 +47,18 @@ describe('entity-store', () => {
         }).toThrow(new Error('entity-store create: entity required'))
       })
 
-      it('no registerHandlers function provided', () => {
-        delete options.registerHandlers
+      it('no projection provided', () => {
+        delete options.projection
         expect(() => {
           createEntityStore(options)
-        }).toThrow(new Error('entity-store create: registerHandlers required'))
+        }).toThrow(new Error('entity-store create: projection required'))
+      })
+
+      it('invalid projection provided', () => {
+        delete options.projection.registerHandlers
+        expect(() => {
+          createEntityStore(options)
+        }).toThrow(new Error('entity-store create: projection required'))
       })
 
       it('no message store provided', () => {
