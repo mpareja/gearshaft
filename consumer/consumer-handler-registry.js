@@ -13,6 +13,7 @@ exports.createConsumerHandlerRegistry = ({ name, log, registerHandlers, strict }
   }
 
   const handle = async (messageData) => {
+    const start = process.hrtime.bigint()
     const { id, streamName, type } = messageData
     const meta = { consumerName: name, messageId: id, messageType: type, streamName }
 
@@ -25,20 +26,23 @@ exports.createConsumerHandlerRegistry = ({ name, log, registerHandlers, strict }
 
       try {
         await handler(message)
+        meta.duration = Number(process.hrtime.bigint() - start)
       } catch (inner) {
+        meta.duration = Number(process.hrtime.bigint() - start)
+
         const message = `${messageData.type} handler raised an error`
         const error = consumerError(message, inner)
         log.error({ ...meta, err: inner }, `${name} consumer: ${message}`)
         throw error
       }
 
-      log.info(meta, `${name} consumer: dispatched ${type} message`)
+      log.info(meta, `${name} consumer: ${type} message handled`)
     } else {
       if (strict) {
         throw consumerError(`${messageData.type} handler not found for strict consumer ${name}`)
       }
 
-      log.info(meta, `${name} consumer: ignored ${type} message`)
+      log.info(meta, `${name} consumer: ${type} message ignored`)
     }
   }
 

@@ -61,8 +61,9 @@ describe('consumer-handler-registry', () => {
           consumerName: 'MyConsumer',
           messageId: messageData.id,
           messageType: 'HandledMessageClass',
-          streamName: messageData.streamName
-        }, 'MyConsumer consumer: dispatched HandledMessageClass message')
+          streamName: messageData.streamName,
+          duration: expect.any(Number)
+        }, 'MyConsumer consumer: HandledMessageClass message handled')
       })
     })
 
@@ -86,7 +87,7 @@ describe('consumer-handler-registry', () => {
             messageId: messageData.id,
             messageType: 'UnhandledMessageClass',
             streamName: messageData.streamName
-          }, 'MyConsumer consumer: ignored UnhandledMessageClass message')
+          }, 'MyConsumer consumer: UnhandledMessageClass message ignored')
         })
       })
 
@@ -105,7 +106,7 @@ describe('consumer-handler-registry', () => {
 
     describe('given handler throws an error', () => {
       it('propagates the error with additional information', async () => {
-        const { registry } = setup()
+        const { log, registry } = setup()
 
         const ErrorMessageClass = exampleMessageClass('ErrorMessageClass')
         const messageData = exampleReadMessageData(ErrorMessageClass)
@@ -115,12 +116,22 @@ describe('consumer-handler-registry', () => {
           throw error
         })
 
-        const promise = registry.handle(messageData)
+        const foundError = await registry.handle(messageData).catch(err => err)
 
-        await expect(promise).rejects.toThrow('MyConsumer consumer: ErrorMessageClass handler raised an error')
-        await expect(promise).rejects.toMatchObject({
+        expect(foundError).toEqual(new Error('MyConsumer consumer: ErrorMessageClass handler raised an error'))
+        expect(foundError).toMatchObject({
+          message: 'MyConsumer consumer: ErrorMessageClass handler raised an error',
           inner: error
         })
+
+        expect(log.error).toHaveBeenCalledWith({
+          consumerName: 'MyConsumer',
+          duration: expect.any(Number),
+          err: error,
+          messageId: messageData.id,
+          messageType: 'ErrorMessageClass',
+          streamName: messageData.streamName
+        }, 'MyConsumer consumer: ErrorMessageClass handler raised an error')
       })
     })
   })
