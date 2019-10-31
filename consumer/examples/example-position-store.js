@@ -1,5 +1,5 @@
 const { createPositionStore } = require('../position-store')
-const { exampleMessageStore, exampleStreamName } = require('../../message-store/examples')
+const { exampleMessageStore, exampleStreamName } = require('../../message-store')
 
 exports.examplePositionStore = ({ messageStore, streamName, ...args } = {}) => {
   streamName = streamName || exampleStreamName()
