@@ -1,7 +1,7 @@
 const { AssertionError } = require('assert')
 const { createWriterSubstitute } = require('../../write/substitute')
 const { exampleMessage } = require('../../../messaging/examples')
-const { ExpectedVersionError } = require('../../../message-store')
+const { ExpectedVersionError, exampleMessageStore } = require('../../../message-store')
 
 const WRITTEN_STREAM_NAME = 'SomeStream'
 const WRITTEN_EXPECTED_VERSION = -1
@@ -344,6 +344,17 @@ describe('write-substitute', () => {
         expect(assertions[0]).toEqual(WRITTEN_MESSAGE_2)
       })
     })
+  })
+
+  it('uses provided message store', async () => {
+    const messageStore = exampleMessageStore()
+    const write = createWriterSubstitute(messageStore)
+
+    await write(WRITTEN_MESSAGE, WRITTEN_STREAM_NAME)
+
+    const found = await messageStore.getLast(WRITTEN_STREAM_NAME)
+
+    expect(found.id).toBe(WRITTEN_MESSAGE.id)
   })
 
   const asyncCatchError = async (fn) => {

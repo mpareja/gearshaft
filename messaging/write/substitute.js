@@ -3,9 +3,9 @@ const { createWriter } = require('../write')
 const { ExpectedVersionError } = require('../../message-store')
 const { createMessageStore } = require('../../message-store/memory')
 
-exports.createWriterSubstitute = () => {
+exports.createWriterSubstitute = (messageStore) => {
+  messageStore = messageStore || createMessageStore()
   const calls = []
-  const messageStore = createMessageStore()
   const write = createWriter({ messageStore })
 
   write.assertOnlyWrite = (...args) => {
