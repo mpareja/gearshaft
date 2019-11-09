@@ -1,6 +1,6 @@
 {
   "name": "gearshaft",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "",
   "main": "index.js",
   "private": false,
@@ -56,12 +56,12 @@
     "uuid-validate": "0.0.3"
   },
   "devDependencies": {
-    "dependency-cruiser": "^5.2.2",
+    "dependency-cruiser": "^5.2.3",
     "husky": "^3.0.9",
     "jest": "^24.9.0",
     "js-joda": "^1.11.0",
     "opener": "^1.5.1",
-    "pino": "^5.13.5",
+    "pino": "^5.13.6",
     "rc": "^1.2.8",
     "rimraf": "^3.0.0",
     "standard": "^14.3.1",
