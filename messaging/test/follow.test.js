@@ -73,6 +73,24 @@ describe('follow', () => {
     })
   })
 
+  describe('message class with create method', () => {
+    const SomeClassWithCreate = class {}
+    SomeClassWithCreate.create = () => {
+      return new SomeClassWithCreate()
+    }
+
+    const previous = exampleMessage()
+    const next = follow(previous, SomeClassWithCreate)
+
+    it('no fields are copied', () => {
+      expect(next.someAttribute).toBeUndefined()
+    })
+
+    it('returns the created message instance', () => {
+      expect(next).toBeInstanceOf(SomeClassWithCreate)
+    })
+  })
+
   describe('message with no metadata', () => {
     it('followed messages has new metadata ', () => {
       const previous = exampleMessage()

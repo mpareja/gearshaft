@@ -3,8 +3,14 @@ const { Metadata } = require('./metadata')
 
 exports.follow = (previous, ClassOfNext) => {
   const data = cloneDeep(previous)
-  const next = new ClassOfNext()
-  Object.assign(next, data)
+
+  let next
+  if (ClassOfNext.create) {
+    next = ClassOfNext.create(data)
+  } else {
+    next = new ClassOfNext()
+    Object.assign(next, data)
+  }
 
   next.id = null
 
