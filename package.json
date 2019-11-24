@@ -52,19 +52,19 @@
   "license": "MIT",
   "dependencies": {
     "lodash.clonedeep": "^4.5.0",
-    "pg": "^7.12.1",
+    "pg": "^7.14.0",
     "uuid-validate": "0.0.3"
   },
   "devDependencies": {
-    "dependency-cruiser": "^5.2.3",
-    "husky": "^3.0.9",
+    "dependency-cruiser": "^5.3.2",
+    "husky": "^3.1.0",
     "jest": "^24.9.0",
     "js-joda": "^1.11.0",
     "opener": "^1.5.1",
-    "pino": "^5.13.6",
+    "pino": "^5.14.0",
     "rc": "^1.2.8",
     "rimraf": "^3.0.0",
     "standard": "^14.3.1",
-    "systeminformation": "^4.14.17"
+    "systeminformation": "^4.15.3"
   }
 }
