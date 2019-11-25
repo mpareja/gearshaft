@@ -6,6 +6,12 @@ const {
 } = require('../examples')
 
 class SomeMessage {}
+class SomeClassWithCreate {}
+SomeClassWithCreate.create = (fields) => {
+  const instance = new SomeClassWithCreate()
+  instance.fields = fields
+  return instance
+}
 
 describe('follow', () => {
   describe('metadata', () => {
@@ -74,11 +80,6 @@ describe('follow', () => {
   })
 
   describe('message class with create method', () => {
-    const SomeClassWithCreate = class {}
-    SomeClassWithCreate.create = () => {
-      return new SomeClassWithCreate()
-    }
-
     const previous = exampleMessage()
     const next = follow(previous, SomeClassWithCreate)
 
@@ -86,8 +87,34 @@ describe('follow', () => {
       expect(next.someAttribute).toBeUndefined()
     })
 
+    it('fields are supplied to create method', () => {
+      expect(next.fields).toEqual(previous)
+    })
+
     it('returns the created message instance', () => {
       expect(next).toBeInstanceOf(SomeClassWithCreate)
+    })
+  })
+
+  describe('additional fields', () => {
+    describe('message class has no create method', () => {
+      it('includes additional field', () => {
+        const previous = exampleMessage()
+        const additional = exampleRandomValue()
+        const next = follow(previous, SomeMessage, { additional })
+
+        expect(next.additional).toEqual(additional)
+      })
+    })
+
+    describe('message class has create method', () => {
+      it('includes additional field', () => {
+        const previous = exampleMessage()
+        const additional = exampleRandomValue()
+        const next = follow(previous, SomeClassWithCreate, { additional })
+
+        expect(next.fields.additional).toEqual(additional)
+      })
     })
   })
 

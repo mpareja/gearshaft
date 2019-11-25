@@ -1,8 +1,8 @@
 const cloneDeep = require('lodash.clonedeep')
 const { Metadata } = require('./metadata')
 
-exports.follow = (previous, ClassOfNext) => {
-  const data = cloneDeep(previous)
+exports.follow = (previous, ClassOfNext, additionalFields) => {
+  const data = Object.assign(cloneDeep(previous), additionalFields)
 
   let next
   if (ClassOfNext.create) {
