@@ -41,44 +41,44 @@ module.exports.generateEntityStoreSuite = ({
       })
 
       describe('stream does not exist', () => {
-        let result
+        let entity
         beforeEach(async () => {
-          result = await entityStore.fetch('unknown-id')
+          entity = await entityStore.fetch('unknown-id')
         })
 
         it('returns instance of entity class', async () => {
-          expect(result).toBeInstanceOf(ExampleEntityClass)
+          expect(entity).toBeInstanceOf(ExampleEntityClass)
         })
 
         it('returns entity with no messages applied', async () => {
-          expect(result.someMessagesApplied).toBe(false)
+          expect(entity.someMessagesApplied).toBe(false)
         })
       })
 
       describe('single message in message store', () => {
-        let message, result
+        let message, entity
         beforeEach(async () => {
           message = exampleMessage(MessageClassA)
           const streamName = exampleStreamName(A_CATEGORY)
           const id = StreamName.getId(streamName)
           await write(message, streamName)
 
-          result = await entityStore.fetch(id)
+          entity = await entityStore.fetch(id)
         })
 
         it('a single message is applied', () => {
-          expect(result.applied).toHaveLength(1)
+          expect(entity.applied).toHaveLength(1)
         })
 
         it('message is applied to correct handler', async () => {
-          expect(result.applied).toEqual([
+          expect(entity.applied).toEqual([
             { method: 'methodA', id: message.id }
           ])
         })
       })
 
       describe('two messages in message store', () => {
-        let messageA, messageB, result
+        let messageA, messageB, entity
         beforeEach(async () => {
           messageA = exampleMessage(MessageClassA)
           messageB = exampleMessage(MessageClassB)
@@ -86,11 +86,11 @@ module.exports.generateEntityStoreSuite = ({
           const id = StreamName.getId(streamName)
           await write([messageB, messageA], streamName)
 
-          result = await entityStore.fetch(id)
+          entity = await entityStore.fetch(id)
         })
 
         it('both messages applied to correct handler in order', () => {
-          expect(result.applied).toEqual([
+          expect(entity.applied).toEqual([
             { method: 'methodB', id: messageB.id },
             { method: 'methodA', id: messageA.id }
           ])
@@ -131,9 +131,9 @@ module.exports.generateEntityStoreSuite = ({
           const id = StreamName.getId(streamName)
           await write(message, streamName)
 
-          const result = await entityStore.fetch(id)
+          const entity = await entityStore.fetch(id)
 
-          expect(result.applied).toHaveLength(0)
+          expect(entity.applied).toHaveLength(0)
         })
       })
     })
