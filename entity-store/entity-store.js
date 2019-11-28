@@ -17,11 +17,14 @@ exports.createEntityStore = (options) => {
   const registry = createEventRegistry()
   projection.registerHandlers(registry.register)
 
-  const fetch = async (id) => {
+  const fetchRecord = async (id) => {
     const entity = new EntityClass()
     const streamName = StreamName.create(category, id)
+    const recordMetadata = {}
     for await (const messageData of messageStore.read(streamName)) {
       const { handler, messageClass } = registry.get(messageData.type)
+
+      recordMetadata.version = messageData.position
 
       if (!handler) { continue }
 
@@ -30,10 +33,15 @@ exports.createEntityStore = (options) => {
       handler(entity, message)
     }
 
+    return [entity, recordMetadata]
+  }
+
+  const fetch = async (id) => {
+    const [entity] = await fetchRecord(id)
     return entity
   }
 
-  return { fetch }
+  return { fetch, fetchRecord }
 }
 
 function validateOptions (options) {

@@ -124,6 +124,20 @@ module.exports.generateEntityStoreSuite = ({
         })
       })
 
+      describe('fetchRecord', () => {
+        it('returns entity with version', async () => {
+          const message = exampleMessage(MessageClassA)
+          const streamName = exampleStreamName(A_CATEGORY)
+          const id = StreamName.getId(streamName)
+          const position = await write(message, streamName)
+
+          const [entity, { version }] = await entityStore.fetchRecord(id)
+
+          expect(entity.applied).toHaveLength(1)
+          expect(version).toEqual(position)
+        })
+      })
+
       describe('handler not registered for message', () => {
         it('ignores message', async () => {
           const message = exampleMessage()
