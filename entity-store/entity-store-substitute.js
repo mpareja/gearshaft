@@ -2,7 +2,7 @@ exports.createEntityStoreSubstitute = ({ entity: EntityClass }) => {
   const records = {}
 
   const add = (id, entity, version) => {
-    records[id] = { entity, version }
+    records[id] = { entity, metadata: { version } }
   }
 
   const fetch = async (id) => {
@@ -11,9 +11,9 @@ exports.createEntityStoreSubstitute = ({ entity: EntityClass }) => {
   }
 
   const fetchRecord = async (id) => {
-    const record = records[id] || { entity: new EntityClass() }
+    const record = records[id] || { entity: new EntityClass(), metadata: {} }
 
-    return [record.entity, record]
+    return [record.entity, record.metadata]
   }
 
   return { add, fetch, fetchRecord }
