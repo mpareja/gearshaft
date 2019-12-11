@@ -1,7 +1,7 @@
 const { AssertionError } = require('assert')
 const { createWriterSubstitute } = require('../../write/substitute')
 const { exampleMessage } = require('../../../messaging/examples')
-const { ExpectedVersionError, exampleMessageStore } = require('../../../message-store')
+const { ExpectedVersionError, exampleMessageStore, exampleStreamName } = require('../../../message-store')
 
 const WRITTEN_STREAM_NAME = 'SomeStream'
 const WRITTEN_EXPECTED_VERSION = -1
@@ -23,6 +23,57 @@ const catchError = (fn) => {
 }
 
 describe('write-substitute', () => {
+  describe('assertNoWrites', () => {
+    describe('given no writes on any streams', () => {
+      it('no error is thrown', async () => {
+        const write = createWriterSubstitute()
+
+        const error = catchError(() => write.assertNoWrites())
+
+        expect(error).not.toBeDefined()
+      })
+    })
+
+    describe('given writes to a stream', () => {
+      it('throws an error', async () => {
+        const write = await setupWrite()
+
+        const error = catchError(() => write.assertNoWrites())
+
+        expect(error).toBeDefined()
+        expect(error).toBeInstanceOf(AssertionError)
+        expect(error.message).toBe('Expected 0 writes to any streams')
+        expect(error.expected).toBe(0)
+        expect(error.actual).toBe(1)
+      })
+    })
+
+    describe('given writes to unrelated stream but no writes to specified stream', () => {
+      it('no error is thrown', async () => {
+        const write = await setupWrite()
+        const unrelatedStreamName = exampleStreamName()
+
+        const error = catchError(() => write.assertNoWrites(unrelatedStreamName))
+
+        expect(error).not.toBeDefined()
+      })
+    })
+
+    describe('given writes to the specified stream', () => {
+      it('no error is thrown', async () => {
+        const write = await setupWrite()
+
+        const error = catchError(() => write.assertNoWrites(WRITTEN_STREAM_NAME))
+
+        expect(error).toBeDefined()
+        expect(error).toBeInstanceOf(AssertionError)
+        expect(error.message).toBe('Expected exactly 0 writes to stream "SomeStream"')
+        expect(error.expected).toBe(0)
+        expect(error.actual).toBe(1)
+      })
+    })
+  })
+
   describe('assertOnlyWrite', () => {
     describe('given no writes', () => {
       it('throws an error', () => {

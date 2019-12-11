@@ -8,6 +8,15 @@ exports.createWriterSubstitute = (messageStore) => {
   const calls = []
   const write = createWriter({ messageStore })
 
+  write.assertNoWrites = (expectedStreamName) => {
+    if (expectedStreamName) {
+      assertStreamWrites(write.assertNoWrites, expectedStreamName, [])
+    } else {
+      assertEqual(calls.length, 0, write.assertNoWrites,
+        'Expected 0 writes to any streams')
+    }
+  }
+
   write.assertOnlyWrite = (...args) => {
     return assertOnlyWrite(write.assertOnlyWrite, ...args)
   }
