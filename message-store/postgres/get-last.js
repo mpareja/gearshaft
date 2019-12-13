@@ -37,7 +37,7 @@ module.exports = ({ db, log }) => {
     const values = [streamName]
     const parameters = '$1::varchar'
 
-    const sql = `SELECT * FROM get_last_message(${parameters});`
+    const sql = `SELECT * FROM get_last_stream_message(${parameters});`
 
     const results = await db.query(sql, values)
     return results.rows

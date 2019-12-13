@@ -1,5 +1,7 @@
 # Gearshaft
 
+**Status: Pre-Release**
+
 An Event Sourcing toolkit for Node.js based on the [Eventide project](https://eventide-project.org) for Ruby.
 
 ## Development
@@ -33,19 +35,11 @@ docker rm -fv pg
 
 ### Provisioning Message Store Database
 
-1. Install Ruby & RubyGems
-
-2. Install the Postgres client (psql)
+1. Install the Postgres client (psql)
 
    Ubuntu: `sudo apt install postgresql-client`
 
-3. Install the database gem by navigating to the Gearshaft project root and running: 
-
-   ```
-   gem install evt-message_store-postgres-database --install-dir ./gems
-   ```
-
-4. (Re)create the message store database and user credentials
+2. (Re)create the message store database and user credentials
 
    If you are using the default (compromised) credentials, simply run: `npm run recreate`; otherwise, customize the following commands as necessary:
 

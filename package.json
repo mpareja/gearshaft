@@ -14,7 +14,11 @@
     "dep-graph": "export OUTPUT=$(mktemp).svg; depcruise --exclude '(node_modules|^test|/test/|^util$|^events$|^crypto$|^assert$|examples|^errors/operation-error.js$)' --max-depth 1 --output-type dot . | dot -T svg > $OUTPUT && x-www-browser \"file://$OUTPUT\"",
     "jest": "jest ${JEST_CI_ENV:-'--notify'}",
     "lint": "standard -v",
-    "recreate": "export PGHOST=localhost PGUSER=postgres PGPASSWORD=NInAN5t3kJo8d7I3 && ./gems/bin/evt-pg-recreate-db && psql -c \"alter role message_store with password 'NInAN5t3kJo8d7I3';\"",
+    "recreate": "export PGHOST=localhost PGUSER=postgres PGPASSWORD=NInAN5t3kJo8d7I3 && npm run recreate-cmd",
+    "recreate-cmd": "npm run mdb-uninstall ; npm run mdb-install && npm run mdb-passwd",
+    "mdb-uninstall": "./node_modules/@eventide/message-db/database/uninstall.sh",
+    "mdb-install": "./node_modules/@eventide/message-db/database/install.sh",
+    "mdb-passwd": "psql -c \"alter role message_store with password 'NInAN5t3kJo8d7I3';\"",
     "test": "npm run clean && npm run lint && npm run jest"
   },
   "husky": {
@@ -56,6 +60,7 @@
     "uuid-validate": "0.0.3"
   },
   "devDependencies": {
+    "@eventide/message-db": "^1.1.0",
     "dependency-cruiser": "^6.0.0",
     "husky": "^3.1.0",
     "jest": "^24.9.0",
