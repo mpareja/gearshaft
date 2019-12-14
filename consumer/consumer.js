@@ -70,7 +70,7 @@ exports.createConsumer = ({
       prefix('error reading from stream'),
       prefix('reading from stream succeeded after encountering errors'),
       async (...args) => {
-        return messageStore.get(...args)
+        return messageStore.getCategory(...args)
       }
     )
 

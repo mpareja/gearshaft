@@ -114,8 +114,8 @@ describe('given a slow message handler', () => {
   it('continue fetching batches until the highwater mark', async () => {
     const handler = exampleHandlerBlocking()
     const messageStore = exampleMessageStore({ batchSize: 2 })
-    const get = messageStore.get
-    messageStore.get = jest.fn((...args) => get(...args))
+    const getCategory = messageStore.getCategory
+    messageStore.getCategory = jest.fn((...args) => getCategory(...args))
 
     const { consumer, category } = setupConsumerWithHandler({
       handler,
@@ -129,7 +129,7 @@ describe('given a slow message handler', () => {
 
     const runner = consumer.start()
 
-    while (messageStore.get.mock.calls.length < 3) {
+    while (messageStore.getCategory.mock.calls.length < 3) {
       await setImmediateP()
     }
 
@@ -137,7 +137,7 @@ describe('given a slow message handler', () => {
 
     await runner.stop()
 
-    expect(messageStore.get).toHaveBeenCalledTimes(3)
+    expect(messageStore.getCategory).toHaveBeenCalledTimes(3)
   })
 })
 
@@ -206,9 +206,9 @@ describe('given an error while fetching messages', () => {
   const setupFetchError = async (opts) => {
     const scenario = await setupConsumerWithHandler(opts)
     const { consumer, messageStore } = scenario
-    messageStore.get = jest.fn(async () => {
+    messageStore.getCategory = jest.fn(async () => {
       await setImmediateP()
-      throw new Error('get error')
+      throw new Error('getCategory error')
     })
 
     const runner = consumer.start()
@@ -218,7 +218,7 @@ describe('given an error while fetching messages', () => {
   it('retries the fetch', async () => {
     const { runner, messageStore } = await setupFetchError()
 
-    while (messageStore.get.mock.calls.length < 2) {
+    while (messageStore.getCategory.mock.calls.length < 2) {
       await setImmediateP()
     }
 
@@ -230,7 +230,7 @@ describe('given an error while fetching messages', () => {
       name: 'MyConsumer'
     })
 
-    while (messageStore.get.mock.calls.length < 1) {
+    while (messageStore.getCategory.mock.calls.length < 1) {
       await setImmediateP()
     }
 
@@ -238,7 +238,7 @@ describe('given an error while fetching messages', () => {
 
     expect(log.error).toHaveBeenCalledWith({
       category,
-      err: new Error('get error'),
+      err: new Error('getCategory error'),
       errorCount: 1
     }, 'MyConsumer consumer: error reading from stream')
   })
