@@ -1,4 +1,4 @@
-const { assertStrictEqual } = require('../../errors/assert-strict-equal')
+const { assertStrictEqual } = require('../../errors')
 const { createMessageStore } = require('../../message-store/memory')
 const { createWriter } = require('../write')
 const { ExpectedVersionError } = require('../../message-store')

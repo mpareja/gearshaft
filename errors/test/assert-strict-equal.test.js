@@ -1,5 +1,5 @@
 const { AssertionError } = require('assert')
-const { assertStrictEqual } = require('../assert-strict-equal')
+const { assertStrictEqual } = require('../')
 const { catchError } = require('../catch-error')
 
 describe('assertStrictEqual', () => {
