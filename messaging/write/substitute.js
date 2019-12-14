@@ -1,7 +1,7 @@
-const { AssertionError } = require('assert')
+const { assertStrictEqual } = require('../../errors/assert-strict-equal')
+const { createMessageStore } = require('../../message-store/memory')
 const { createWriter } = require('../write')
 const { ExpectedVersionError } = require('../../message-store')
-const { createMessageStore } = require('../../message-store/memory')
 
 exports.createWriterSubstitute = (messageStore) => {
   messageStore = messageStore || createMessageStore()
@@ -12,7 +12,7 @@ exports.createWriterSubstitute = (messageStore) => {
     if (expectedStreamName) {
       assertStreamWrites(write.assertNoWrites, expectedStreamName, [])
     } else {
-      assertEqual(calls.length, 0, write.assertNoWrites,
+      assertStrictEqual(calls.length, 0, write.assertNoWrites,
         'Expected 0 writes to any streams')
     }
   }
@@ -29,17 +29,6 @@ exports.createWriterSubstitute = (messageStore) => {
     return assertStreamWrites(write.assertStreamWrites, ...args)
   }
 
-  const assertEqual = (actual, expected, stackStartFn, message) => {
-    if (actual !== expected) {
-      throw new AssertionError({
-        message,
-        expected,
-        actual,
-        stackStartFn
-      })
-    }
-  }
-
   const assertStreamWrites = (assertFn, expectedStreamName, expectedExpectedVersion, assertions) => {
     const streamCalls = calls.filter(c => c.streamName === expectedStreamName)
     if (Array.isArray(expectedExpectedVersion)) {
@@ -49,7 +38,7 @@ exports.createWriterSubstitute = (messageStore) => {
 
     if (typeof expectedExpectedVersion === 'number') {
       const { expectedVersion } = streamCalls[0]
-      assertEqual(expectedVersion, expectedExpectedVersion, assertFn,
+      assertStrictEqual(expectedVersion, expectedExpectedVersion, assertFn,
         `Expected write to stream "${expectedStreamName}" with expectedVersion of ${expectedExpectedVersion}`)
     }
 
@@ -65,16 +54,16 @@ exports.createWriterSubstitute = (messageStore) => {
     const msg = assertions.length === 1
       ? `Expected exactly ${assertions.length} write to stream "${expectedStreamName}"`
       : `Expected exactly ${assertions.length} writes to stream "${expectedStreamName}"`
-    assertEqual(streamCalls.length, assertions.length, assertFn, msg)
+    assertStrictEqual(streamCalls.length, assertions.length, assertFn, msg)
   }
 
   const assertOnlyWrite = (assertFn, expectedStreamName, expectedExpectedVersion, assertions) => {
-    assertEqual(calls.length, 1, assertFn,
+    assertStrictEqual(calls.length, 1, assertFn,
       `Expected exactly 1 write to stream "${expectedStreamName}"`)
 
     const { streamName, expectedVersion, message } = calls[0]
 
-    assertEqual(streamName, expectedStreamName, assertFn,
+    assertStrictEqual(streamName, expectedStreamName, assertFn,
         `Expected exactly 1 write to stream "${expectedStreamName}"`)
 
     if (typeof expectedExpectedVersion === 'function') {
@@ -83,7 +72,7 @@ exports.createWriterSubstitute = (messageStore) => {
     }
 
     if (typeof expectedExpectedVersion === 'number') {
-      assertEqual(expectedVersion, expectedExpectedVersion, assertFn,
+      assertStrictEqual(expectedVersion, expectedExpectedVersion, assertFn,
         `Expected write to stream "${expectedStreamName}" with expectedVersion of ${expectedExpectedVersion}`)
     }
 
