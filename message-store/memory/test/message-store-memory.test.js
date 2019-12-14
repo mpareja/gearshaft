@@ -1,6 +1,8 @@
 const createLog = require('../../../test/test-log')
 const { createMessageStore } = require('../index')
+const { generateGetCategorySuite } = require('../../test/get-category-test-suite')
 const { generateGetLastSuite } = require('../../test/get-last-test-suite')
+const { generateGetStreamSuite } = require('../../test/get-stream-test-suite')
 const { generateGetSuite } = require('../../test/get-test-suite')
 const { generatePutSuite } = require('../../test/put-test-suite')
 const { generateReadSuite } = require('../../test/read-test-suite')
@@ -11,7 +13,9 @@ const {
 } = require('../../examples')
 
 describe('message-store-memory', () => {
+  generateGetCategorySuite({ createMessageStore })
   generateGetLastSuite({ createMessageStore })
+  generateGetStreamSuite({ createMessageStore })
   generateGetSuite({ createMessageStore })
   generatePutSuite({ createMessageStore })
   generateReadSuite({ createMessageStore })

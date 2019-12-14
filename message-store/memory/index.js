@@ -2,6 +2,7 @@ const createRead = require('../read')
 const cloneDeep = require('lodash.clonedeep')
 const operationError = require('../../errors/operation-error')
 const uuidValidate = require('uuid-validate')
+const { assertTruthy } = require('../../errors')
 const { createLog } = require('../../logging')
 const { ExpectedVersionError } = require('../expected-version-error')
 const { promisify } = require('util')
@@ -40,6 +41,20 @@ module.exports.createMessageStore = ({ batchSize = 1000, log = createLog() } = {
       'message-store get: successful')
 
     return subset
+  }
+
+  const getCategory = async (category, position) => {
+    assertTruthy(StreamName.isCategory(category), getCategory,
+      `stream category required, not a specific stream (${category})`)
+
+    return get(category, position)
+  }
+
+  const getStream = async (streamName, position) => {
+    assertTruthy(!StreamName.isCategory(streamName), get,
+      `stream required, not a category (${streamName})`)
+
+    return get(streamName, position)
   }
 
   const getLast = async (streamName) => {
@@ -155,5 +170,5 @@ module.exports.createMessageStore = ({ batchSize = 1000, log = createLog() } = {
     return lastPosition
   }
 
-  return { get, getLast, put, read, write }
+  return { get, getCategory, getLast, getStream, put, read, write }
 }
