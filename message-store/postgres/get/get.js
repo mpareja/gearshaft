@@ -1,11 +1,13 @@
 const operationError = require('../../../errors/operation-error')
 const { deserialize } = require('../deserialize')
 
-exports.createGet = ({ db, getValues, log, sql, batchSize }) => {
+exports.createGet = ({ assert, db, getValues, log, sql, batchSize }) => {
   const getError = operationError('message-store get')
 
   const get = async (streamName, position = 0) => {
     log.debug({ batchSize, position, streamName }, 'message-store get: starting')
+
+    assert(streamName)
 
     let dbResults
     try {

@@ -15,5 +15,5 @@ module.exports = ({ db, log, batchSize = 1000 }) => {
     return get(streamName, position)
   }
 
-  return { get }
+  return { get, getCategory, getStream }
 }

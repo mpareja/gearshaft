@@ -1,6 +1,8 @@
 const createTestLog = require('../../../test/test-log')
 const getConfig = require('./config')
+const { generateGetCategorySuite } = require('../../test/get-category-test-suite')
 const { generateGetLastSuite } = require('../../test/get-last-test-suite')
+const { generateGetStreamSuite } = require('../../test/get-stream-test-suite')
 const { generateGetSuite } = require('../../test/get-test-suite')
 const { generatePutSuite } = require('../../test/put-test-suite')
 const { generateReadSuite } = require('../../test/read-test-suite')
@@ -17,6 +19,8 @@ afterAll(async () => { await db.close() })
 const createMessageStore = (options) => createStore({ db, ...options })
 
 describe('message-store-postgres', () => {
+  generateGetCategorySuite({ createMessageStore })
+  generateGetStreamSuite({ createMessageStore })
   generateGetLastSuite({ createMessageStore })
   generateGetSuite({ createMessageStore })
   generatePutSuite({ createMessageStore })
