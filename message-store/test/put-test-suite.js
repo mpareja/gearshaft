@@ -2,7 +2,7 @@ const createLog = require('../../test/test-log')
 const uuidValidate = require('uuid-validate')
 const { ExpectedVersionError } = require('../expected-version-error')
 const {
-  examplePut, exampleStreamName, exampleWriteMessageData
+  examplePut, examplePutCategory, exampleStreamName, exampleWriteMessageData
 } = require('../examples')
 
 exports.generatePutSuite = ({
@@ -115,7 +115,7 @@ exports.generatePutSuite = ({
     })
 
     describe('expected version', () => {
-      describe('writing multiple messages in same category', () => {
+      describe('writing multiple messages in same stream', () => {
         it('messages are written with the expected versions', async () => {
           const streamName = exampleStreamName()
 
@@ -214,9 +214,34 @@ exports.generatePutSuite = ({
   })
 
   describe('example-put', () => {
+    describe('given no options', () => {
+      it('tracks the only message written', async () => {
+        const { messages } = await examplePut(messageStore)
+
+        expect(messages).toHaveLength(1)
+      })
+    })
+
     describe('when trackMessages is false', () => {
       it('does not track messages', async () => {
         const { messages } = await examplePut(messageStore, { trackMessages: false })
+        expect(messages).toHaveLength(0)
+      })
+    })
+  })
+
+  describe('example-put-category', () => {
+    describe('given no options', () => {
+      it('tracks the only message written', async () => {
+        const { messages } = await examplePutCategory(messageStore)
+
+        expect(messages).toHaveLength(1)
+      })
+    })
+
+    describe('when trackMessages is false', () => {
+      it('does not track messages', async () => {
+        const { messages } = await examplePutCategory(messageStore, { trackMessages: false })
         expect(messages).toHaveLength(0)
       })
     })
