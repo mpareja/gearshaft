@@ -17,28 +17,12 @@ jobs:
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: NInAN5t3kJo8d7I3
-          POSTGRES_DB: message_store
         ports:
         - 5432:5432
         # needed because the postgres container does not provide a healthcheck
         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
 
     steps:
-    - name: Set up Ruby 2.6
-      uses: actions/setup-ruby@v1
-      with:
-        ruby-version: 2.6.x
-    - name: Create message-store database
-      run: |
-        sudo apt-get -yqq install postgresql-client
-        gem install evt-message_store-postgres-database
-        evt-pg-recreate-db
-        psql -c "alter role message_store with password '$PGPASSWORD';"
-      env:
-        PGHOST: localhost
-        PGUSER: postgres
-        PGPASSWORD: NInAN5t3kJo8d7I3
-
     - uses: actions/checkout@v1
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v1
@@ -46,7 +30,13 @@ jobs:
         node-version: ${{ matrix.node-version }}
     - name: npm install, build, and test
       run: |
+        sudo apt-get -yqq install postgresql-client
         npm install
+        npm run mdb-install
+        npm run mdb-passwd
         npm test
       env:
         CI: true
+        PGHOST: localhost
+        PGUSER: postgres
+        PGPASSWORD: NInAN5t3kJo8d7I3
