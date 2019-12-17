@@ -10,7 +10,7 @@ exports.createGetStream = (options) => {
       `stream required, not a category (${streamName})`)
   }
 
-  const getValues = (streamName, position) => [
+  const getValues = (streamName, { position }) => [
     streamName,
     position,
     batchSize,

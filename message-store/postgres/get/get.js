@@ -4,14 +4,14 @@ const { deserialize } = require('../deserialize')
 exports.createGet = ({ assert, db, getValues, log, sql, batchSize }) => {
   const getError = operationError('message-store get')
 
-  const get = async (streamName, { position = 0 } = {}) => {
+  const get = async (streamName, { correlation, position = 0 } = {}) => {
     log.debug({ batchSize, position, streamName }, 'message-store get: starting')
 
     assert(streamName)
 
     let dbResults
     try {
-      dbResults = await query(streamName, position)
+      dbResults = await query(streamName, { correlation, position })
     } catch (inner) {
       throw getError('error reading from database', inner)
     }
@@ -23,8 +23,8 @@ exports.createGet = ({ assert, db, getValues, log, sql, batchSize }) => {
     return results
   }
 
-  const query = async (streamName, position) => {
-    const values = getValues(streamName, position)
+  const query = async (streamName, options) => {
+    const values = getValues(streamName, options)
 
     const result = await db.query(sql, values)
     return result.rows

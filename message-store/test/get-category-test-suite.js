@@ -1,6 +1,11 @@
 const createLog = require('../../test/test-log')
 const { AssertionError } = require('assert')
-const { exampleCategory, examplePutCategory, exampleStreamName } = require('../examples')
+const {
+  exampleCategory,
+  examplePutCategory,
+  exampleStreamName,
+  exampleWriteMessageData
+} = require('../examples')
 
 exports.generateGetCategorySuite = ({
   createMessageStore
@@ -76,6 +81,70 @@ exports.generateGetCategorySuite = ({
           const { category } = await examplePutCategory(messageStore, { count: 3 })
           const results = await messageStore.getCategory(category)
           expect(results.length).toBe(A_BATCH_SIZE)
+        })
+      })
+    })
+
+    describe('correlation', () => {
+      describe('given message with the desired correlation stream name', () => {
+        it('returns the correlated message', async () => {
+          const correlationCategory = exampleCategory()
+          const correlationStreamName = exampleStreamName(correlationCategory)
+
+          const emittingCategory = exampleCategory()
+          const emittingStreamName = exampleStreamName(emittingCategory)
+
+          const publishedMessageData = exampleWriteMessageData()
+          publishedMessageData.metadata.correlationStreamName = correlationStreamName
+
+          await messageStore.put(publishedMessageData, emittingStreamName)
+
+          const results = await messageStore.getCategory(emittingCategory, {
+            correlation: correlationCategory
+          })
+
+          expect(results).toHaveLength(1)
+          expect(results.map(r => r.id)).toEqual([publishedMessageData.id])
+        })
+      })
+
+      describe('given message does not match correlation stream name', () => {
+        it('does not return message', async () => {
+          const correlationCategory = exampleCategory()
+
+          const emittingCategory = exampleCategory()
+          const emittingStreamName = exampleStreamName(emittingCategory)
+
+          const publishedMessageData = exampleWriteMessageData()
+          publishedMessageData.metadata.correlationStreamName = exampleStreamName()
+
+          await messageStore.put(publishedMessageData, emittingStreamName)
+
+          const results = await messageStore.getCategory(emittingCategory, {
+            correlation: correlationCategory
+          })
+
+          expect(results).toHaveLength(0)
+        })
+      })
+
+      describe('given message without correlation stream name', () => {
+        it('does not return message', async () => {
+          const correlationCategory = exampleCategory()
+
+          const emittingCategory = exampleCategory()
+          const emittingStreamName = exampleStreamName(emittingCategory)
+
+          const publishedMessageData = exampleWriteMessageData()
+          publishedMessageData.metadata.correlationStreamName = undefined
+
+          await messageStore.put(publishedMessageData, emittingStreamName)
+
+          const results = await messageStore.getCategory(emittingCategory, {
+            correlation: correlationCategory
+          })
+
+          expect(results).toHaveLength(0)
         })
       })
     })

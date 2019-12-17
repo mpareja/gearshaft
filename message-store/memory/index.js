@@ -17,14 +17,15 @@ module.exports.createMessageStore = ({ batchSize = 1000, log = createLog() } = {
   const messageIds = {}
   let globalPosition = 0
 
-  const get = async function (streamName, { position = 0 } = {}) {
+  const get = async function (streamName, { correlation, position = 0 } = {}) {
     await setImmediateP() // mimic async IO
 
     let subset
     if (StreamName.isCategory(streamName)) {
       subset = messages.filter(m =>
         StreamName.getCategory(m.streamName) === streamName &&
-        m.globalPosition >= position
+        m.globalPosition >= position &&
+        (!correlation || correlated(correlation, m))
       )
       subset = subset.splice(0, batchSize)
     } else {
@@ -166,6 +167,13 @@ module.exports.createMessageStore = ({ batchSize = 1000, log = createLog() } = {
     }, 'message-store write: successful')
 
     return lastPosition
+  }
+
+  const correlated = (correlation, message) => {
+    const { correlationStreamName } = message.metadata
+
+    return correlationStreamName &&
+      StreamName.getCategory(correlationStreamName) === correlation
   }
 
   return { get, getCategory, getLast, getStream, put, read, write }

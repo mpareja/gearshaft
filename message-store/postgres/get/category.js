@@ -10,11 +10,11 @@ exports.createGetCategory = (options) => {
       `stream category required, not a specific stream (${category})`)
   }
 
-  const getValues = (streamName, position) => [
+  const getValues = (streamName, { correlation, position }) => [
     streamName,
     position,
     batchSize,
-    null
+    correlation
   ]
 
   const parameters = '$1::varchar, $2::bigint, $3::bigint, $4::varchar'
