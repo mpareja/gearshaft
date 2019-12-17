@@ -66,7 +66,7 @@ exports.generatePutSuite = ({
 
         const position = await messageStore.put(writeMessage, streamName)
 
-        const results = await messageStore.get(streamName, position)
+        const results = await messageStore.get(streamName, { position })
         const readMessage = results[0]
 
         expect(readMessage.data).toBeNull()
@@ -82,7 +82,7 @@ exports.generatePutSuite = ({
 
         const position = await messageStore.put(writeMessage, streamName)
 
-        const results = await messageStore.get(streamName, position)
+        const results = await messageStore.get(streamName, { position })
         const readMessage = results[0]
 
         expect(readMessage.metadata).toBeNull()
@@ -125,7 +125,7 @@ exports.generatePutSuite = ({
           const wm1 = exampleWriteMessageData()
           await messageStore.put(wm1, streamName)
 
-          const readMessage = (await messageStore.get(streamName, 1))[0]
+          const readMessage = (await messageStore.get(streamName, { position: 1 }))[0]
 
           expect(readMessage.data).toEqual(wm1.data)
         })
@@ -141,10 +141,10 @@ exports.generatePutSuite = ({
           const wm1 = exampleWriteMessageData()
           await messageStore.put(wm1, streamName1)
 
-          const rm0 = (await messageStore.get(streamName0, 0))[0]
+          const rm0 = (await messageStore.get(streamName0, { position: 0 }))[0]
           expect(rm0.data).toEqual(wm0.data)
 
-          const rm1 = (await messageStore.get(streamName1, 0))[0]
+          const rm1 = (await messageStore.get(streamName1, { position: 0 }))[0]
           expect(rm1.data).toEqual(wm1.data)
         })
       })

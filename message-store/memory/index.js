@@ -17,10 +17,8 @@ module.exports.createMessageStore = ({ batchSize = 1000, log = createLog() } = {
   const messageIds = {}
   let globalPosition = 0
 
-  const get = async function (streamName, position) {
+  const get = async function (streamName, { position = 0 } = {}) {
     await setImmediateP() // mimic async IO
-
-    position = position || 0
 
     let subset
     if (StreamName.isCategory(streamName)) {
@@ -43,18 +41,18 @@ module.exports.createMessageStore = ({ batchSize = 1000, log = createLog() } = {
     return subset
   }
 
-  const getCategory = async (category, position) => {
+  const getCategory = async (category, options) => {
     assertTruthy(StreamName.isCategory(category), getCategory,
       `stream category required, not a specific stream (${category})`)
 
-    return get(category, position)
+    return get(category, options)
   }
 
-  const getStream = async (streamName, position) => {
+  const getStream = async (streamName, options) => {
     assertTruthy(!StreamName.isCategory(streamName), get,
       `stream required, not a category (${streamName})`)
 
-    return get(streamName, position)
+    return get(streamName, options)
   }
 
   const getLast = async (streamName) => {

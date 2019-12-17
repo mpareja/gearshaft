@@ -77,7 +77,7 @@ exports.createConsumer = ({
     const getBatch = async (version) => {
       let batch
       try {
-        batch = await get(category, version)
+        batch = await get(category, { position: version })
       } catch (err) {
         // wait for next batch (i.e. retry)
         batch = []

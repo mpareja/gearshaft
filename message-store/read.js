@@ -4,7 +4,7 @@ module.exports = ({ batchSize, get }) => {
   const read = async function * (streamName, { position } = {}) {
     let results
     do {
-      results = await get(streamName, position)
+      results = await get(streamName, { position })
       for (const result of results) {
         position = StreamName.isCategory(streamName)
           ? result.globalPosition + 1

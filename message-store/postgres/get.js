@@ -7,12 +7,12 @@ module.exports = ({ db, log, batchSize = 1000 }) => {
 
   const getStream = createGetStream({ db, log, batchSize })
 
-  const get = (streamName, position) => {
+  const get = (streamName, options) => {
     const get = StreamName.isCategory(streamName)
       ? getCategory
       : getStream
 
-    return get(streamName, position)
+    return get(streamName, options)
   }
 
   return { get, getCategory, getStream }

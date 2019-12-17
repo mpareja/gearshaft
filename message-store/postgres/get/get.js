@@ -4,7 +4,7 @@ const { deserialize } = require('../deserialize')
 exports.createGet = ({ assert, db, getValues, log, sql, batchSize }) => {
   const getError = operationError('message-store get')
 
-  const get = async (streamName, position = 0) => {
+  const get = async (streamName, { position = 0 } = {}) => {
     log.debug({ batchSize, position, streamName }, 'message-store get: starting')
 
     assert(streamName)

@@ -24,7 +24,7 @@ exports.generateWriteSuite = ({
       })
 
       it('is written', async () => {
-        const [readMessage] = await messageStore.get(streamName, position)
+        const [readMessage] = await messageStore.get(streamName, { position })
         expect(readMessage).toBeDefined()
         expect(readMessage).toEqual({
           id: writeMessage.id,
@@ -177,10 +177,10 @@ exports.generateWriteSuite = ({
           const wm1 = exampleWriteMessageData()
           await messageStore.write(wm1, streamName1)
 
-          const rm0 = (await messageStore.get(streamName0, 0))[0]
+          const rm0 = (await messageStore.get(streamName0, { position: 0 }))[0]
           expect(rm0.data).toEqual(wm0.data)
 
-          const rm1 = (await messageStore.get(streamName1, 0))[0]
+          const rm1 = (await messageStore.get(streamName1, { position: 0 }))[0]
           expect(rm1.data).toEqual(wm1.data)
         })
       })
