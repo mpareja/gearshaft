@@ -33,7 +33,7 @@ describe('message-store-memory', () => {
 
   const readFrom = async (aStore, streamName, position) => {
     const found = []
-    for await (const message of aStore.read(streamName, position)) {
+    for await (const message of aStore.read(streamName, { position })) {
       found.push(message)
     }
     return found

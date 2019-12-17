@@ -38,7 +38,7 @@ exports.generateReadSuite = ({
           setup({ batchSize: 1 })
           const { streamName, messages } = await examplePut(messageStore, { count: 1 })
 
-          const found = await read(streamName, 0)
+          const found = await read(streamName, { position: 0 })
 
           expect(found).toHaveLength(1)
           expect(found[0].data).toEqual(messages[0].data)
@@ -50,7 +50,7 @@ exports.generateReadSuite = ({
           setup({ batchSize: 10 })
           const { streamName, messages } = await examplePut(messageStore, { count: 3 })
 
-          const found = await read(streamName, 0)
+          const found = await read(streamName, { position: 0 })
 
           expect(found).toHaveLength(3)
           expect(found[0].data).toEqual(messages[0].data)
@@ -64,7 +64,7 @@ exports.generateReadSuite = ({
           setup({ batchSize: 3 })
           const { streamName, messages } = await examplePut(messageStore, { count: 10 })
 
-          const found = await read(streamName, 0)
+          const found = await read(streamName, { position: 0 })
 
           expect(found).toHaveLength(10)
           expect(found.map(f => f.data)).toEqual(messages.map(m => m.data))
@@ -95,7 +95,7 @@ exports.generateReadSuite = ({
           const streamName2 = exampleStreamName(category)
           const { messages: [message2] } = await examplePut(messageStore, { streamName: streamName2 })
 
-          const found = await read(category, 0)
+          const found = await read(category, { position: 0 })
 
           expect(found).toHaveLength(2)
           expect(found.map(f => f.data)).toEqual([
@@ -117,7 +117,7 @@ exports.generateReadSuite = ({
           const { messages: messages3 } = await examplePut(messageStore,
             { streamName: category, count: 2 })
 
-          const found = await read(category, 0)
+          const found = await read(category, { position: 0 })
 
           expect(found.map(f => f.data)).toEqual([
             ...messages1,
@@ -141,7 +141,7 @@ exports.generateReadSuite = ({
           const { messages: messages4 } = await examplePut(messageStore,
             { streamName: category, count: 3 })
 
-          const found = await read(category, 0)
+          const found = await read(category, { position: 0 })
 
           expect(found).toHaveLength(10)
           expect(found.map(f => f.data)).toEqual([
@@ -206,7 +206,7 @@ exports.generateReadSuite = ({
           const all = await read(category)
           const subsetStartPosition = all[2].globalPosition
 
-          const subset = await read(category, subsetStartPosition)
+          const subset = await read(category, { position: subsetStartPosition })
 
           expect(subset).toHaveLength(3)
           expect(subset.map(f => f.data)).toEqual([
@@ -252,7 +252,7 @@ exports.generateReadSuite = ({
 
       describe('position specified', () => {
         it('only returns records from the specified position', async () => {
-          const found = await read(streamName, 2)
+          const found = await read(streamName, { position: 2 })
 
           expect(found).toHaveLength(3)
           expect(found[0].data).toEqual(messages[2].data)

@@ -1,7 +1,7 @@
 const { StreamName } = require('./stream-name')
 
 module.exports = ({ batchSize, get }) => {
-  const read = async function * (streamName, position) {
+  const read = async function * (streamName, { position } = {}) {
     let results
     do {
       results = await get(streamName, position)
