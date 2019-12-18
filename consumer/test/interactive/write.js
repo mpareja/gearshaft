@@ -1,4 +1,4 @@
-const { bulkWrite } = require('../bulk-write')
+const { bulkWrite } = require('../../../message-store/test/bulk-write')
 const { initializeStore } = require('./init')
 
 const category = process.env.CATEGORY || 'testPostgresConsumer'

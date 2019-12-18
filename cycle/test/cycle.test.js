@@ -1,4 +1,4 @@
-const { cycle } = require('./cycle')
+const { cycle } = require('../')
 
 describe('cycle', () => {
   it('returns cycle using iterator', () => {

@@ -1,7 +1,7 @@
 const fs = require('fs')
 const path = require('path')
 const si = require('systeminformation')
-const { bulkWrite } = require('../bulk-write')
+const { bulkWrite } = require('../../../message-store/test/bulk-write')
 const { createConsumer } = require('../../../consumer')
 const { exampleCategory } = require('../../../message-store')
 const { initializeStore, log } = require('../interactive/init')
