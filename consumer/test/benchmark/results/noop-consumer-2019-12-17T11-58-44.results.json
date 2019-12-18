@@ -3,7 +3,7 @@
   "count": 1000000,
   "durationMicroSeconds": 27123720.169,
   "averageOverheadMicroSeconds": 27.124,
-  "consumedPerSecond": 36868.099,
+  "operationsPerSecond": 36868.099,
   "cpu": {
     "manufacturer": "Intel®",
     "brand": "Xeon® E3-1225 v3",
