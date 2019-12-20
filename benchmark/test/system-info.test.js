@@ -20,4 +20,10 @@ describe('system-info', () => {
       'servicepack'
     ])
   })
+
+  it('includes node.js information', async () => {
+    const info = await getSystemInfo()
+
+    expect(info.node).toMatch(/^v.*/)
+  })
 })

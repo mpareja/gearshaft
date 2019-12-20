@@ -12,6 +12,7 @@ exports.getSystemInfo = async () => {
       kernel: os.kernel,
       arch: os.arch,
       servicepack: os.servicepack
-    }
+    },
+    node: process.version
   }
 }
