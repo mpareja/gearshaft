@@ -1,34 +1,8 @@
-const createLog = require('../../test/test-log')
 const promisify = require('util').promisify
 const setImmediateP = promisify(setImmediate)
-const {
-  exampleCategory, exampleMessageStore, exampleWriteMessageData, exampleStreamName
-} = require('../../message-store')
-const { exampleConsumer, exampleHandler, exampleHandlerBlocking } = require('../examples')
-const { exampleMessageClass } = require('../../messaging')
-
-const HandledMessageClass = exampleMessageClass('HandledMessageClass')
-
-const setupConsumerWithHandler = (opts = {}) => {
-  const log = createLog()
-  // log.enableDebugging()
-  const category = opts.category || exampleCategory()
-  const handler = opts.handler || exampleHandler()
-  const messageData = exampleWriteMessageData({ type: HandledMessageClass.name })
-  const registerHandlers = (register) => {
-    register(HandledMessageClass, handler)
-  }
-  const messageStore = exampleMessageStore({ log })
-  const consumer = exampleConsumer({
-    log,
-    pollingIntervalMs: 20, // keep test fast
-    registerHandlers,
-    messageStore,
-    category,
-    ...opts
-  })
-  return { consumer, handler, log, messageData, messageStore, category }
-}
+const { exampleHandlerBlocking } = require('../examples')
+const { exampleMessageStore, exampleWriteMessageData, exampleStreamName } = require('../../message-store')
+const { HandledMessageClass, setupConsumerWithHandler } = require('./setup-consumer-with-handler')
 
 describe('given messages in store', () => {
   it('processes all messages in store', async () => {
@@ -151,8 +125,9 @@ describe('given a handler exception', () => {
 
   const setupConsumerWithBlockedHandler = async (opts = {}) => {
     const handler = exampleHandlerBlocking()
+    const messageData = exampleWriteMessageData({ type: HandledMessageClass.name })
     const scenario = setupConsumerWithHandler({ handler, ...opts })
-    const { consumer, messageData, messageStore, category } = scenario
+    const { consumer, messageStore, category } = scenario
 
     await messageStore.write(messageData, exampleStreamName(category))
     runner = consumer.start()
