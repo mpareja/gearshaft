@@ -12,6 +12,7 @@ exports.createConsumer = ({
   registerHandlers,
   messageStore,
   category,
+  correlation,
   strict = false,
 
   // TUNING
@@ -31,6 +32,7 @@ exports.createConsumer = ({
   const getLogMeta = (messageData) => {
     return {
       category,
+      correlation,
       position: messageData.position,
       globalPosition: messageData.globalPosition,
       type: messageData.type
@@ -64,9 +66,9 @@ exports.createConsumer = ({
     let queue = []
 
     // --- BATCH FETCHING ----
-    const get = throttleErrorLogging(
+    const getCategory = throttleErrorLogging(
       log,
-      { category },
+      { category, correlation },
       prefix('error reading from stream'),
       prefix('reading from stream succeeded after encountering errors'),
       async (...args) => {
@@ -77,7 +79,7 @@ exports.createConsumer = ({
     const getBatch = async (version) => {
       let batch
       try {
-        batch = await get(category, { position: version })
+        batch = await getCategory(category, { correlation, position: version })
       } catch (err) {
         // wait for next batch (i.e. retry)
         batch = []
