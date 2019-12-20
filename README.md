@@ -1,8 +1,8 @@
 # Gearshaft
 
-**Status: Pre-Release**
-
 An Event Sourcing toolkit for Node.js based on the [Eventide project](https://eventide-project.org) for Ruby.
+
+**Status: Pre-Release**
 
 ## Development
 
