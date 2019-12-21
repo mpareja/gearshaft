@@ -33,6 +33,11 @@ class StreamName {
     return split.length > 1 ? split[split.length - 1] : null
   }
 
+  static getCardinalId (name) {
+    const id = StreamName.getId(name)
+    return id ? id.split('+')[0] : null
+  }
+
   static getTypes (name) {
     const typeString = StreamName.getTypeList(name)
     return typeString === null ? [] : typeString.split('+')

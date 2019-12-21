@@ -2,6 +2,7 @@ const { exampleStreamName } = require('../examples')
 const { StreamName } = require('../stream-name')
 
 const A_CATEGORY = 'someCategory'
+const A_COMPOUND_ID = 'some_id+otherId'
 const AN_ID = 'some_id'
 
 describe('stream-name', () => {
@@ -31,6 +32,10 @@ describe('stream-name', () => {
     it('id is null', () => {
       expect(StreamName.getId(name)).toBe(null)
     })
+
+    it('getCardinalId returns null', () => {
+      expect(StreamName.getCardinalId(name)).toBe(null)
+    })
   })
 
   describe('with category and id', () => {
@@ -54,6 +59,30 @@ describe('stream-name', () => {
 
     it('id is the part of stream name before the first dash', () => {
       expect(StreamName.getId(name)).toBe(AN_ID)
+    })
+
+    it('getCardinalId returns the id', () => {
+      expect(StreamName.getCardinalId(name)).toBe(AN_ID)
+    })
+  })
+
+  describe('with category and multiple ids', () => {
+    const name = StreamName.create('someCategory', A_COMPOUND_ID)
+
+    it('stream name is the category and the ids delimited by + sign', () => {
+      expect(name).toEqual('someCategory-some_id+otherId')
+    })
+
+    it('getCategory returns the category name and types but no id', () => {
+      expect(StreamName.getCategory(name)).toEqual('someCategory')
+    })
+
+    it('getId returns all ids delimited by + sign', () => {
+      expect(StreamName.getId(name)).toEqual(A_COMPOUND_ID)
+    })
+
+    it('getCardinalId returns the first id delimited by + sign', () => {
+      expect(StreamName.getCardinalId(name)).toEqual(AN_ID)
     })
   })
 
@@ -109,11 +138,12 @@ describe('stream-name', () => {
     })
   })
 
-  describe('with category, type, types and id', () => {
-    const name = StreamName.create('someCategory', AN_ID, { type: 'someType', types: ['someOtherType', 'yetAnotherYet'] })
+  describe('with category, type, types and ids', () => {
+    const name = StreamName.create('someCategory', A_COMPOUND_ID,
+      { type: 'someType', types: ['someOtherType', 'yetAnotherYet'] })
 
     it('stream name is the category and the types delimited by the plus (+) sign', () => {
-      expect(name).toEqual('someCategory:someType+someOtherType+yetAnotherYet-some_id')
+      expect(name).toEqual('someCategory:someType+someOtherType+yetAnotherYet-some_id+otherId')
     })
 
     it('getCategory returns the category name and types but no id', () => {
@@ -123,6 +153,14 @@ describe('stream-name', () => {
 
     it('entity name is the category', () => {
       expect(StreamName.getEntityName(name)).toBe(A_CATEGORY)
+    })
+
+    it('getId returns the id', () => {
+      expect(StreamName.getId(name)).toBe(A_COMPOUND_ID)
+    })
+
+    it('getCardinalId returns the id', () => {
+      expect(StreamName.getCardinalId(name)).toBe(AN_ID)
     })
   })
 
