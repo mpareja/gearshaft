@@ -1,0 +1,41 @@
+#!/bin/bash
+
+next_version=$(jq -r '.version' package.json)
+next_tag="v$next_version"
+previous_tag=$(git tag | tail -1)
+release_date=$(date +'%Y-%m-%d')
+
+echo "Creating Release Notes"
+echo ""
+
+echo "Previous Tag: $previous_tag"
+echo "Next Tag: $next_tag"
+echo "Release Date: $release_date"
+echo ""
+
+if [ "$next_tag" = "$previous_tag" ] ; then
+  echo "ERROR: tags are the same. Please update package.json version."
+  exit 1
+fi
+
+notes="## $next_tag: DESCRIPTION ($release_date)
+
+### Highlights
+
+-
+
+### Commits
+
+$(git log --pretty="- ([\`%h\`](https://github.com/mpareja/gearshaft/commit/%H)) %s" $previous_tag..)
+"
+
+echo "$notes"
+
+echo ""
+
+read -n 1 -p "Update release notes? (y/N) " CONFIRM
+if [ "$CONFIRM" = "y" -o "$CONFIRM" = "Y" ]; then
+  echo "$notes" > CHANGELOG-new.md
+  cat CHANGELOG.md >> CHANGELOG-new.md
+  mv CHANGELOG-new.md CHANGELOG.md
+fi
