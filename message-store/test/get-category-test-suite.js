@@ -206,6 +206,18 @@ exports.generateGetCategorySuite = ({
 
         expect(results.map(r => r.id)).toEqual([firstC.id, secondC.id])
       })
+
+      // support configuration via environment vars
+      it('handles _string_ group member and size', async () => {
+        const { category, firstA, secondA } = await setupTwoMemberStreams()
+
+        const results = await messageStore.getCategory(category, {
+          consumerGroupMember: '0',
+          consumerGroupSize: '2'
+        })
+
+        expect(results.map(r => r.id)).toEqual([firstA.id, secondA.id])
+      })
     })
 
     describe('when called without await', () => {

@@ -34,7 +34,8 @@ module.exports.createMessageStore = ({ batchSize = 1000, log = createLog() } = {
         (!correlation ||
           correlated(correlation, m)) &&
         (!consumerGroupSize ||
-          consumerGroupMember === getConsumerGroupMember(m.streamName, consumerGroupSize))
+          // eslint-disable-next-line eqeqeq
+          consumerGroupMember == getConsumerGroupMember(m.streamName, consumerGroupSize))
       )
       subset = subset.splice(0, batchSize)
     } else {
