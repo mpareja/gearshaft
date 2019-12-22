@@ -6,6 +6,7 @@ const {
   exampleStreamName,
   exampleWriteMessageData
 } = require('../examples')
+const { StreamName } = require('../stream-name')
 
 exports.generateGetCategorySuite = ({
   createMessageStore
@@ -146,6 +147,64 @@ exports.generateGetCategorySuite = ({
 
           expect(results).toHaveLength(0)
         })
+      })
+    })
+
+    describe('consumer group', () => {
+      const setupTwoMemberStreams = async () => {
+        const category = exampleCategory()
+
+        // 'A' and 'C' were chosen because consistent hashing
+        // makes them different members for a group of size 2
+        const streamNameA = StreamName.create(category, 'A')
+        const streamNameC = StreamName.create(category, 'C')
+
+        const firstA = exampleWriteMessageData()
+        const secondA = exampleWriteMessageData()
+        const firstC = exampleWriteMessageData()
+        const secondC = exampleWriteMessageData()
+
+        // interleave to ensure awaiting 2 doesn't accidentally pick
+        // the correct subset of messages
+        await messageStore.put(firstA, streamNameA)
+        await messageStore.put(firstC, streamNameC)
+        await messageStore.put(secondA, streamNameA)
+        await messageStore.put(secondC, streamNameC)
+
+        return {
+          category,
+          messageStore,
+
+          streamNameA,
+          firstA,
+          secondA,
+
+          streamNameC,
+          firstC,
+          secondC
+        }
+      }
+
+      it('returns messages from first member', async () => {
+        const { category, firstA, secondA } = await setupTwoMemberStreams()
+
+        const results = await messageStore.getCategory(category, {
+          consumerGroupMember: 0,
+          consumerGroupSize: 2
+        })
+
+        expect(results.map(r => r.id)).toEqual([firstA.id, secondA.id])
+      })
+
+      it('returns messages from second member', async () => {
+        const { category, firstC, secondC } = await setupTwoMemberStreams()
+
+        const results = await messageStore.getCategory(category, {
+          consumerGroupMember: 1,
+          consumerGroupSize: 2
+        })
+
+        expect(results.map(r => r.id)).toEqual([firstC.id, secondC.id])
       })
     })
 

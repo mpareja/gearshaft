@@ -5,6 +5,7 @@ const uuidValidate = require('uuid-validate')
 const { assertTruthy } = require('../../errors')
 const { createLog } = require('../../logging')
 const { ExpectedVersionError } = require('../expected-version-error')
+const { getConsumerGroupMember } = require('./consumer-group-member')
 const { promisify } = require('util')
 const { StreamName } = require('../stream-name')
 const { uuid } = require('../../identifier')
@@ -17,7 +18,12 @@ module.exports.createMessageStore = ({ batchSize = 1000, log = createLog() } = {
   const messageIds = {}
   let globalPosition = 0
 
-  const get = async function (streamName, { correlation, position = 0 } = {}) {
+  const get = async function (streamName, {
+    consumerGroupMember,
+    consumerGroupSize,
+    correlation,
+    position = 0
+  } = {}) {
     await setImmediateP() // mimic async IO
 
     let subset
@@ -25,7 +31,10 @@ module.exports.createMessageStore = ({ batchSize = 1000, log = createLog() } = {
       subset = messages.filter(m =>
         StreamName.getCategory(m.streamName) === streamName &&
         m.globalPosition >= position &&
-        (!correlation || correlated(correlation, m))
+        (!correlation ||
+          correlated(correlation, m)) &&
+        (!consumerGroupSize ||
+          consumerGroupMember === getConsumerGroupMember(m.streamName, consumerGroupSize))
       )
       subset = subset.splice(0, batchSize)
     } else {
