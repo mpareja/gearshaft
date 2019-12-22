@@ -13,6 +13,8 @@ exports.createConsumer = ({
   messageStore,
   category,
   correlation,
+  groupMember,
+  groupSize,
   strict = false,
 
   // TUNING
@@ -79,7 +81,12 @@ exports.createConsumer = ({
     const getBatch = async (version) => {
       let batch
       try {
-        batch = await getCategory(category, { correlation, position: version })
+        batch = await getCategory(category, {
+          consumerGroupMember: groupMember,
+          consumerGroupSize: groupSize,
+          correlation,
+          position: version
+        })
       } catch (err) {
         // wait for next batch (i.e. retry)
         batch = []
