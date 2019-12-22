@@ -1,3 +1,20 @@
+## v0.9.0: consumer group support (2019-12-22)
+
+### Highlights
+
+- consumer: support parallel processing via consumer groups.
+- message-store: support filtering messages in a category by consumer group.
+
+### Commits
+
+- ([`ef90298`](https://github.com/mpareja/gearshaft/commit/ef9029828fed113fddce49b3f742c4ec5267efec)) package: upgrade pg to 7.15.1
+- ([`95f6969`](https://github.com/mpareja/gearshaft/commit/95f6969146d440ac99821377b097082c4fc1c86f)) message-store: support configuring group size/member via env variable
+- ([`1f37027`](https://github.com/mpareja/gearshaft/commit/1f370276c5dd290d05e59aeba3c03a9628860873)) consumer: support consumer group
+- ([`535b99c`](https://github.com/mpareja/gearshaft/commit/535b99c4ea600120641e55e966e6f3a912abc04c)) message-store: getCategory: support consumer groups
+- ([`8ff542b`](https://github.com/mpareja/gearshaft/commit/8ff542bea8970d35625cfd9620ac0110038f7035)) message-store: StreamName: support parsing cardinal id
+- ([`10db52a`](https://github.com/mpareja/gearshaft/commit/10db52ac553553211aea478315b4adbc39c21b56)) tools: add release note generator
+- ([`b94a969`](https://github.com/mpareja/gearshaft/commit/b94a9696cf040bcb39fe59ac876938064c9d1f90)) CHANGELOG: reformat commit sections
+
 ## v0.8.0: support correlated messaging
 
 ### Highlights
