@@ -36,7 +36,7 @@ exports.createWriterSubstitute = (messageStore) => {
       expectedExpectedVersion = undefined
     }
 
-    if (typeof expectedExpectedVersion === 'number') {
+    if (typeof expectedExpectedVersion === 'number' && streamCalls.length) {
       const { expectedVersion } = streamCalls[0]
       assertStrictEqual(expectedVersion, expectedExpectedVersion, assertFn,
         `Expected write to stream "${expectedStreamName}" with expectedVersion of ${expectedExpectedVersion}`)

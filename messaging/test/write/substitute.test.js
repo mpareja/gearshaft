@@ -378,6 +378,21 @@ describe('write-substitute', () => {
           expect(error).toBe(assertionError)
         })
       })
+
+      describe('given no writes to expected stream', () => {
+        it('throws error noting the number of missing messages', async () => {
+          const write = createWriterSubstitute()
+
+          const error = catchError(() =>
+            write.assertStreamWrites(WRITTEN_STREAM_NAME, WRITTEN_EXPECTED_VERSION, [() => {}]))
+
+          expect(error).toBeDefined()
+          expect(error).toBeInstanceOf(AssertionError)
+          expect(error.message).toBe('Expected exactly 1 write to stream "SomeStream"')
+          expect(error.expected).toBe(1)
+          expect(error.actual).toBe(0)
+        })
+      })
     })
 
     describe('given writes to multiple streams', () => {
