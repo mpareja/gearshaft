@@ -1,3 +1,17 @@
+## v0.10.0: minor usability enhancements (2020-01-01)
+
+### Highlights
+
+- message-store: ease creation of entity stream names from a category.
+- messaging: add convenience method `assertStreamWritesInitial` for asserting a set of writes occurred at the start of a stream.
+- messaging: bug fix: raise correct error when asserting a set of writes occurred but no writes were made
+
+### Commits
+
+- ([`909c93a`](https://github.com/mpareja/gearshaft/commit/909c93a91d22a581f4f1aec59b33d8d5d37113c1)) messaging: write: add assertStreamWritesInitial
+- ([`ee7218c`](https://github.com/mpareja/gearshaft/commit/ee7218cdb8ea79d77202e3dd532309da3289c6b9)) messaging: write: substitute: fix asserting expected version when no writes
+- ([`7c2228d`](https://github.com/mpareja/gearshaft/commit/7c2228d6115c84499b9c82a7418c57e7393384d6)) message-store: category: support creating entity stream names
+
 ## v0.9.0: consumer group support (2019-12-22)
 
 ### Highlights
