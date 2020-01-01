@@ -412,6 +412,68 @@ describe('write-substitute', () => {
     })
   })
 
+  describe('assertStreamWritesInitial', () => {
+    describe('given an initial write', () => {
+      it('no error is thrown', async () => {
+        const write = createWriterSubstitute()
+        await write.initial(WRITTEN_MESSAGE, WRITTEN_STREAM_NAME)
+
+        const error = catchError(() =>
+          write.assertStreamWritesInitial(WRITTEN_STREAM_NAME, [() => {}]))
+
+        expect(error).toBe(undefined)
+      })
+    })
+
+    describe('given write without specifying initial version', () => {
+      it('returns error', async () => {
+        const write = createWriterSubstitute()
+        await write(WRITTEN_MESSAGE, WRITTEN_STREAM_NAME)
+
+        const error = catchError(() =>
+          write.assertStreamWritesInitial(WRITTEN_STREAM_NAME, [() => {}]))
+
+        expect(error).toBeDefined()
+        expect(error).toBeInstanceOf(AssertionError)
+        expect(error.message).toBe('Expected write to stream "SomeStream" with expectedVersion of -1')
+        expect(error.expected).toBe(-1)
+        expect(error.actual).toBe(undefined)
+      })
+    })
+
+    describe('given writes to another stream', () => {
+      it('returns error', async () => {
+        const write = createWriterSubstitute()
+        await write(WRITTEN_MESSAGE, 'otherStream')
+
+        const error = catchError(() =>
+          write.assertStreamWritesInitial(WRITTEN_STREAM_NAME, [() => {}]))
+
+        expect(error).toBeDefined()
+        expect(error).toBeInstanceOf(AssertionError)
+        expect(error.message).toBe('Expected exactly 1 write to stream "SomeStream"')
+        expect(error.expected).toBe(1)
+        expect(error.actual).toBe(0)
+      })
+    })
+
+    describe('given a correct number of writes but an assertion error', () => {
+      it('assertion error is raised', async () => {
+        const write = createWriterSubstitute()
+        await write.initial(WRITTEN_MESSAGE, WRITTEN_STREAM_NAME)
+
+        const assertionError = new Error()
+
+        const error = catchError(() =>
+          write.assertStreamWritesInitial(WRITTEN_STREAM_NAME, [
+            () => { throw assertionError }
+          ]))
+
+        expect(error).toBe(assertionError)
+      })
+    })
+  })
+
   it('uses provided message store', async () => {
     const messageStore = exampleMessageStore()
     const write = createWriterSubstitute(messageStore)

@@ -29,6 +29,10 @@ exports.createWriterSubstitute = (messageStore) => {
     return assertStreamWrites(write.assertStreamWrites, ...args)
   }
 
+  write.assertStreamWritesInitial = (expectedStreamName, assertions) => {
+    return assertStreamWrites(write.assertStreamWritesInitial, expectedStreamName, -1, assertions)
+  }
+
   const assertStreamWrites = (assertFn, expectedStreamName, expectedExpectedVersion, assertions) => {
     const streamCalls = calls.filter(c => c.streamName === expectedStreamName)
     if (Array.isArray(expectedExpectedVersion)) {
