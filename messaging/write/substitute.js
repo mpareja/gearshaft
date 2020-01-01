@@ -1,10 +1,9 @@
 const { assertStrictEqual } = require('../../errors')
-const { createMessageStore } = require('../../message-store/memory')
 const { createWriter } = require('../write')
 const { ExpectedVersionError } = require('../../message-store')
 
 exports.createWriterSubstitute = (messageStore) => {
-  messageStore = messageStore || createMessageStore()
+  messageStore = messageStore || { write: () => {} }
   const calls = []
   const write = createWriter({ messageStore })
 
