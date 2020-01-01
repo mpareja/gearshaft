@@ -13,13 +13,7 @@ exports.createCategory = (category) => {
   }
 
   const commandStreamName = (id, extra = {}) => {
-    if (id === null || id === undefined) {
-      throw new AssertionError({
-        message: 'ID is required to create a command stream name',
-        actual: id,
-        stackStartFn: commandStreamName
-      })
-    }
+    assertId(commandStreamName, 'command', id)
 
     const types = extra.types || []
     if (extra.type) {
@@ -30,5 +24,21 @@ exports.createCategory = (category) => {
     return StreamName.create(category, id, { types })
   }
 
-  return { commandCategory, commandStreamName }
+  const entityStreamName = (id, extra) => {
+    assertId(commandStreamName, 'entity', id)
+
+    return StreamName.create(category, id, extra)
+  }
+
+  const assertId = (stackStartFn, streamType, id) => {
+    if (id === null || id === undefined) {
+      throw new AssertionError({
+        message: `ID is required to create ${streamType} stream name`,
+        actual: id,
+        stackStartFn: commandStreamName
+      })
+    }
+  }
+
+  return { commandCategory, commandStreamName, entityStreamName }
 }
