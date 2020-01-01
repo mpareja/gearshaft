@@ -2,7 +2,7 @@
 
 next_version=$(jq -r '.version' package.json)
 next_tag="v$next_version"
-previous_tag=$(git tag | tail -1)
+previous_tag=$(git tag | sort -V | tail -1)
 release_date=$(date +'%Y-%m-%d')
 
 echo "Creating Release Notes"
