@@ -1,3 +1,14 @@
+## v0.10.1: inert write substitute (2020-01-02)
+
+### Highlights
+
+- messaging: write substitute is not bound to in-memory message store by default. Writes are no-ops that always succeed - stream expected version checking is not performed. Use the rich set of assertion methods provided by the substitute to validate a message was written with the corrrect expected version.
+
+### Commits
+
+- ([`601a7d1`](https://github.com/mpareja/gearshaft/commit/601a7d14abc3576f7fa699dc17d064406ba20e3c)) tools: use version sort when finding last version
+- ([`1b9c8d4`](https://github.com/mpareja/gearshaft/commit/1b9c8d4dcf00a5b2fb094b40ac277403118a4215)) messaging: write substitute: default to inert message-store write
+
 ## v0.10.0: minor usability enhancements (2020-01-01)
 
 ### Highlights
