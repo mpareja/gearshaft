@@ -89,18 +89,6 @@ The publish for 0.7.0 mysteriously disappeared. The publish completed successful
 
 EDIT: It turns out `npm` was having issues and release was delayed by a long time. v0.7.0 is equivalent to v0.7.1.
 
-### Highlights
-
-- Adds `EntityStoreSubstitute` which can be used by handler test suites wanting to exercise different states of an entity. Entities can be added to an instance of `EntityStoreSubstitute` via the `add` function.
-- `assertNoWrites` has been added to `WriterSubstitute`. Test suites can now assert no writes have occurred to a specific stream or any streams all together.
-
-### Commits
-
-- ([`2fae100`](https://github.com/mpareja/gearshaft/commit/2fae100)) entity-store: don't nest entity under record metadata
-- ([`1531ccd`](https://github.com/mpareja/gearshaft/commit/1531ccd)) package: upgrade dev dependencies
-- ([`0326775`](https://github.com/mpareja/gearshaft/commit/0326775)) entity-store: introduce EntityStoreSubstitute
-- ([`f267a59`](https://github.com/mpareja/gearshaft/commit/f267a59)) messaging: write substitute: add assertNoWrites assertion
-
 ## v0.6.0: improved experience for implementing handler test cases
 
 ### Highlights
