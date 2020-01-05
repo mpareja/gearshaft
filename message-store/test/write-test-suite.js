@@ -124,19 +124,20 @@ exports.generateWriteSuite = ({
 
     describe('expected version', () => {
       describe('writing message specifying previous message version', () => {
-        it('message is written with the expected version', async () => {
+        it('messages are written with the expected version', async () => {
           const streamName = exampleStreamName()
 
           const wm0 = exampleWriteMessageData()
           const position1 = await messageStore.write(wm0, streamName)
 
           const wm1 = exampleWriteMessageData()
-          const position2 = await messageStore.write(wm1, streamName, position1)
+          const wm2 = exampleWriteMessageData()
+          const position2 = await messageStore.write([wm1, wm2], streamName, position1)
 
           const readMessage = await messageStore.getLast(streamName)
 
-          expect(readMessage.data).toEqual(wm1.data)
-          expect(readMessage.position).toEqual(1)
+          expect(readMessage.data).toEqual(wm2.data)
+          expect(readMessage.position).toEqual(2)
           expect(readMessage.position).toEqual(position2)
         })
       })

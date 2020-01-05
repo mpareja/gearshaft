@@ -10,7 +10,10 @@ module.exports = ({ db, log, put }) => {
 
     log.debug(info, 'message-store write: starting')
 
-    const position = await writeMessages(messages, streamName, expectedVersion)
+    // optimization: skip transaction if not required
+    const position = messages.length === 1
+      ? await put(messages[0], streamName, expectedVersion)
+      : await writeMessages(messages, streamName, expectedVersion)
 
     log.info({ ...info, position }, 'message-store write: successful')
 
