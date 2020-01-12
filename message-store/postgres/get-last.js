@@ -1,7 +1,7 @@
 const operationError = require('../../errors/operation-error')
 const { deserialize } = require('./deserialize')
 
-module.exports = ({ db, log }) => {
+module.exports = ({ postgresGateway, log }) => {
   const getLastError = operationError('message-store getLast')
 
   const getLast = async (streamName) => {
@@ -39,7 +39,7 @@ module.exports = ({ db, log }) => {
 
     const sql = `SELECT * FROM get_last_stream_message(${parameters});`
 
-    const results = await db.query(sql, values)
+    const results = await postgresGateway.query(sql, values)
     return results.rows
   }
 

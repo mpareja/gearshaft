@@ -1,4 +1,4 @@
-module.exports = ({ db, log, put }) => {
+module.exports = ({ postgresGateway, log, put }) => {
   const write = async (data, streamName, expectedVersion) => {
     const messages = Array.isArray(data) ? data : [data]
     const info = {
@@ -22,7 +22,7 @@ module.exports = ({ db, log, put }) => {
 
   const writeMessages = async (messages, streamName, expectedVersion) => {
     let position
-    await db.transaction(async (txdb) => {
+    await postgresGateway.transaction(async (txdb) => {
       for (const message of messages) {
         position = await put(message, streamName, expectedVersion, txdb)
 

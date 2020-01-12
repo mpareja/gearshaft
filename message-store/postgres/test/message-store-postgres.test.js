@@ -12,11 +12,11 @@ const {
   exampleStreamName, exampleWriteMessageData
 } = require('./init-message-store')
 
-let db
-beforeAll(() => { db = createTestPostgresGateway() })
-afterAll(async () => { await db.end() })
+let postgresGateway
+beforeAll(() => { postgresGateway = createTestPostgresGateway() })
+afterAll(async () => { await postgresGateway.end() })
 
-const createMessageStore = (options) => createStore({ db, ...options })
+const createMessageStore = (options) => createStore({ postgresGateway, ...options })
 
 describe('message-store-postgres', () => {
   generateGetCategorySuite({ createMessageStore })
@@ -33,9 +33,9 @@ describe('message-store-postgres', () => {
         const log = createTestLog()
         const messageStore = createMessageStore({ log })
 
-        // disconnect db used by _this_ test, but reset db used for other tests
-        await db.end()
-        db = await db.recreate()
+        // disconnect gateway used by _this_ test, but reset gateway used for other tests
+        await postgresGateway.end()
+        postgresGateway = await postgresGateway.recreate()
 
         const promise = messageStore.get(exampleStreamName())
 
@@ -53,9 +53,9 @@ describe('message-store-postgres', () => {
         const log = createTestLog()
         const messageStore = createMessageStore({ log })
 
-        // disconnect db used by _this_ test, but reset db used for other tests
-        await db.end()
-        db = await db.recreate()
+        // disconnect gateway used by _this_ test, but reset gateway used for other tests
+        await postgresGateway.end()
+        postgresGateway = await postgresGateway.recreate()
 
         const promise = messageStore.getLast(exampleStreamName())
 
@@ -73,9 +73,9 @@ describe('message-store-postgres', () => {
         const log = createTestLog()
         const messageStore = createMessageStore({ log })
 
-        // disconnect db used by _this_ test, but reset db used for other tests
-        await db.end()
-        db = await db.recreate()
+        // disconnect gateway used by _this_ test, but reset gateway used for other tests
+        await postgresGateway.end()
+        postgresGateway = await postgresGateway.recreate()
 
         const message = exampleWriteMessageData()
         const promise = messageStore.put(message, exampleStreamName())
@@ -103,12 +103,12 @@ describe('message-store-postgres', () => {
         const streamName1 = exampleStreamName()
         const streamName2 = exampleStreamName()
 
-        await db.transaction(async (tx1) => {
-          const store1 = createStore({ db: tx1 })
+        await postgresGateway.transaction(async (tx1) => {
+          const store1 = createStore({ postgresGateway: tx1 })
           await examplePut(store1, { streamName: streamName1 })
 
-          await db.transaction(async (tx2) => {
-            const store2 = createStore({ db: tx2 })
+          await postgresGateway.transaction(async (tx2) => {
+            const store2 = createStore({ postgresGateway: tx2 })
             await examplePut(store1, { streamName: streamName1 })
             await examplePut(store2, { streamName: streamName2 })
           })
@@ -116,7 +116,7 @@ describe('message-store-postgres', () => {
           await examplePut(store1, { streamName: streamName1 })
         })
 
-        const messageStore = createStore({ db })
+        const messageStore = createStore({ postgresGateway })
         const results1 = await messageStore.get(streamName1)
         const results2 = await messageStore.get(streamName2)
 
@@ -133,12 +133,12 @@ describe('message-store-postgres', () => {
         const block = new Promise(resolve => { resolveBlock = resolve })
 
         let promise2
-        const promise1 = db.transaction(async (tx1) => {
-          const store1 = createStore({ db: tx1 })
+        const promise1 = postgresGateway.transaction(async (tx1) => {
+          const store1 = createStore({ postgresGateway: tx1 })
           await examplePut(store1, { streamName })
 
-          promise2 = db.transaction(async (tx2) => {
-            const store2 = createStore({ db: tx2 })
+          promise2 = postgresGateway.transaction(async (tx2) => {
+            const store2 = createStore({ postgresGateway: tx2 })
             await examplePut(store2)
             states.push('before write')
             await examplePut(store2, { streamName })
@@ -156,7 +156,7 @@ describe('message-store-postgres', () => {
         states.push('after delay')
 
         // show that a write ought to have finished
-        const messageStore = createStore({ db })
+        const messageStore = createStore({ postgresGateway })
         await examplePut(messageStore)
         states.push('unblocked stream written')
 

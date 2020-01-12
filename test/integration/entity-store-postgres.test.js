@@ -3,13 +3,13 @@ const {
   createStore, createLog, createTestPostgresGateway
 } = require('../../message-store/postgres/test/init-message-store')
 
-let db
-beforeAll(() => { db = createTestPostgresGateway() })
-afterAll(async () => { await db.end() })
+let postgresGateway
+beforeAll(() => { postgresGateway = createTestPostgresGateway() })
+afterAll(async () => { await postgresGateway.end() })
 
 const createMessageStore = () => {
   const log = createLog()
-  const messageStore = createStore({ db, log })
+  const messageStore = createStore({ postgresGateway, log })
   return messageStore
 }
 

@@ -14,7 +14,7 @@ exports.createTestPostgresGateway = () => {
 }
 
 const createInstance = (config) => {
-  const db = createPostgresGateway(config)
-  db.recreate = () => createInstance(config)
-  return db
+  const postgresGateway = createPostgresGateway(config)
+  postgresGateway.recreate = () => createInstance(config)
+  return postgresGateway
 }

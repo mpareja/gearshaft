@@ -1,7 +1,7 @@
 const operationError = require('../../../errors/operation-error')
 const { deserialize } = require('../deserialize')
 
-exports.createGet = ({ assert, db, getValues, log, sql, batchSize }) => {
+exports.createGet = ({ assert, postgresGateway, getValues, log, sql, batchSize }) => {
   const getError = operationError('message-store get')
 
   const get = async (streamName, options = {}) => {
@@ -28,7 +28,7 @@ exports.createGet = ({ assert, db, getValues, log, sql, batchSize }) => {
   const query = async (streamName, options) => {
     const values = getValues(streamName, options)
 
-    const result = await db.query(sql, values)
+    const result = await postgresGateway.query(sql, values)
     return result.rows
   }
 
