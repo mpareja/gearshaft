@@ -4,7 +4,7 @@ const createPut = require('./put')
 const createRead = require('../read')
 const createWrite = require('./write')
 const { createLog } = require('../../logging')
-const { createPostgresGateway } = require('./pg')
+const { createPostgresGateway } = require('../../postgres-gateway')
 
 module.exports.createMessageStore = (config) => {
   // allow passing in db instance or settings
@@ -26,5 +26,3 @@ module.exports.createMessageStore = (config) => {
     ...write
   }
 }
-
-module.exports.createPostgresGateway = createPostgresGateway

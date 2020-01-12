@@ -1,6 +1,6 @@
 const rc = require('rc')
 
-module.exports = () => rc('gearshaft_tests', {
+exports.getConfig = () => rc('gearshaft_tests', {
   db: {
     type: 'postgres',
     host: 'localhost',

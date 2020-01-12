@@ -1,10 +1,10 @@
-const { createMessageStore } = require('../')
 const createLog = require('../../../test/test-log')
-const createMessageStoreDb = require('./create-message-store-db')
+const { createMessageStore } = require('../')
+const { createTestPostgresGateway } = require('../../../postgres-gateway/test/test-postgres-gateway')
 
 module.exports = {
   ...require('../../examples'),
   createStore: createMessageStore,
   createLog,
-  createMessageStoreDb
+  createTestPostgresGateway
 }

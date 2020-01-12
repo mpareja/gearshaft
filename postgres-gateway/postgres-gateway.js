@@ -4,13 +4,13 @@ types.setTypeParser(20, (data) => {
   /* global BigInt */
   /* istanbul ignore next */
   if (BigInt(data) > BigInt(Number.MAX_SAFE_INTEGER)) {
-    // hopefully, BigInt support in standard & jest will catch up to node
+    // waiting for jest 25 release to add support for BigInt
     throw new Error('BigInt in database will overflow Number.MAX_SAFE_INTEGER')
   }
   return Number(data)
 })
 
-module.exports.createPostgresGateway = (config) => {
+exports.createPostgresGateway = (config) => {
   const pool = new Pool(config)
 
   pool.transaction = async (fn) => {

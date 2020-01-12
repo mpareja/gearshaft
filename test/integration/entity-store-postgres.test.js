@@ -1,11 +1,11 @@
 const { generateEntityStoreSuite } = require('../../entity-store/test/fetch-test-suite')
 const {
-  createStore, createLog, createMessageStoreDb
+  createStore, createLog, createTestPostgresGateway
 } = require('../../message-store/postgres/test/init-message-store')
 
 let db
-beforeAll(() => { db = createMessageStoreDb() })
-afterAll(async () => { await db.close() })
+beforeAll(() => { db = createTestPostgresGateway() })
+afterAll(async () => { await db.end() })
 
 const createMessageStore = () => {
   const log = createLog()
