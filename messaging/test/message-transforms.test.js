@@ -71,7 +71,7 @@ describe('message-transforms', () => {
     })
   })
 
-  describe('fromWriteMessageData', () => {
+  describe('fromReadMessageData', () => {
     let message, messageClass, messageData, transformed
 
     beforeEach(() => {
