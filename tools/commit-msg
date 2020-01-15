@@ -5,7 +5,7 @@
 commitFile="$1"
 
 main () {
-	if ! egrep '(^benchmark:|^consumer:|^errors:|^entity-projection:|^entity-store:|^host:|^logging:|^message-store:|^messaging:|^package:|^postgres-gateway:|^retry:|^runner:|^tools:)' "$commitFile"; then
+	if ! egrep '(^benchmark:|^consumer:|^document-store:|^errors:|^entity-projection:|^entity-store:|^host:|^logging:|^message-store:|^messaging:|^package:|^postgres-gateway:|^retry:|^runner:|^tools:)' "$commitFile"; then
 		echo "ERROR: missing acceptable prefix (like message-store:)"
 		exit 1
 	fi
