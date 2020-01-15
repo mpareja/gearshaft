@@ -1,4 +1,4 @@
-const operationError = require('../operation-error')
+const { operationError } = require('../')
 
 const A_DETAIL = 'some detail'
 const AN_OPERATION = 'fetch-operation'

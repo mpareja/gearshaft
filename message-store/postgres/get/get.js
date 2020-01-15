@@ -1,5 +1,5 @@
-const operationError = require('../../../errors/operation-error')
 const { deserialize } = require('../deserialize')
+const { operationError } = require('../../../errors')
 
 exports.createGet = ({ assert, postgresGateway, getValues, log, sql, batchSize }) => {
   const getError = operationError('message-store get')

@@ -1,5 +1,5 @@
-const operationError = require('../../errors/operation-error')
 const { ExpectedVersionError } = require('../expected-version-error')
+const { operationError } = require('../../errors')
 const { uuid } = require('../../identifier')
 
 module.exports = ({ postgresGateway: globalPostgresGateway, log }) => {

@@ -1,5 +1,5 @@
-const operationError = require('../../errors/operation-error')
 const { deserialize } = require('./deserialize')
+const { operationError } = require('../../errors')
 
 module.exports = ({ postgresGateway, log }) => {
   const getLastError = operationError('message-store getLast')

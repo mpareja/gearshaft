@@ -1,4 +1,5 @@
 module.exports = {
   ...require('./assertions'),
-  ...require('./operation-error')
+  ...require('./catch-error'),
+  operationError: require('./operation-error')
 }

@@ -1,6 +1,6 @@
-const operationError = require('../errors/operation-error')
 const { createLog } = require('../logging')
 const { EventEmitter } = require('events')
+const { operationError } = require('../errors')
 const { toWriteMessageData } = require('./message-transforms')
 
 const writeError = operationError('messaging write')

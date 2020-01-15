@@ -1,5 +1,5 @@
-const operationError = require('../errors/operation-error')
 const { createEventRegistry, fromReadMessageData } = require('../messaging')
+const { operationError } = require('../errors')
 
 exports.createConsumerHandlerRegistry = ({ name, log, registerHandlers, strict }) => {
   const consumerError = operationError(`${name} consumer`)

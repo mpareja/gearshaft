@@ -1,8 +1,8 @@
-const operationError = require('../errors/operation-error')
 const delay = require('util').promisify(setTimeout)
 const { createConsumerHandlerRegistry } = require('./consumer-handler-registry')
 const { createPositionStore } = require('./position-store')
 const { createRunner } = require('../runner')
+const { operationError } = require('../errors')
 const { throttleErrorLogging } = require('../logging')
 
 exports.createConsumer = ({
