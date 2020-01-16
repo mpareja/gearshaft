@@ -1,5 +1,6 @@
 const { createDocumentProjection } = require('../document-projection')
 const { createEntityProjection } = require('../../entity-projection')
+const { createLog } = require('../../logging')
 const { createMemoryDocumentStore } = require('../../document-store/memory')
 
 const exampleDocumentProjection = (overrides) => {
@@ -7,6 +8,7 @@ const exampleDocumentProjection = (overrides) => {
     documentStore: createMemoryDocumentStore('basketId'),
     entity: FruitBasketView,
     identify: (message) => message.basketId,
+    log: createLog(),
     projection: FruitBasketViewProjection
   }, overrides)
 

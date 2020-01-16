@@ -8,19 +8,42 @@ const createError = operationError('document-projection')
 exports.createDocumentProjection = (options) => {
   assertOptions(options)
 
-  const { documentStore, entity: Entity, projection, identify } = options
+  const {
+    documentStore,
+    entity: Entity,
+    identify,
+    log,
+    projection,
+    versionField = 'version'
+  } = options
 
   const handler = async (message) => {
     const id = identify(message)
+    const globalPosition = message.metadata.globalPosition
 
     await retry([StaleDocumentError], async () => {
       const foundDocument = await getDocument(id)
       const doc = foundDocument || new Entity()
       const save = foundDocument ? documentStore.update : documentStore.insert
 
+      const meta = {
+        foundDocumentVersion: foundDocument ? foundDocument[versionField] : undefined,
+        globalPosition,
+        messageId: message.id
+      }
+
+      if (foundDocument && foundDocument[versionField] >= globalPosition) {
+        log.info(meta, `${Entity.name} document-projection: message ignored, already processed`)
+        return
+      }
+
       projection.project(doc, message)
 
+      doc[versionField] = globalPosition
+
       await save(doc)
+
+      log.info(meta, `${Entity.name} document-projection: document updated successfully`)
     })
   }
 
@@ -47,6 +70,7 @@ const assertOptions = (options) => {
   assert(typeof options === 'object', errorMessage('options required'))
   assert(options.documentStore, errorMessage('documentStore required'))
   assert(typeof options.entity === 'function', errorMessage('entity required'))
-  assert(options.projection, errorMessage('projection required'))
   assert(typeof options.identify === 'function', errorMessage('identify required'))
+  assert(options.log, errorMessage('log required'))
+  assert(options.projection, errorMessage('projection required'))
 }
