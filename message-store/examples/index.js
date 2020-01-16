@@ -1,5 +1,4 @@
 module.exports = {
-  ...require('../../examples'),
   ...require('./example-category.js'),
   ...require('./example-message-data.js'),
   ...require('./example-message-store.js'),

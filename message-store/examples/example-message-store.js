@@ -1,7 +1,7 @@
 const { createMessageStore } = require('../memory')
-const { exampleLog } = require('../../examples')
+const { createLog } = require('../../logging')
 
 module.exports.exampleMessageStore = (opts = {}) => {
-  const log = exampleLog()
+  const log = createLog()
   return createMessageStore({ log, ...opts })
 }
