@@ -1,4 +1,4 @@
-const { exampleDocument, exampleDocumentId, exampleRandomValue } = require('../examples')
+const { exampleDocument, exampleDocumentId, ExampleEntityClass, exampleRandomValue } = require('../examples')
 const { StaleDocumentError } = require('../')
 
 exports.generateTestSuite = ({
@@ -26,6 +26,7 @@ exports.generateTestSuite = ({
         const readDocument = await documentStore.get(writeDocument.basketId)
 
         expect(readDocument).toBeDefined()
+        expect(readDocument).toBeInstanceOf(ExampleEntityClass)
         expect(readDocument.someValue).toBe(writeDocument.someValue)
       })
     })
@@ -88,7 +89,7 @@ exports.generateTestSuite = ({
     })
 
     describe('document exists at unexpected version (optimistic concurrency control)', () => {
-      it('updates successfully', async () => {
+      it('throws StaleDocumentError', async () => {
         // arrange:
         // 1. insert doc version A
         // 2. "thread 1": load doc version A
