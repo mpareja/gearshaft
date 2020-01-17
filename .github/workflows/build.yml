@@ -32,8 +32,9 @@ jobs:
       run: |
         sudo apt-get -yqq install postgresql-client
         npm install
-        npm run mdb-install
-        npm run mdb-passwd
+        npm run mdb:install
+        npm run recreate:test-schema
+        npm run mdb:passwd
         npm test
       env:
         CI: true
