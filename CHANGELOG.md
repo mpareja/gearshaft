@@ -1,3 +1,33 @@
+## v0.11.0: document projection support (2020-01-17)
+
+### Highlights
+
+- document-projection: creating view models has never been easier! Define how events are projected onto a document, specify a document-store to use, and simply create a consumer from the document-projection.
+- postgres-message-store: single-message write [performance is up 30%](message-store/postgres/test/benchmark/results/write-single-message-2020-01-05T14-39-26.results.json) by no longer creating a database transaction
+- postgres-document-store: postgres-backed storage and retrieval of documents including optimistic concurrency control
+- memory-document-store: in-memory storage and retrieval of documents including optimistic concurrency control
+- **BREAKING**: postgres-message-store: `db` option has been renamed to `postgresGateway` for anyone directly supplying a connection
+
+### Commits
+
+- ([`2587330`](https://github.com/mpareja/gearshaft/commit/2587330a41a06582768cb5b141cbeb04670aff0c)) package: update build to create the test schema
+- ([`20d0559`](https://github.com/mpareja/gearshaft/commit/20d0559a01fc67c9937f5d7bf8be030249f5cb1a)) package: update dependencies (pg to 7.17.1)
+- ([`a97cc5a`](https://github.com/mpareja/gearshaft/commit/a97cc5aba79da09e8da68e8360c116bbb0bbf386)) document-store: add postgres-document-store
+- ([`452aacd`](https://github.com/mpareja/gearshaft/commit/452aacd6e03afd3d57702a643981065d12c91b41)) document-store: ensure documents are returned with entity type
+- ([`25ddfdb`](https://github.com/mpareja/gearshaft/commit/25ddfdb34576c1cafe6a537c1ad946345a990919)) document-projection: add idempotence handling and logging
+- ([`0e47c25`](https://github.com/mpareja/gearshaft/commit/0e47c25baf463fe3b549c47c3c90c0ccfbe2b84e)) document-projection: support projecting a category stream to documents
+- ([`45e6e0c`](https://github.com/mpareja/gearshaft/commit/45e6e0c7e92be75775094db9cda1c1250dba6fb7)) package: remove "examples" directory containing exampleLog
+- ([`32e0372`](https://github.com/mpareja/gearshaft/commit/32e0372b1b4cdcc8160079e0b8c6cf90a0554754)) errors: normalize how operationError is exported
+- ([`8ff3b04`](https://github.com/mpareja/gearshaft/commit/8ff3b041fb429e818254428fe3c3db8657f8b311)) document-store: memory: add in-memory document store
+- ([`0b25888`](https://github.com/mpareja/gearshaft/commit/0b25888cd09ac539895f9b21f0c3abf1dea7ae0f)) messaging: test: correct fromReadMessageData test name
+- ([`f69663a`](https://github.com/mpareja/gearshaft/commit/f69663a30d50e2518e21f8222a3e702277a121a7)) retry: add retry module w/o needing to take on new dependency
+- ([`300d5f9`](https://github.com/mpareja/gearshaft/commit/300d5f9b26f062f206509dee1a691c4bfeca7319)) message-store: rename all `db` references to `postgresGateway`
+- ([`cb59747`](https://github.com/mpareja/gearshaft/commit/cb5974725c441bf76a93ee1183eda523e7e3943d)) postgres-gateway: extract from message-store
+- ([`6581c30`](https://github.com/mpareja/gearshaft/commit/6581c308b4a6257a7c5e8ba026a14a69582d4127)) package: generate test table for PostgresGateway
+- ([`b2f7d04`](https://github.com/mpareja/gearshaft/commit/b2f7d04ca40069886482f08b1d2a2f517548071f)) message-store: improve write perf by 30%
+- ([`024249d`](https://github.com/mpareja/gearshaft/commit/024249d5f27b2537edff5d44ca82ebe5a9bfcd0a)) message-store: benchmark writing single message
+- ([`e93997c`](https://github.com/mpareja/gearshaft/commit/e93997c8e26b753df9782e65f761e2f4332aa909)) CHANGELOG: remove duplicate section
+
 ## v0.10.1: inert write substitute (2020-01-02)
 
 ### Highlights
