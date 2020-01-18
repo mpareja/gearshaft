@@ -10,6 +10,8 @@
 
 ### Commits
 
+- ([`23bd6cf`](https://github.com/mpareja/gearshaft/commit/23bd6cfdd9bb1373101ac07054f86a8b05e12ce9)) document-store: postgres: support customizing column names
+- ([`fd8b21a`](https://github.com/mpareja/gearshaft/commit/fd8b21aa6e858097e665c22fa803c52cee2bcb61)) document-store: support multiple updates on same doc instance
 - ([`2587330`](https://github.com/mpareja/gearshaft/commit/2587330a41a06582768cb5b141cbeb04670aff0c)) package: update build to create the test schema
 - ([`20d0559`](https://github.com/mpareja/gearshaft/commit/20d0559a01fc67c9937f5d7bf8be030249f5cb1a)) package: update dependencies (pg to 7.17.1)
 - ([`a97cc5a`](https://github.com/mpareja/gearshaft/commit/a97cc5aba79da09e8da68e8360c116bbb0bbf386)) document-store: add postgres-document-store
