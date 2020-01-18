@@ -1,3 +1,13 @@
+## v0.12.0: document-projection position field (2020-01-18)
+
+### Highlights
+
+- **BREAKING** document-projection: disambiguate between the stream position used by document-projection to determine whether or not to process a message and the version used by a document-store for optimistic concurrency control. Either customize the `versionField` property to your needs, or recreate View models so they include `globalPosition`.
+
+### Commits
+
+- ([`0f275bb`](https://github.com/mpareja/gearshaft/commit/0f275bb82abd62431d085dc9454304d9e7b6a240)) document-projection: rename version field to globalPosition
+
 ## v0.11.0: document projection support (2020-01-17)
 
 ### Highlights
