@@ -76,6 +76,10 @@ The Test Suite configuration is managed using the [rc module](https://www.npmjs.
 }
 ```
 
+## What's with the name?
+
+The project is named after the concept of a physical gearshaft: a machine engineered to precisely actuate components.
+
 ## Acknowledgements
 
 Gearshaft builds on the hard-fought design learnings of the Eventide's Ruby implemention. The module boundaries and many test-cases have Eventide equivalents making the [Eventide Documentation](https://docs.eventide-project.org) a great resource for getting started. Gearshaft relies on the [Eventide Message Store Postgres Database](https://github.com/eventide-project/message-store-postgres-database) schema and functions.
