@@ -6,15 +6,22 @@ const UNIQUE_VIOLATION = '23505'
 const RETRIEVED_VERSION_FIELD = Symbol('postgres-document-store-retrieved-version')
 
 exports.createPostgresDocumentStore = ({
+  columns = {},
   entity: Entity,
   idField = 'id',
   postgresGateway,
   table
 }) => {
+  const columnId = columns.id || 'id'
+  const columnData = columns.data || 'data'
+  const columnVersion = columns.version || 'version'
+
   const get = async (id) => {
     const values = [id]
 
-    const sql = `SELECT id, version, data FROM ${table} WHERE id = $1`
+    const sql = `
+      SELECT ${columnId} as id, ${columnVersion} as version, ${columnData} as data
+      FROM ${table} WHERE ${columnId} = $1`
 
     const results = await postgresGateway.query(sql, values)
 
@@ -33,7 +40,9 @@ exports.createPostgresDocumentStore = ({
     const version = 0
     const values = [id, doc, version]
 
-    const sql = `INSERT INTO ${table} (id, version, data) VALUES ($1, $3::bigint, $2::jsonb)`
+    const sql = `
+      INSERT INTO ${table} (${columnId}, ${columnVersion}, ${columnData})
+      VALUES ($1, $3::bigint, $2::jsonb)`
 
     try {
       await postgresGateway.query(sql, values)
@@ -60,9 +69,9 @@ exports.createPostgresDocumentStore = ({
 
     const sql = `
       UPDATE ${table} SET
-        data = $2::jsonb,
-        version = $3::bigint
-      WHERE id = $1 AND version = $4::bigint`
+        ${columnData} = $2::jsonb,
+        ${columnVersion} = $3::bigint
+      WHERE ${columnId} = $1 AND ${columnVersion} = $4::bigint`
 
     const results = await postgresGateway.query(sql, values)
 

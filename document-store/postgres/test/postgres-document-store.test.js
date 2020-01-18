@@ -32,6 +32,33 @@ describe('postgres-document-store', () => {
     })
   })
 
+  describe('custom columns', () => {
+    it('allows insertion, update and retrieval', async () => {
+      const documentStore = createDocumentStore({
+        table: 'document_custom_columns',
+        columns: { id: 'custom_id', data: 'custom_data', version: 'custom_version' }
+      })
+
+      const writeDocument = exampleDocument()
+      await documentStore.insert(writeDocument)
+
+      const readDocument1 = await documentStore.get(writeDocument.basketId)
+
+      expect(readDocument1).toBeDefined()
+      expect(readDocument1).toBeInstanceOf(ExampleEntityClass)
+      expect(readDocument1.someValue).toBe(writeDocument.someValue)
+
+      writeDocument.someValue = exampleDocument().someValue
+      await documentStore.update(writeDocument)
+
+      const readDocument2 = await documentStore.get(writeDocument.basketId)
+
+      expect(readDocument2).toBeDefined()
+      expect(readDocument2).toBeInstanceOf(ExampleEntityClass)
+      expect(readDocument2.someValue).toBe(writeDocument.someValue)
+    })
+  })
+
   describe('error inserting document', () => {
     it('propagates error', async () => {
       const queryError = new Error('bogus query error')
