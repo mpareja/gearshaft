@@ -43,6 +43,8 @@ exports.createPostgresDocumentStore = ({
       }
       throw err
     }
+
+    doc[RETRIEVED_VERSION_FIELD] = version
   }
 
   const update = async (doc) => {
@@ -67,6 +69,8 @@ exports.createPostgresDocumentStore = ({
     if (results.rowCount === 0) {
       throw new StaleDocumentError('document does not exist or had unexpected version')
     }
+
+    doc[RETRIEVED_VERSION_FIELD] = updateVersion
   }
 
   return { get, insert, update }

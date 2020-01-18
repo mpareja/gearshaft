@@ -20,10 +20,9 @@ exports.createMemoryDocumentStore = (idKey = 'id') => {
       throw new StaleDocumentError('document already exists')
     }
 
-    const inserted = cloneDeep(doc)
-    inserted[versionKey] = 1
+    doc[versionKey] = 0
 
-    documents[id] = inserted
+    documents[id] = cloneDeep(doc)
   }
 
   const update = async (doc) => {
@@ -36,10 +35,9 @@ exports.createMemoryDocumentStore = (idKey = 'id') => {
       throw new StaleDocumentError('document does not exist or had unexpected version')
     }
 
-    const updated = cloneDeep(doc)
-    updated[versionKey] = found[versionKey] + 1
+    doc[versionKey] += 1
 
-    documents[id] = updated
+    documents[id] = cloneDeep(doc)
   }
 
   const setupConcurrencyError = () => {

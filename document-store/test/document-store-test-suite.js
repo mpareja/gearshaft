@@ -88,6 +88,27 @@ exports.generateTestSuite = ({
       })
     })
 
+    describe('applying multiple updates to the same document instance', () => {
+      it('updates successfully', async () => {
+        const document = exampleDocument()
+        const documentStore = createDocumentStore()
+
+        await documentStore.insert(document)
+
+        document.someValue = 'first-update'
+        await documentStore.update(document)
+
+        const readDocument1 = await documentStore.get(document.basketId)
+        expect(readDocument1.someValue).toBe('first-update')
+
+        document.someValue = 'second-update'
+        await documentStore.update(document)
+
+        const readDocument2 = await documentStore.get(document.basketId)
+        expect(readDocument2.someValue).toBe('second-update')
+      })
+    })
+
     describe('document exists at unexpected version (optimistic concurrency control)', () => {
       it('throws StaleDocumentError', async () => {
         // arrange:
