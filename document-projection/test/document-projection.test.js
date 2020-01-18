@@ -136,7 +136,7 @@ describe('document-projection', () => {
         const found = await documentStore.get(manufactured.basketId)
 
         expect(found.fruit).toEqual(['banana'])
-        expect(found.version).toEqual(fruitAdded.metadata.globalPosition)
+        expect(found.globalPosition).toEqual(fruitAdded.metadata.globalPosition)
       })
 
       it('logs the message as ignored', async () => {

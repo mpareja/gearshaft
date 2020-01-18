@@ -14,7 +14,7 @@ exports.createDocumentProjection = (options) => {
     identify,
     log,
     projection,
-    versionField = 'version'
+    versionField = 'globalPosition'
   } = options
 
   const handler = async (message) => {
