@@ -4,6 +4,7 @@ const { StreamName } = require('../stream-name')
 const A_CATEGORY = 'someCategory'
 const A_COMPOUND_ID = 'some_id+otherId'
 const AN_ID = 'some_id'
+const AN_ID_WITH_DASHES = '2fbd8c3a-f8e3-4bed-961e-525dd41de89a'
 
 describe('stream-name', () => {
   describe('with category no id', () => {
@@ -161,6 +162,32 @@ describe('stream-name', () => {
 
     it('getCardinalId returns the id', () => {
       expect(StreamName.getCardinalId(name)).toBe(AN_ID)
+    })
+  })
+
+  describe('getId', () => {
+    describe('id contains dashes', () => {
+      const name = StreamName.create(A_CATEGORY, AN_ID_WITH_DASHES)
+
+      it('getId returns the id', () => {
+        expect(StreamName.getId(name)).toBe(AN_ID_WITH_DASHES)
+      })
+    })
+
+    describe('stream name has trailing dash', () => {
+      const name = 'someCategory-'
+
+      it('getId returns null', () => {
+        expect(StreamName.getId(name)).toBe(null)
+      })
+    })
+
+    describe('id is 1 character long', () => {
+      const name = StreamName.create(A_CATEGORY, 'b')
+
+      it('getId returns null', () => {
+        expect(StreamName.getId(name)).toBe('b')
+      })
     })
   })
 

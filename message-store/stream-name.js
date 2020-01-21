@@ -29,8 +29,9 @@ class StreamName {
   }
 
   static getId (name) {
-    const split = name.split('-')
-    return split.length > 1 ? split[split.length - 1] : null
+    const idStart = name.indexOf('-') + 1
+    const hasId = idStart > 0 && idStart < name.length
+    return hasId ? name.substring(idStart) : null
   }
 
   static getCardinalId (name) {
