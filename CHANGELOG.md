@@ -1,3 +1,13 @@
+## v0.12.1: support dashes in stream ids (2020-01-23)
+
+### Highlights
+
+- message-store: `StreamName.getId` is now correctly handling ids with dashes
+
+### Commits
+
+- ([`e416c9f`](https://github.com/mpareja/gearshaft/commit/e416c9fb1432456d6a61479b412bdad31e44b758)) message-store: StreamName.getId: handle IDs with dashes
+
 ## v0.12.0: document-projection position field (2020-01-18)
 
 ### Highlights
