@@ -1,4 +1,5 @@
 const { createMessageStore } = require('../../../message-store/postgres')
+const { createTestPostgresGateway } = require('../../../postgres-gateway/test/test-postgres-gateway')
 
 const level = process.env.LOG_LEVEL || 'warn'
 const log = require('pino')({ level })
@@ -6,9 +7,9 @@ const log = require('pino')({ level })
 exports.log = log
 
 exports.initializeStore = () => {
-  const postgresTestConfig = require('../../../message-store/postgres/test/config')().db
+  const postgresGateway = createTestPostgresGateway()
 
-  const messageStore = createMessageStore({ ...postgresTestConfig, log })
+  const messageStore = createMessageStore({ log, postgresGateway })
 
   return messageStore
 }

@@ -10,7 +10,7 @@ benchmark()
 async function benchmark () {
   const messageStore = initializeStore()
   const category = exampleCategory('NoOpConsumerBenchmark', { randomize: true })
-  const total = 1e3
+  const total = process.env.CYCLES || 1e3
   await bulkWrite({ category, concurrency: 3, total, messageStore, streams: 3 })
 
   console.log('done writing messages')
