@@ -1,3 +1,14 @@
+## v0.12.2: postgres library upgrade (2020-02-25)
+
+### Highlights
+
+- postgres-gateway: upgrade `pg` dependency to verion 7.18.2. Performance benchmarks were not significantly impacted.
+
+### Commits
+
+- ([`28b0640`](https://github.com/mpareja/gearshaft/commit/28b06409e8269b727aab99966ea2bb83b5f42e59)) benchmark: update references to test postgres gateway
+- ([`c373f63`](https://github.com/mpareja/gearshaft/commit/c373f63bed484f6e624b58349f30068e26f0a4c2)) package: upgrade pg and dev dependencies
+
 ## v0.12.1: support dashes in stream ids (2020-01-23)
 
 ### Highlights
