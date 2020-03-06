@@ -59,6 +59,7 @@
   "dependencies": {
     "lodash.clonedeep": "^4.5.0",
     "pg": "^7.18.2",
+    "uuid": "^7.0.2",
     "uuid-validate": "0.0.3"
   },
   "devDependencies": {

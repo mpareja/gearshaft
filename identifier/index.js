@@ -1,3 +1,5 @@
+const { v4 } = require('uuid')
+
 module.exports = {
-  uuid: require('uuid/v4')
+  uuid: v4
 }
