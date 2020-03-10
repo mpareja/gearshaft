@@ -2,6 +2,8 @@ const { startHost } = require('../')
 const { EventEmitter } = require('events')
 const { exampleConsumer } = require('../examples')
 
+const setImmediateP = require('util').promisify(setImmediate)
+
 describe('host', () => {
   const setupHostWithConsumer = () => {
     const consumer = exampleConsumer()
@@ -24,7 +26,7 @@ describe('host', () => {
     })
   })
 
-  describe('stopping the host', () => {
+  describe('stop', () => {
     it('stops the consumer', () => {
       const { consumer, host } = setupHostWithConsumer()
 
@@ -32,15 +34,63 @@ describe('host', () => {
 
       expect(consumer.runner.stats().stopped).toBe(true)
     })
+
+    describe('given an active task', () => {
+      it('awaits completion of active task', async () => {
+        const { consumer, host } = setupHostWithConsumer()
+
+        // start active task
+        consumer.runner.trigger('blockedTask')
+        await setImmediateP()
+
+        // commence stopping
+        const stopPromise = host.stop()
+
+        // task is still blocked
+        expect(consumer.runner.stats().active).toBe(1)
+
+        setTimeout(() => {
+          consumer.runner.tasks.blockedTask.unblock()
+        }, 5)
+
+        await stopPromise
+
+        expect(consumer.runner.stats().active).toBe(0)
+      })
+    })
   })
 
-  describe('pausing the host', () => {
+  describe('pause', () => {
     it('pauses the consumer', () => {
       const { consumer, host } = setupHostWithConsumer()
 
       host.pause()
 
       expect(consumer.runner.stats().paused).toBe(true)
+    })
+
+    describe('given an active task', () => {
+      it('awaits completion of active task', async () => {
+        const { consumer, host } = setupHostWithConsumer()
+
+        // start active task
+        consumer.runner.trigger('blockedTask')
+        await setImmediateP()
+
+        // commence stopping
+        const pausePromise = host.pause()
+
+        // task is still blocked
+        expect(consumer.runner.stats().active).toBe(1)
+
+        setTimeout(() => {
+          consumer.runner.tasks.blockedTask.unblock()
+        }, 5)
+
+        await pausePromise
+
+        expect(consumer.runner.stats().active).toBe(0)
+      })
     })
   })
 

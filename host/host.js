@@ -13,9 +13,9 @@ exports.startHost = (fn, /* istanbul ignore next */ systemProcess = process) => 
 const createHost = (consumers, systemProcess) => {
   const runners = consumers.map(consumer => consumer.start())
 
-  const pause = () => runners.forEach(runner => runner.pause())
+  const pause = () => Promise.all(runners.map(runner => runner.pause()))
   const unpause = () => runners.forEach(runner => runner.unpause())
-  const stop = () => runners.forEach(runner => runner.stop())
+  const stop = () => Promise.all(runners.map(runner => runner.stop()))
 
   systemProcess.on('SIGCONT', unpause)
   systemProcess.on('SIGINT', stop)
