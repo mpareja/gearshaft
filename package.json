@@ -64,15 +64,15 @@
   },
   "devDependencies": {
     "@eventide/message-db": "^1.1.6",
-    "dependency-cruiser": "^7.2.0",
+    "dependency-cruiser": "^8.0.1",
     "husky": "^4.2.3",
     "jest": "^25.1.0",
     "js-joda": "^1.11.0",
     "opener": "^1.5.1",
-    "pino": "^5.16.0",
+    "pino": "^5.17.0",
     "rc": "^1.2.8",
     "rimraf": "^3.0.2",
     "standard": "^14.3.1",
-    "systeminformation": "^4.22.3"
+    "systeminformation": "^4.23.0"
   }
 }
