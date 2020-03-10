@@ -2,7 +2,7 @@ const createTestLog = require('../../test/test-log')
 const { AssertionError } = require('assert')
 const { catchError } = require('../../errors')
 const { createDocumentProjection } = require('../')
-const { exampleDocumentProjection, FruitAdded, Manufactured } = require('../examples')
+const { exampleDocumentProjection, exampleManufactured, FruitAdded, Manufactured } = require('../examples')
 const { exampleMessage, follow } = require('../../messaging')
 
 describe('document-projection', () => {
@@ -70,7 +70,7 @@ describe('document-projection', () => {
       const documentProjection = exampleDocumentProjection(options)
       const { documentStore, handler } = documentProjection
 
-      const manufactured = exampleMessage(Manufactured)
+      const manufactured = exampleManufactured()
 
       await handler(manufactured)
 
@@ -111,6 +111,7 @@ describe('document-projection', () => {
 
         expect(log.info).toHaveBeenCalledWith({
           foundDocumentVersion: undefined,
+          FruitBasketViewId: manufactured.basketId,
           messageId: manufactured.id,
           globalPosition: manufactured.metadata.globalPosition
         }, 'FruitBasketView document-projection: document updated successfully')
@@ -147,6 +148,7 @@ describe('document-projection', () => {
 
         expect(log.info).toHaveBeenCalledWith({
           foundDocumentVersion: fruitAdded.metadata.globalPosition,
+          FruitBasketViewId: fruitAdded.basketId,
           messageId: 'some-id',
           globalPosition: fruitAdded.metadata.globalPosition
         }, 'FruitBasketView document-projection: message ignored, already processed')

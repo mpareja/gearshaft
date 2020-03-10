@@ -17,6 +17,10 @@ exports.createDocumentProjection = (options) => {
     versionField = 'globalPosition'
   } = options
 
+  // use projection-specific field name to avoid data type
+  // collisions across projections
+  const loggedIdField = Entity.name + 'Id'
+
   const handler = async (message) => {
     const id = identify(message)
     const globalPosition = message.metadata.globalPosition
@@ -29,6 +33,7 @@ exports.createDocumentProjection = (options) => {
       const meta = {
         foundDocumentVersion: foundDocument ? foundDocument[versionField] : undefined,
         globalPosition,
+        [loggedIdField]: id,
         messageId: message.id
       }
 

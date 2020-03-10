@@ -2,6 +2,8 @@ const { createDocumentProjection } = require('../document-projection')
 const { createEntityProjection } = require('../../entity-projection')
 const { createLog } = require('../../logging')
 const { createMemoryDocumentStore } = require('../../document-store/memory')
+const { exampleMessage } = require('../../messaging')
+const { uuid } = require('../../identifier')
 
 const exampleDocumentProjection = (overrides) => {
   const fields = Object.assign({
@@ -13,6 +15,12 @@ const exampleDocumentProjection = (overrides) => {
   }, overrides)
 
   return createDocumentProjection(fields)
+}
+
+const exampleManufactured = () => {
+  const manufactured = exampleMessage(Manufactured)
+  manufactured.basketId = uuid()
+  return manufactured
 }
 
 class FruitBasketView {
@@ -49,6 +57,7 @@ const FruitBasketViewProjection = createEntityProjection((register) => {
 
 module.exports = {
   exampleDocumentProjection,
+  exampleManufactured,
   FruitAdded,
   FruitBasketView,
   FruitBasketViewProjection,
