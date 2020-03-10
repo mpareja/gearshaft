@@ -158,7 +158,10 @@ describe('given a handler exception', () => {
     await runner.stop()
 
     expect(log.warn).toHaveBeenCalledWith(expect.anything(),
-      'MyConsumer consumer: processing paused due to error (errorStrategy = "pause")')
+      'MyConsumer consumer: processing paused due to error')
+
+    const logMetadata = log.warn.mock.calls[0][0]
+    expect(logMetadata.err).toBeDefined()
   })
 
   it('unpausing runner retries the same message', async () => {

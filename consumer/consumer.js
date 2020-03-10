@@ -106,14 +106,24 @@ exports.createConsumer = ({
 
     // --- CONSUMPTION ----
 
+    const pauseErrorStrategy = (err) => {
+      throw err
+    }
+
     const processMessage = async () => {
       const messageData = queue.shift()
       try {
         await dispatch(messageData)
-      } catch (e) {
-        log.warn(getLogMeta(messageData), prefix('processing paused due to error (errorStrategy = "pause")'))
-        runner.pause()
-        queue.unshift(messageData) // place back in queue for retry if unpaused
+      } catch (error) {
+        const logMetadata = getLogMeta(messageData)
+
+        try {
+          await pauseErrorStrategy(error, messageData, { dispatch, log, logMetadata })
+        } catch (err) {
+          log.warn({ ...logMetadata, err }, prefix('processing paused due to error'))
+          runner.pause()
+          queue.unshift(messageData) // place back in queue for retry if unpaused
+        }
       }
 
       if (state === 'draining' && queue.length < lowWaterMark) {
