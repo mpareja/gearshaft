@@ -1,3 +1,19 @@
+## v0.12.3: minor operational enhancements (2020-03-10)
+
+### Highlights
+
+- host: support waiting for consumers to finish pausing / stopping
+- document-projection: log entries now include the id of the document being updated
+- message-store: category: allow retrieval of category name
+
+### Commits
+
+- ([`56ac7eb`](https://github.com/mpareja/gearshaft/commit/56ac7eb97f52b4d08ad1b3f70daae95e9556c293)) host: pause/stop support waiting for consumers to pause/stop
+- ([`fc595d6`](https://github.com/mpareja/gearshaft/commit/fc595d6d6bdc62b4f95b8de5de9dcc3d3fde0a24)) document-projection: include projection id in log message
+- ([`c7e7c3b`](https://github.com/mpareja/gearshaft/commit/c7e7c3b2b8a8d9091a09c48b140b4bed7b926787)) message-store: category: allow retrieval of category name
+- ([`6a4dd59`](https://github.com/mpareja/gearshaft/commit/6a4dd592bc8518bbac90ab9feb33cbcaa914a797)) package: upgrade development dependencies
+- ([`93a8d57`](https://github.com/mpareja/gearshaft/commit/93a8d5799350c32e35c4ec5334c7163e150c69cb)) package: upgrade uuid and include in operational dependencies
+
 ## v0.12.2: postgres library upgrade (2020-02-25)
 
 ### Highlights
