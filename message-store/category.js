@@ -40,5 +40,5 @@ exports.createCategory = (category) => {
     }
   }
 
-  return { commandCategory, commandStreamName, entityStreamName }
+  return { category, commandCategory, commandStreamName, entityStreamName }
 }

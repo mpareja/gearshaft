@@ -13,6 +13,14 @@ const catchError = (fn) => {
 }
 
 describe('category', () => {
+  describe('category', () => {
+    it('returns the category name', () => {
+      const category = createCategory(A_CATEGORY)
+
+      expect(category.category).toBe(A_CATEGORY)
+    })
+  })
+
   describe('commandStreamName', () => {
     describe('given no types specified', () => {
       it('adds "command" type to stream name', () => {
