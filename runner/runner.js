@@ -50,9 +50,7 @@ exports.createRunner = ({ tasks }) => {
   }
 
   const awaitActive = () => {
-    // mimick allSettled
-    const promises = active.map(p => p.catch(() => {}))
-    return Promise.all(promises)
+    return Promise.all(active)
   }
 
   const stats = () => {

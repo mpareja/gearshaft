@@ -11,8 +11,8 @@ const setupRunBlockedTask = async () => {
 
   await setImmediateP()
 
-  const { unblock, unblockWithError } = runner.tasks.blockedTask
-  return { runner, unblock, unblockWithError }
+  const { unblock } = runner.tasks.blockedTask
+  return { runner, unblock }
 }
 
 describe('trigger', () => {
@@ -188,18 +188,6 @@ describe('stop', () => {
       const promise = runner.stop()
 
       unblock()
-
-      await promise
-    })
-  })
-
-  describe('given a long task that fails', () => {
-    it('stop resolves once task is complete', async () => {
-      const { runner, unblockWithError } = await setupRunBlockedTask()
-
-      const promise = runner.stop()
-
-      unblockWithError()
 
       await promise
     })

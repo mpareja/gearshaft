@@ -3,13 +3,11 @@ exports.exampleTasks = () => {
   const task = async (...args) => taskCalls.push(args)
   task.calls = taskCalls
 
-  let blockedResolve, blockedReject
-  const blockedTask = () => new Promise((resolve, reject) => {
+  let blockedResolve
+  const blockedTask = () => new Promise((resolve) => {
     blockedResolve = resolve
-    blockedReject = reject
   })
   blockedTask.unblock = () => blockedResolve()
-  blockedTask.unblockWithError = () => blockedReject(new Error('bogus'))
 
   return { blockedTask, task }
 }
