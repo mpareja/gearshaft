@@ -1,6 +1,7 @@
 const { createRunner, exampleRunner } = require('../')
 const { promisify } = require('util')
 const setImmediateP = promisify(setImmediate)
+const delay = promisify(setTimeout)
 
 const NO_PARAMETERS = []
 
@@ -148,48 +149,66 @@ describe('pause / unpause', () => {
   })
 
   describe('given a long running task', () => {
-    it('waits for task to complete', async () => {
+    it('pause waits and resolves once task is complete', async () => {
       const { runner } = await setupRunBlockedTask()
 
-      let resolved = false
-      runner.pause().then(() => { resolved = true })
+      let paused = false
+      runner.pause().then(() => { paused = true })
 
+      // give task opportunity to start and block
+      await delay(10)
+
+      expect(paused).toBe(false)
+
+      // unblock and expect pause to complete on next tick
+      runner.tasks.blockedTask.unblock()
       await setImmediateP()
-      expect(resolved).toBe(false)
+
+      expect(paused).toBe(true)
     })
+  })
 
-    it('pause resolves once task is complete', async () => {
-      const { runner, unblock } = await setupRunBlockedTask()
+  describe('triggering task and pausing runner on the same event loop tick', () => {
+    it('pauses runner once task is complete', async () => {
+      const runner = exampleRunner()
 
-      const promise = runner.pause()
+      runner.trigger('blockedTask')
 
-      unblock()
+      let paused = false
+      runner.pause().then(() => { paused = true })
 
-      await promise
+      // give task opportunity to start and block
+      await delay(10)
+
+      expect(paused).toBe(false)
+
+      // unblock and expect pause to complete on next tick
+      runner.tasks.blockedTask.unblock()
+      await setImmediateP()
+
+      expect(paused).toBe(true)
     })
   })
 })
 
 describe('stop', () => {
   describe('given a long running task', () => {
-    it('waits for task to complete', async () => {
-      const { runner } = await setupRunBlockedTask()
-
-      let resolved = false
-      runner.stop().then(() => { resolved = true })
-
-      await setImmediateP()
-      expect(resolved).toBe(false)
-    })
-
-    it('stop resolves once task is complete', async () => {
+    it('stop waits and resolves once task is complete', async () => {
       const { runner, unblock } = await setupRunBlockedTask()
 
-      const promise = runner.stop()
+      let stopped = false
+      runner.stop().then(() => { stopped = true })
 
+      // give task opportunity to start and block
+      await delay(10)
+
+      expect(stopped).toBe(false)
+
+      // unblock and expect stop to complete on next tick
       unblock()
+      await setImmediateP()
 
-      await promise
+      expect(stopped).toBe(true)
     })
   })
 
@@ -201,6 +220,28 @@ describe('stop', () => {
       runner.trigger('task')
 
       expect(runner.tasks.task.calls).toHaveLength(0)
+    })
+  })
+
+  describe('triggering task and stopping runner on the same event loop tick', () => {
+    it('stops runner once task is complete', async () => {
+      const runner = exampleRunner()
+
+      runner.trigger('blockedTask')
+
+      let stopped = false
+      runner.stop().then(() => { stopped = true })
+
+      // give task opportunity to start and block
+      await delay(10)
+
+      expect(stopped).toBe(false)
+
+      // unblock and expect stop to complete on next tick
+      runner.tasks.blockedTask.unblock()
+      await setImmediateP()
+
+      expect(stopped).toBe(true)
     })
   })
 

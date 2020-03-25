@@ -1,3 +1,5 @@
+const setImmediateP = require('util').promisify(setImmediate)
+
 exports.createRunner = ({ tasks }) => {
   const active = []
   let queue = []
@@ -20,15 +22,15 @@ exports.createRunner = ({ tasks }) => {
   }
 
   const triggerTask = (name, args) => {
-    let promise = tasks[name](...args)
+    const promise = tasks[name](...args)
 
     if (promise instanceof Promise) {
-      promise = promise.finally(() => {
-        const ix = active.indexOf(promise)
+      const cleanupPromise = promise.finally(() => {
+        const ix = active.indexOf(cleanupPromise)
         active.splice(ix, 1)
       })
 
-      active.push(promise)
+      active.push(cleanupPromise)
     }
   }
 
@@ -49,7 +51,10 @@ exports.createRunner = ({ tasks }) => {
     return awaitActive()
   }
 
-  const awaitActive = () => {
+  const awaitActive = async () => {
+    // allow tasks triggered on same tick to register as active
+    await setImmediateP()
+
     return Promise.all(active)
   }
 
