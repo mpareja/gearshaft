@@ -115,7 +115,17 @@ exports.createConsumer = ({
           log.warn({ category, correlation, err }, prefix('processing paused due to error'))
           runner.pause()
           queue.unshift(messageData) // place back in queue for retry if unpaused
-          throw err
+
+          // As of Node.js 12, uncaught promise rejections _still_ don't terminate
+          // the process. As such, let's ensure users are accustomed to process
+          // termination on fatal errors by throwing an uncaught exception. Use
+          // of next tick is preferred over setImmediate to ensure other queued async
+          // activity is not processed.
+          process.nextTick(() => {
+            throw err
+          })
+
+          return
         }
       }
 
