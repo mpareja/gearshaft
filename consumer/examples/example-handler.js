@@ -12,7 +12,7 @@ exports.exampleHandler = () => {
   const handler = (input) => { calls.push(input) }
   handler.calls = calls
   handler.waitUntilCalled = () => waitUntilCalledAtLeast(calls, 1)
-  handler.waitUntilCalledAtLeast = (times) => waitUntilCalledAtLeast(calls, times)
+  handler.waitUntilCalledAtLeast = waitUntilCalledAtLeast.bind(null, calls)
 
   return handler
 }
@@ -27,7 +27,7 @@ exports.exampleHandlerBlocking = () => {
   })
   handler.calls = calls
   handler.waitUntilCalled = () => waitUntilCalledAtLeast(calls, 1)
-  handler.waitUntilCalledAtLeast = (times) => waitUntilCalledAtLeast(calls, times)
+  handler.waitUntilCalledAtLeast = waitUntilCalledAtLeast.bind(null, calls)
 
   return handler
 }

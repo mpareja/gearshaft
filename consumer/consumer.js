@@ -5,6 +5,11 @@ const { createRunner } = require('../runner')
 const { operationError } = require('../errors')
 const { throttleErrorLogging } = require('../logging')
 
+/* istanbul ignore next */
+const crashStopErrorStrategy = (error) => {
+  throw error
+}
+
 exports.createConsumer = ({
   log,
   name,
@@ -16,6 +21,7 @@ exports.createConsumer = ({
   groupMember,
   groupSize,
   strict = false,
+  errorStrategy = crashStopErrorStrategy,
 
   // TUNING
   highWaterMark = 500,
@@ -30,16 +36,6 @@ exports.createConsumer = ({
 
   const registry = createConsumerHandlerRegistry({ name, log, strict })
   registerHandlers(registry.register)
-
-  const getLogMeta = (messageData) => {
-    return {
-      category,
-      correlation,
-      position: messageData.position,
-      globalPosition: messageData.globalPosition,
-      type: messageData.type
-    }
-  }
 
   const dispatch = async (messageData) => {
     await registry.handle(messageData)
@@ -106,23 +102,20 @@ exports.createConsumer = ({
 
     // --- CONSUMPTION ----
 
-    const pauseErrorStrategy = (err) => {
-      throw err
-    }
-
     const processMessage = async () => {
       const messageData = queue.shift()
       try {
         await dispatch(messageData)
       } catch (error) {
-        const logMetadata = getLogMeta(messageData)
-
         try {
-          await pauseErrorStrategy(error, messageData, { dispatch, log, logMetadata })
-        } catch (err) {
-          log.warn({ ...logMetadata, err }, prefix('processing paused due to error'))
+          await errorStrategy(error, messageData, dispatch)
+        } catch (err) /* istanbul ignore next */ {
+          // it is possible global uncaught exception handling will prevent/delay
+          // process crash, so "pause" further message consumption and reading
+          log.warn({ category, correlation, err }, prefix('processing paused due to error'))
           runner.pause()
           queue.unshift(messageData) // place back in queue for retry if unpaused
+          throw err
         }
       }
 
