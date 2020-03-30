@@ -12,6 +12,8 @@ const {
   exampleStreamName, exampleWriteMessageData
 } = require('./init-message-store')
 
+const delay = require('util').promisify(setTimeout)
+
 let postgresGateway
 beforeAll(() => { postgresGateway = createTestPostgresGateway() })
 afterAll(async () => { await postgresGateway.end() })
@@ -95,6 +97,26 @@ describe('message-store-postgres', () => {
 
       await messageStore.getLast(exampleStreamName())
     })
+
+    it('logs connection pool errors (since application cannot bind to errors directly)', async () => {
+      const databaseSettings = getConfig().db
+      const log = createTestLog()
+      const config = { ...databaseSettings, log }
+      require('../').createMessageStore(config)
+
+      // pid of new connection
+      const result = await config.postgresGateway.query('SELECT pg_backend_pid() as pid')
+      const { pid } = result.rows[0]
+
+      // use other connection to kill new connection (i.e. induce error outside
+      // the context of a specific query execution)
+      await postgresGateway.query('SELECT pg_terminate_backend($1::int)', [pid])
+
+      await delay(100) // give termination of other pid a chance to be noticed
+
+      expect(log.error).toHaveBeenCalledWith(expect.anything(),
+        'message-store: postgres connection error')
+    })
   })
 
   describe('transactions', () => {
@@ -150,7 +172,6 @@ describe('message-store-postgres', () => {
           states.push('after block')
         })
 
-        const delay = require('util').promisify(setTimeout)
         states.push('before delay')
         await delay(50)
         states.push('after delay')

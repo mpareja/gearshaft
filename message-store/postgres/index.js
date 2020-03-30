@@ -10,7 +10,13 @@ module.exports.createMessageStore = (config) => {
   // allow passing in postgresGateway instance or settings
   const { ...databaseSettings } = config
   delete databaseSettings.log
-  config.postgresGateway = config.postgresGateway || createPostgresGateway(databaseSettings)
+
+  if (!config.postgresGateway) {
+    config.postgresGateway = createPostgresGateway(databaseSettings)
+    config.postgresGateway.on('error',
+      (err) => config.log.error({ err }, 'message-store: postgres connection error'))
+  }
+
   config.log = config.log || createLog()
 
   const get = createGet(config)
