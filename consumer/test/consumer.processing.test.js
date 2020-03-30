@@ -245,8 +245,7 @@ describe('given an error while fetching messages', () => {
 
     expect(log.error).toHaveBeenCalledWith({
       category,
-      err: new Error('getCategory error'),
-      errorCount: 1
+      err: new Error('getCategory error')
     }, 'MyConsumer consumer: error reading from stream')
   })
 })
@@ -277,7 +276,7 @@ describe('given an error fetching initial consumer position', () => {
     await runner.stop()
 
     expect(log.error).toHaveBeenCalledWith(
-      { category, err: expect.anything(), errorCount: 1, name },
+      { category, err: expect.anything(), name },
       'MyConsumer consumer: error reading consumer start position')
   })
 

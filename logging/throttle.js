@@ -6,7 +6,7 @@ exports.throttleErrorLogging = (
   let errorCount = 0
 
   const tenSecondsSinceLastLogged = () => {
-    const spanMs = clock() - errorLoggedTs
+    const spanMs = clock() - errorLoggedTs // handles null
     return spanMs >= (10 * 1000)
   }
 
@@ -15,16 +15,22 @@ exports.throttleErrorLogging = (
     try {
       result = await fn(...args)
 
-      if (errorCount) {
-        log.info({ errorCount, ...context }, recoverMessage)
+      if (errorCount === 1) {
+        log.info(context, recoverMessage)
       }
-      errorLoggedTs = null
-      errorCount = 0
     } catch (err) {
-      errorCount++
-      if (!errorLoggedTs || tenSecondsSinceLastLogged()) {
+      // only track errors inside 10s windows
+      if (tenSecondsSinceLastLogged()) {
+        errorCount = 1
         errorLoggedTs = clock()
-        log.error({ errorCount, ...context, err }, errorMessage)
+      } else {
+        errorCount++
+      }
+
+      if (errorCount === 1) {
+        log.error({ ...context, err }, errorMessage)
+      } else if (errorCount === 2) {
+        log.error({ ...context, err }, errorMessage + ' (logging suppressed for next 10s)')
       }
 
       throw err

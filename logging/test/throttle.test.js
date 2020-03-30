@@ -64,7 +64,6 @@ describe('throttle-error-log', () => {
       await throttled().catch(() => {})
 
       expect(throttled.log.error).toHaveBeenCalledWith({
-        errorCount: 1,
         some: 'context',
         err: new Error('operation failed')
       }, AN_ERROR_MESSAGE)
@@ -73,14 +72,14 @@ describe('throttle-error-log', () => {
     it('waits 10s before logging the error again', async () => {
       const throttled = setupThrottledOperation()
 
-      await throttled().catch(() => {})
-      await throttled().catch(() => {})
+      await throttled().catch(() => {}) // initial logged
+      await throttled().catch(() => {}) // subsequent logged
+      await throttled().catch(() => {}) // not logged
       throttled.clock.plusSeconds(10)
-      await throttled().catch(() => {})
+      await throttled().catch(() => {}) // logged
 
-      expect(throttled.log.error).toHaveBeenCalledTimes(2)
+      expect(throttled.log.error).toHaveBeenCalledTimes(3)
       expect(throttled.log.error).toHaveBeenCalledWith({
-        errorCount: 3,
         some: 'context',
         err: new Error('operation failed')
       }, AN_ERROR_MESSAGE)
@@ -94,9 +93,54 @@ describe('throttle-error-log', () => {
       await throttled()
 
       expect(throttled.log.info).toHaveBeenCalledWith({
-        errorCount: 1,
         some: 'context'
       }, A_RECOVERY_MESSAGE)
+    })
+  })
+
+  describe('given an operation is intermittently failing', () => {
+    it('logs subsequent error indicating suppression of further logs', async () => {
+      const throttled = setupThrottledOperation()
+
+      await throttled().catch(() => {})
+      throttled.operation.completing()
+      await throttled()
+      throttled.operation.failing()
+      await throttled().catch(() => {})
+      await throttled().catch(() => {}) // no error logged
+
+      expect(throttled.log.error).toHaveBeenCalledTimes(2)
+
+      expect(throttled.log.error).toHaveBeenCalledWith({
+        some: 'context',
+        err: new Error('operation failed')
+      }, AN_ERROR_MESSAGE)
+
+      expect(throttled.log.error).toHaveBeenCalledWith({
+        some: 'context',
+        err: new Error('operation failed')
+      }, AN_ERROR_MESSAGE + ' (logging suppressed for next 10s)')
+    })
+
+    it('suppresses recovery messages for 10 seconds', async () => {
+      const throttled = setupThrottledOperation()
+
+      await throttled().catch(() => {})
+      throttled.operation.completing()
+      await throttled() // initial recovery logged
+
+      throttled.operation.failing()
+      await throttled().catch(() => {})
+      throttled.operation.completing()
+      await throttled() // no recovery logged
+
+      throttled.clock.plusSeconds(10)
+      throttled.operation.failing()
+      await throttled().catch(() => {})
+      throttled.operation.completing()
+      await throttled() // recovery logged
+
+      expect(throttled.log.info).toHaveBeenCalledTimes(2)
     })
   })
 })
