@@ -1,3 +1,23 @@
+## v0.13.0: consumer: configurable error handling (2020-03-30)
+
+### Highlights
+
+- **BREAKING** consumer: handler exceptions crash the process by default
+- consumer: supports configurable `errorStrategy` for dealing with handler errors. If the function does not throw, the message is considered processed. The `errorStrategy` function receives the following 3 parameters and can be used to retry handlers and/or log errors before throwing:
+  - `error`: the error thrown by the handler
+  - `messageData`: the message data the handler was consuming
+  - `dispatch`: a function accepting `messageData` and triggering the assocatied message handler
+
+### Commits
+
+- ([`df8e8cb`](https://github.com/mpareja/gearshaft/commit/df8e8cbde8ea861b92df79ec605e2023d5ef0bcf)) message-store: postgres: handle errors for _managed_ postgres connections
+- ([`58dcaf4`](https://github.com/mpareja/gearshaft/commit/58dcaf40aacf517ef024893c4b64af26d206497f)) logging: throttle: better handle intermittent errors
+- ([`200b6d6`](https://github.com/mpareja/gearshaft/commit/200b6d603e2562c9eeff7b9176dd6e5aa6f73ba5)) consumer: throw uncaught exception on error instead of promise rejection
+- ([`6e99f05`](https://github.com/mpareja/gearshaft/commit/6e99f05aed89cdeb763ae013bed6251b0dc98363)) consumer: crash-stop on error, support configurable errorStrategy
+- ([`12481d3`](https://github.com/mpareja/gearshaft/commit/12481d3d59a50ceb879505d085048f5a43410b02)) runner: pause/stop wait for tasks triggered on same tick of the event loop
+- ([`e694281`](https://github.com/mpareja/gearshaft/commit/e694281ea527ca19e540dacc4299cc5adf153a72)) runner: stop/pause no longer swallow unhandled rejections
+- ([`08c4de3`](https://github.com/mpareja/gearshaft/commit/08c4de3aaa208bf074e9284fe23a0d2ac1acc2e7)) consumer: extract pauseErrorStrategy, preparing for pluggable strategies
+
 ## v0.12.3: minor operational enhancements (2020-03-10)
 
 ### Highlights
