@@ -6,7 +6,7 @@
 - consumer: supports configurable `errorStrategy` for dealing with handler errors. If the function does not throw, the message is considered processed. The `errorStrategy` function receives the following 3 parameters and can be used to retry handlers and/or log errors before throwing:
   - `error`: the error thrown by the handler
   - `messageData`: the message data the handler was consuming
-  - `dispatch`: a function accepting `messageData` and triggering the assocatied message handler
+  - `dispatch`: a function accepting `messageData` and triggering the associated message handler
 
 ### Commits
 
