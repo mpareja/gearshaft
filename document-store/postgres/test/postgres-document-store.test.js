@@ -3,11 +3,15 @@ const { createTestPostgresGateway } = require('../../../postgres-gateway/test/te
 const { exampleDocument, ExampleEntityClass } = require('../../examples')
 const { generateTestSuite } = require('../../test/document-store-test-suite')
 
+const postgresGateway = createTestPostgresGateway()
+
+afterAll(() => postgresGateway.end())
+
 const createDocumentStore = (overrides) => {
   return createPostgresDocumentStore(Object.assign({
     entity: ExampleEntityClass,
     idField: 'basketId',
-    postgresGateway: createTestPostgresGateway(),
+    postgresGateway,
     table: 'document_projection'
   }, overrides))
 }
