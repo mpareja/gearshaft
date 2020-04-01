@@ -13,8 +13,13 @@ module.exports.createMessageStore = (config) => {
 
   if (!config.postgresGateway) {
     config.postgresGateway = createPostgresGateway(databaseSettings)
-    config.postgresGateway.on('error',
-      (err) => config.log.error({ err }, 'message-store: postgres connection error'))
+    config.postgresGateway.on('error', (err) => {
+      // prevent exposing postgres credentials and clogging up logs
+      // https://github.com/brianc/node-postgres/issues/1568
+      delete err.client
+
+      config.log.error({ err }, 'message-store: postgres connection error')
+    })
   }
 
   config.log = config.log || createLog()

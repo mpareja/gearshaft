@@ -96,26 +96,39 @@ describe('message-store-postgres', () => {
       const messageStore = require('../').createMessageStore(databaseSettings)
 
       await messageStore.getLast(exampleStreamName())
+
+      await databaseSettings.postgresGateway.end()
     })
 
-    it('logs connection pool errors (since application cannot bind to errors directly)', async () => {
+    it('logs connection pool errors (since application cannot log errors directly)', async () => {
       const databaseSettings = getConfig().db
       const log = createTestLog()
       const config = { ...databaseSettings, log }
       require('../').createMessageStore(config)
 
-      // pid of new connection
+      // 1. reserve connection that will do the termination
+      const reaperConnection = await config.postgresGateway.connect()
+
+      // 2. grab pid for connection that will be terminated
       const result = await config.postgresGateway.query('SELECT pg_backend_pid() as pid')
       const { pid } = result.rows[0]
 
-      // use other connection to kill new connection (i.e. induce error outside
-      // the context of a specific query execution)
-      await postgresGateway.query('SELECT pg_terminate_backend($1::int)', [pid])
+      // 3. terminate the other connection
+      await reaperConnection.query('SELECT pg_backend_pid() as pid, pg_terminate_backend($1::int)', [pid])
+      await reaperConnection.release()
+
+      // 4. cleanup
+      await config.postgresGateway.end()
 
       await delay(100) // give termination of other pid a chance to be noticed
 
-      expect(log.error).toHaveBeenCalledWith(expect.anything(),
+      expect(log.error).toHaveBeenCalledWith({ err: expect.any(Error) },
         'message-store: postgres connection error')
+
+      // ensure credentials aren't exposed to logs
+      // https://github.com/brianc/node-postgres/issues/1568
+      const error = log.error.mock.calls[0][0]
+      expect(containsValue(error, databaseSettings.password)).toBe(false)
     })
   })
 
@@ -201,3 +214,23 @@ describe('message-store-postgres', () => {
     })
   })
 })
+
+const containsValue = (obj, value) => {
+  if (obj === value) {
+    return true
+  }
+
+  if (!obj) {
+    return false
+  }
+
+  if (obj instanceof Array) {
+    return obj.some((entry) => containsValue(entry, value))
+  }
+
+  if (typeof obj === 'object') {
+    return Object.values(obj).some((entry) => containsValue(entry, value))
+  }
+
+  return false
+}
