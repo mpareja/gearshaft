@@ -1,3 +1,24 @@
+## v0.13.1: host events & compound stream ids (2020-04-01)
+
+### Highlights
+
+- host: emit paused/unpaused/stopped events. Applications can leverage the events to cleanly shut down after consumers have stopped.
+- message-store: StreamName: add compound id and cardinal id support
+  - support creating compound identifiers by supplying array of IDs
+  - support creating compound identifiers by supplying id and `ids` array
+  - support providing explicit `cardinalId`
+- message-store: postgres: prevent leaking sensitive data when logging connection errors
+
+### Commits
+
+- ([`6e73cad`](https://github.com/mpareja/gearshaft/commit/6e73cad6495edbf3623b787af32c7d83cde1bc02)) package: upgrade uuid and dev dependencies
+- ([`7538833`](https://github.com/mpareja/gearshaft/commit/7538833983d5a970102ae590c1f56e722761313e)) document-store: test: cleanup postgres gateway after tests
+- ([`caab2b6`](https://github.com/mpareja/gearshaft/commit/caab2b67412f1c447475ff102661a8f6f4a32a34)) logging: throttle: use "warn" log level when recovering from errors
+- ([`bf8b1e9`](https://github.com/mpareja/gearshaft/commit/bf8b1e988b77753b4661fc6f72771cc05785d444)) host: emit paused/unpaused/stopped events
+- ([`fa9ff31`](https://github.com/mpareja/gearshaft/commit/fa9ff31e57c5d783edf0e056bf582a4c85f9f354)) message-store: StreamName: add compound id and cardinal id support
+- ([`7437d85`](https://github.com/mpareja/gearshaft/commit/7437d85fe1d23e4ec0aaa70a3bb081dd526095a0)) message-store: postgres: prevent leaking sensitive data in logs
+- ([`a9d4b26`](https://github.com/mpareja/gearshaft/commit/a9d4b26d573887cc8a586ef01d945013ec04512d)) CHANGELOG: correct typo
+
 ## v0.13.0: consumer: configurable error handling (2020-03-30)
 
 ### Highlights
