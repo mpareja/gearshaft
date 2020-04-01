@@ -44,7 +44,7 @@ describe('throttle-error-log', () => {
 
       await throttled()
 
-      expect(log.info).not.toHaveBeenCalled()
+      expect(log.warn).not.toHaveBeenCalled()
       expect(log.error).not.toHaveBeenCalled()
     })
   })
@@ -92,7 +92,7 @@ describe('throttle-error-log', () => {
       throttled.operation.completing()
       await throttled()
 
-      expect(throttled.log.info).toHaveBeenCalledWith({
+      expect(throttled.log.warn).toHaveBeenCalledWith({
         some: 'context'
       }, A_RECOVERY_MESSAGE)
     })
@@ -126,6 +126,7 @@ describe('throttle-error-log', () => {
       const throttled = setupThrottledOperation()
 
       await throttled().catch(() => {})
+      await throttled().catch(() => {})
       throttled.operation.completing()
       await throttled() // initial recovery logged
 
@@ -140,7 +141,7 @@ describe('throttle-error-log', () => {
       throttled.operation.completing()
       await throttled() // recovery logged
 
-      expect(throttled.log.info).toHaveBeenCalledTimes(2)
+      expect(throttled.log.warn).toHaveBeenCalledTimes(2)
     })
   })
 })
