@@ -59,20 +59,20 @@
   "dependencies": {
     "lodash.clonedeep": "^4.5.0",
     "pg": "^7.18.2",
-    "uuid": "^7.0.2",
+    "uuid": "^7.0.3",
     "uuid-validate": "0.0.3"
   },
   "devDependencies": {
     "@eventide/message-db": "^1.1.6",
-    "dependency-cruiser": "^8.0.1",
+    "dependency-cruiser": "^8.1.0",
     "husky": "^4.2.3",
-    "jest": "^25.1.0",
+    "jest": "^25.2.4",
     "js-joda": "^1.11.0",
     "opener": "^1.5.1",
-    "pino": "^5.17.0",
+    "pino": "^6.0.0",
     "rc": "^1.2.8",
     "rimraf": "^3.0.2",
-    "standard": "^14.3.1",
-    "systeminformation": "^4.23.0"
+    "standard": "^14.3.3",
+    "systeminformation": "^4.23.1"
   }
 }
