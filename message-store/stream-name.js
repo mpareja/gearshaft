@@ -4,9 +4,23 @@ class StreamName {
   static create (category, id, extra = {}) {
     assert(typeof category === 'string')
 
-    if (id && typeof id === 'object') {
+    if (id && typeof id === 'object' && !Array.isArray(id)) {
       extra = id
       id = null
+    }
+
+    const allIds = []
+    if (typeof extra.cardinalId === 'string') {
+      allIds.push(extra.cardinalId)
+    }
+    if (typeof id === 'string') {
+      allIds.push(id)
+    }
+    if (Array.isArray(id)) {
+      allIds.push(...id)
+    }
+    if (Array.isArray(extra.ids)) {
+      allIds.push(...extra.ids)
     }
 
     const allTypes = Array.isArray(extra.types) ? extra.types : []
@@ -16,7 +30,7 @@ class StreamName {
 
     let name = category
     if (allTypes.length) { name += `:${allTypes.join('+')}` }
-    if (id) { name += `-${id}` }
+    if (allIds.length) { name += `-${allIds.join('+')}` }
     return name
   }
 

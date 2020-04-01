@@ -67,8 +67,48 @@ describe('stream-name', () => {
     })
   })
 
-  describe('with category and multiple ids', () => {
+  describe('with category and multiple ids (string)', () => {
     const name = StreamName.create('someCategory', A_COMPOUND_ID)
+
+    it('stream name is the category and the ids delimited by + sign', () => {
+      expect(name).toEqual('someCategory-some_id+otherId')
+    })
+
+    it('getCategory returns the category name and types but no id', () => {
+      expect(StreamName.getCategory(name)).toEqual('someCategory')
+    })
+
+    it('getId returns all ids delimited by + sign', () => {
+      expect(StreamName.getId(name)).toEqual(A_COMPOUND_ID)
+    })
+
+    it('getCardinalId returns the first id delimited by + sign', () => {
+      expect(StreamName.getCardinalId(name)).toEqual(AN_ID)
+    })
+  })
+
+  describe('with category and multiple ids (array)', () => {
+    const name = StreamName.create('someCategory', ['some_id', 'otherId'])
+
+    it('stream name is the category and the ids delimited by + sign', () => {
+      expect(name).toEqual('someCategory-some_id+otherId')
+    })
+
+    it('getCategory returns the category name and types but no id', () => {
+      expect(StreamName.getCategory(name)).toEqual('someCategory')
+    })
+
+    it('getId returns all ids delimited by + sign', () => {
+      expect(StreamName.getId(name)).toEqual(A_COMPOUND_ID)
+    })
+
+    it('getCardinalId returns the first id delimited by + sign', () => {
+      expect(StreamName.getCardinalId(name)).toEqual(AN_ID)
+    })
+  })
+
+  describe('with category, cardinal id, and child ids', () => {
+    const name = StreamName.create('someCategory', { cardinalId: 'some_id', ids: ['otherId'] })
 
     it('stream name is the category and the ids delimited by + sign', () => {
       expect(name).toEqual('someCategory-some_id+otherId')
