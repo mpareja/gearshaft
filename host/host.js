@@ -1,3 +1,5 @@
+const { EventEmitter } = require('events')
+
 exports.startHost = (fn, /* istanbul ignore next */ systemProcess = process) => {
   const consumers = []
 
@@ -13,14 +15,25 @@ exports.startHost = (fn, /* istanbul ignore next */ systemProcess = process) => 
 const createHost = (consumers, systemProcess) => {
   const runners = consumers.map(consumer => consumer.start())
 
-  const pause = () => Promise.all(runners.map(runner => runner.pause()))
-  const unpause = () => runners.forEach(runner => runner.unpause())
-  const stop = () => Promise.all(runners.map(runner => runner.stop()))
+  const host = new EventEmitter()
 
-  systemProcess.on('SIGCONT', unpause)
-  systemProcess.on('SIGINT', stop)
-  systemProcess.on('SIGTERM', stop)
-  systemProcess.on('SIGTSTP', pause)
+  host.pause = async () => {
+    await Promise.all(runners.map(runner => runner.pause()))
+    host.emit('paused')
+  }
+  host.unpause = async () => {
+    await runners.forEach(runner => runner.unpause())
+    host.emit('unpaused')
+  }
+  host.stop = async () => {
+    await Promise.all(runners.map(runner => runner.stop()))
+    host.emit('stopped')
+  }
 
-  return { stop, pause, unpause }
+  systemProcess.on('SIGCONT', host.unpause)
+  systemProcess.on('SIGINT', host.stop)
+  systemProcess.on('SIGTERM', host.stop)
+  systemProcess.on('SIGTSTP', host.pause)
+
+  return host
 }

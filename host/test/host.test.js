@@ -35,6 +35,16 @@ describe('host', () => {
       expect(consumer.runner.stats().stopped).toBe(true)
     })
 
+    it('emits "stopped" event', async () => {
+      const { host } = setupHostWithConsumer()
+      const stopped = jest.fn()
+      host.once('stopped', stopped)
+
+      await host.stop()
+
+      expect(stopped).toHaveBeenCalled()
+    })
+
     describe('given an active task', () => {
       it('awaits completion of active task', async () => {
         const { consumer, host } = setupHostWithConsumer()
@@ -67,6 +77,16 @@ describe('host', () => {
       host.pause()
 
       expect(consumer.runner.stats().paused).toBe(true)
+    })
+
+    it('emits "paused" event', async () => {
+      const { host } = setupHostWithConsumer()
+      const paused = jest.fn()
+      host.once('paused', paused)
+
+      await host.pause()
+
+      expect(paused).toHaveBeenCalled()
     })
 
     describe('given an active task', () => {
@@ -102,6 +122,17 @@ describe('host', () => {
       host.unpause()
 
       expect(consumer.runner.stats().paused).toBe(false)
+    })
+
+    it('emits "unpaused" event', async () => {
+      const { host } = setupHostWithConsumer()
+      const unpaused = jest.fn()
+      host.once('unpaused', unpaused)
+
+      await host.pause()
+      await host.unpause()
+
+      expect(unpaused).toHaveBeenCalled()
     })
   })
 
