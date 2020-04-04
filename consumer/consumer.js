@@ -1,3 +1,4 @@
+const assert = require('assert')
 const delay = require('util').promisify(setTimeout)
 const { createConsumerHandlerRegistry } = require('./consumer-handler-registry')
 const { createPositionStore } = require('./position-store')
@@ -10,24 +11,28 @@ const crashStopErrorStrategy = (error) => {
   throw error
 }
 
-exports.createConsumer = ({
-  log,
-  name,
-  positionUpdateInterval = 100,
-  registerHandlers,
-  messageStore,
-  category,
-  correlation,
-  groupMember,
-  groupSize,
-  strict = false,
-  errorStrategy = crashStopErrorStrategy,
+exports.createConsumer = (options) => {
+  assertOptions(options)
 
-  // TUNING
-  highWaterMark = 500,
-  lowWaterMark = 50,
-  pollingIntervalMs = 100
-}) => {
+  const {
+    log,
+    name,
+    positionUpdateInterval = 100,
+    registerHandlers,
+    messageStore,
+    category,
+    correlation,
+    groupMember,
+    groupSize,
+    strict = false,
+    errorStrategy = crashStopErrorStrategy,
+
+    // TUNING
+    highWaterMark = 500,
+    lowWaterMark = 50,
+    pollingIntervalMs = 100
+  } = options
+
   const consumerError = operationError(`${name} consumer`)
   const prefix = (text) => `${name} consumer: ${text}`
 
@@ -192,4 +197,15 @@ exports.createConsumer = ({
   }
 
   return { dispatch, positionStore, start }
+}
+
+const errorMessage = (msg) => `consumer: ${msg}`
+
+const assertOptions = (options) => {
+  assert(options, errorMessage('options required'))
+  assert(options.log, errorMessage('log required'))
+  assert(typeof options.name === 'string', errorMessage('name required'))
+  assert(typeof options.registerHandlers === 'function', errorMessage('registerHandlers required'))
+  assert(options.messageStore, errorMessage('messageStore required'))
+  assert(options.category, errorMessage('category required'))
 }
