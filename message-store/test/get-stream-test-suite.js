@@ -67,15 +67,33 @@ exports.generateGetStreamSuite = ({
       })
 
       describe('store with an overriden batch size', () => {
-        const A_BATCH_SIZE = 2
-        beforeEach(() => {
-          messageStore = createMessageStore({ log, batchSize: A_BATCH_SIZE })
-        })
-
         it('limits the results to the batch size', async () => {
+          const A_BATCH_SIZE = 2
+          messageStore = createMessageStore({ log, batchSize: A_BATCH_SIZE })
           const { streamName } = await examplePut(messageStore, { count: 3 })
+
           const results = await messageStore.getStream(streamName)
+
           expect(results.length).toBe(A_BATCH_SIZE)
+          expect(log.info).toHaveBeenCalledWith(expect.objectContaining({
+            batchSize: A_BATCH_SIZE
+          }), expect.anything())
+        })
+      })
+
+      describe('individual getStream request with overriden batch size', () => {
+        it('limits the results to the specified batch size', async () => {
+          const A_BATCH_SIZE = 2
+          const { streamName } = await examplePut(messageStore, { count: A_BATCH_SIZE + 1 })
+
+          const results = await messageStore.getStream(streamName, {
+            batchSize: A_BATCH_SIZE
+          })
+
+          expect(results.length).toBe(A_BATCH_SIZE)
+          expect(log.info).toHaveBeenCalledWith(expect.objectContaining({
+            batchSize: A_BATCH_SIZE
+          }), expect.anything())
         })
       })
     })

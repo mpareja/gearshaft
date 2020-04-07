@@ -1,11 +1,12 @@
 const { deserialize } = require('../deserialize')
 const { operationError } = require('../../../errors')
 
-exports.createGet = ({ assert, postgresGateway, getValues, log, sql, batchSize }) => {
+exports.createGet = ({ assert, postgresGateway, getValues, log, sql, batchSize: configuredBatchSize }) => {
   const getError = operationError('message-store get')
 
   const get = async (streamName, options = {}) => {
     const position = options.position || 0
+    const batchSize = options.batchSize || configuredBatchSize
 
     log.debug({ batchSize, position, streamName }, 'message-store get: starting')
 
@@ -13,7 +14,7 @@ exports.createGet = ({ assert, postgresGateway, getValues, log, sql, batchSize }
 
     let dbResults
     try {
-      dbResults = await query(streamName, { ...options, position })
+      dbResults = await query(streamName, { ...options, batchSize, position })
     } catch (inner) {
       throw getError('error reading from database', inner)
     }

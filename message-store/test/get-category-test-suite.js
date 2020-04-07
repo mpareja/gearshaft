@@ -73,15 +73,33 @@ exports.generateGetCategorySuite = ({
       })
 
       describe('store with an overriden batch size', () => {
-        const A_BATCH_SIZE = 2
-        beforeEach(() => {
-          messageStore = createMessageStore({ log, batchSize: A_BATCH_SIZE })
-        })
-
         it('limits the results to the batch size', async () => {
-          const { category } = await examplePutCategory(messageStore, { count: 3 })
+          const A_BATCH_SIZE = 2
+          messageStore = createMessageStore({ log, batchSize: A_BATCH_SIZE })
+          const { category } = await examplePutCategory(messageStore, { count: A_BATCH_SIZE + 1 })
+
           const results = await messageStore.getCategory(category)
+
           expect(results.length).toBe(A_BATCH_SIZE)
+          expect(log.info).toHaveBeenCalledWith(expect.objectContaining({
+            batchSize: A_BATCH_SIZE
+          }), expect.anything())
+        })
+      })
+
+      describe('individual getCategory request with overriden batch size', () => {
+        it('limits the results to the specified batch size', async () => {
+          const A_BATCH_SIZE = 2
+          const { category } = await examplePutCategory(messageStore, { count: A_BATCH_SIZE + 1 })
+
+          const results = await messageStore.getCategory(category, {
+            batchSize: A_BATCH_SIZE
+          })
+
+          expect(results.length).toBe(A_BATCH_SIZE)
+          expect(log.info).toHaveBeenCalledWith(expect.objectContaining({
+            batchSize: A_BATCH_SIZE
+          }), expect.anything())
         })
       })
     })

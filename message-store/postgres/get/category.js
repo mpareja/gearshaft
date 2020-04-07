@@ -3,8 +3,6 @@ const { createGet } = require('./get')
 const { StreamName } = require('../../stream-name')
 
 exports.createGetCategory = (options) => {
-  const { batchSize } = options
-
   const assert = (category) => {
     assertTruthy(StreamName.isCategory(category), get,
       `stream category required, not a specific stream (${category})`)
@@ -13,7 +11,7 @@ exports.createGetCategory = (options) => {
   const getValues = (streamName, options) => [
     streamName,
     options.position,
-    batchSize,
+    options.batchSize,
     options.correlation,
     options.consumerGroupMember,
     options.consumerGroupSize

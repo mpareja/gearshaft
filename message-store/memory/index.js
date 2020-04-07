@@ -13,12 +13,13 @@ const { uuid } = require('../../identifier')
 const setImmediateP = promisify(setImmediate)
 const writeError = operationError('message-store write')
 
-module.exports.createMessageStore = ({ batchSize = 1000, log = createLog() } = {}) => {
+module.exports.createMessageStore = ({ batchSize: configuredBatchSize = 1000, log = createLog() } = {}) => {
   const messages = []
   const messageIds = {}
   let globalPosition = 0
 
   const get = async function (streamName, {
+    batchSize = configuredBatchSize,
     consumerGroupMember,
     consumerGroupSize,
     correlation,
@@ -92,7 +93,7 @@ module.exports.createMessageStore = ({ batchSize = 1000, log = createLog() } = {
     return last
   }
 
-  const { read } = createRead({ batchSize, get })
+  const { read } = createRead({ batchSize: configuredBatchSize, get })
 
   const put = async (...args) => {
     await setImmediateP() // mimic async IO
