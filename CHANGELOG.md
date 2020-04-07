@@ -1,3 +1,10 @@
+## v0.13.2: configurable batch sizes (2020-04-07)
+
+### Commits
+
+- ([`53273af`](https://github.com/mpareja/gearshaft/commit/53273af7cf29975527c1fbed3b16feba261b0bb4)) message-store: support specifying a batch size for get operations
+- ([`ebedd04`](https://github.com/mpareja/gearshaft/commit/ebedd04f39f2f4abe05e9bcabdfbce5b5d644bce)) consumer: add option assertions
+
 ## v0.13.1: host events & compound stream ids (2020-04-01)
 
 ### Highlights
