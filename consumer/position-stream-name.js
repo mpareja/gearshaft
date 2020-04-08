@@ -7,7 +7,7 @@ exports.getPositionStreamName = (streamName, consumerId) => {
   const sourceId = StreamName.getId(streamName)
   let id = sourceId
   if (consumerId) {
-    id = sourceId ? `${sourceId}_${consumerId}` : consumerId
+    id = sourceId ? `${sourceId}-${consumerId}` : consumerId
   }
 
   const types = StreamName.getTypes(streamName)

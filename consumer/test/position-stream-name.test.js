@@ -27,8 +27,8 @@ describe('position-stream-name', () => {
     const consumerId = 'SomeConsumerId'
     const positionStreamName = getPositionStreamName(streamName, consumerId)
 
-    it('appends the consumer id to the stream id with an underscore', () => {
-      expect(StreamName.getId(positionStreamName)).toEqual('SomeStreamId_SomeConsumerId')
+    it('appends the consumer id to the stream id with a dash', () => {
+      expect(StreamName.getId(positionStreamName)).toEqual('SomeStreamId-SomeConsumerId')
     })
   })
 
