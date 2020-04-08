@@ -2,12 +2,14 @@ const { createConsumer } = require('../consumer')
 const { createLog } = require('../../logging')
 const { exampleCategory, exampleMessageStore, exampleRandomValue } = require('../../message-store')
 
-exports.exampleConsumer = ({ name, log, registerHandlers, messageStore, category, ...args } = {}) => {
-  log = log || createLog()
-  name = name || exampleRandomValue()
-  registerHandlers = registerHandlers || (() => {})
-  messageStore = messageStore || exampleMessageStore()
-  category = category || exampleCategory()
+exports.exampleConsumer = (overrides) => {
+  const settings = Object.assign({
+    log: createLog(),
+    name: exampleRandomValue(),
+    registerHandlers: () => {},
+    messageStore: exampleMessageStore(),
+    category: exampleCategory()
+  }, overrides)
 
-  return createConsumer({ log, name, registerHandlers, messageStore, category, ...args })
+  return createConsumer(settings)
 }
