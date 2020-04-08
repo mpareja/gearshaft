@@ -58,4 +58,41 @@ describe('consumer configuration', () => {
     expect(error).toBeInstanceOf(AssertionError)
     expect(error.message).toBe('consumer: category required')
   })
+
+  describe('consumer groups', () => {
+    const setupConsumerGroup = (overrides) => {
+      return setupConsumer(Object.assign({
+        groupMember: 0,
+        groupSize: 2,
+        identifier: 'some-identifier'
+      }, overrides))
+    }
+
+    it('requires identifier', () => {
+      const error = catchError(() => setupConsumerGroup({
+        identifier: null
+      }))
+
+      expect(error).toBeInstanceOf(AssertionError)
+      expect(error.message).toBe('consumer: groupMember, groupSize, and identifier required for consumer groups')
+    })
+
+    it('requires groupMember', () => {
+      const error = catchError(() => setupConsumerGroup({
+        groupMember: null
+      }))
+
+      expect(error).toBeInstanceOf(AssertionError)
+      expect(error.message).toBe('consumer: groupMember, groupSize, and identifier required for consumer groups')
+    })
+
+    it('requires groupSize', () => {
+      const error = catchError(() => setupConsumerGroup({
+        groupSize: null
+      }))
+
+      expect(error).toBeInstanceOf(AssertionError)
+      expect(error.message).toBe('consumer: groupMember, groupSize, and identifier required for consumer groups')
+    })
+  })
 })

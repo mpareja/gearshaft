@@ -36,7 +36,7 @@ describe('category with streams assigned to 2 different members', () => {
 
   it('processes first member messages', async () => {
     const { category, consumer, handler, messageStore } =
-      setupConsumerWithHandler({ groupMember: 0, groupSize: 2 })
+      setupConsumerWithHandler({ identifier: '0', groupMember: 0, groupSize: 2 })
 
     const { firstA, secondA } = await setupTwoMemberStreams(category, messageStore)
 
@@ -49,7 +49,7 @@ describe('category with streams assigned to 2 different members', () => {
 
   it('processes second member messages', async () => {
     const { category, consumer, handler, messageStore } =
-      setupConsumerWithHandler({ groupMember: 1, groupSize: 2 })
+      setupConsumerWithHandler({ identifier: '1', groupMember: 1, groupSize: 2 })
 
     const { firstC, secondC } = await setupTwoMemberStreams(category, messageStore)
 

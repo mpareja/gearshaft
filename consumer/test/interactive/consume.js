@@ -4,6 +4,13 @@ const { InteractiveErrorMessage, InteractiveMessage } = require('./messages')
 
 const category = process.env.CATEGORY || 'testPostgresConsumer'
 
+let identifier, groupSize, groupMember
+if (process.env.GROUP_SIZE) {
+  identifier = process.env.IDENTIFIER
+  groupSize = Number(process.env.GROUP_SIZE)
+  groupMember = Number(process.env.GROUP_MEMBER)
+}
+
 const messageStore = initializeStore()
 
 let count = 0n
@@ -19,7 +26,9 @@ const registerHandlers = (register) => {
   })
 }
 
-const consumer = createConsumer({ category, log, name: 'interactive', registerHandlers, messageStore })
+const consumer = createConsumer({
+  category, log, name: 'interactive', registerHandlers, messageStore, identifier, groupSize, groupMember
+})
 
 const startTime = process.hrtime.bigint()
 const runner = consumer.start()

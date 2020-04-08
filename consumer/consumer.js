@@ -22,6 +22,7 @@ exports.createConsumer = (options) => {
     messageStore,
     category,
     correlation,
+    identifier,
     groupMember,
     groupSize,
     strict = false,
@@ -36,7 +37,7 @@ exports.createConsumer = (options) => {
   const consumerError = operationError(`${name} consumer`)
   const prefix = (text) => `${name} consumer: ${text}`
 
-  const positionStore = createPositionStore({ messageStore, streamName: category })
+  const positionStore = createPositionStore({ consumerId: identifier, messageStore, streamName: category })
   let positionUpdateCount = 0
 
   const registry = createConsumerHandlerRegistry({ name, log, strict })
@@ -208,4 +209,19 @@ const assertOptions = (options) => {
   assert(typeof options.registerHandlers === 'function', errorMessage('registerHandlers required'))
   assert(options.messageStore, errorMessage('messageStore required'))
   assert(options.category, errorMessage('category required'))
+
+  assertConsumerGroupOptions(options)
+}
+
+const assertConsumerGroupOptions = (options) => {
+  const groupOptions = [
+    typeof options.groupMember === 'number',
+    typeof options.groupSize === 'number',
+    typeof options.identifier === 'string'
+  ]
+
+  const allValid = groupOptions.every(valid => valid)
+  const noneSpecified = groupOptions.every(valid => !valid)
+
+  assert(allValid || noneSpecified, errorMessage('groupMember, groupSize, and identifier required for consumer groups'))
 }
