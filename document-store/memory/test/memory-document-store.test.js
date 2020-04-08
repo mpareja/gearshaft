@@ -85,4 +85,15 @@ describe('memory-document-store', () => {
       })
     })
   })
+
+  it('gives adventurous people access to all documents (unsupported)', async () => {
+    const documentStore = createDocumentStore()
+    const document = exampleDocument()
+
+    await documentStore.insert(document)
+
+    expect(documentStore.documents).toEqual({
+      [document.basketId]: document
+    })
+  })
 })

@@ -51,5 +51,5 @@ exports.createMemoryDocumentStore = (idKey = 'id') => {
     }
   }
 
-  return { get, insert, update, setupConcurrencyError }
+  return { documents, get, insert, update, setupConcurrencyError }
 }
