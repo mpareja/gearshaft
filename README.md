@@ -2,7 +2,7 @@
 
 An Event Sourcing toolkit for Node.js based on the [Eventide project](https://eventide-project.org) for Ruby.
 
-**Status: Pre-Release**
+**Status: Pre-Release** (due to lack of documentation, see [Roadmap](https://github.com/mpareja/gearshaft/issues/3))
 
 ## Development
 
