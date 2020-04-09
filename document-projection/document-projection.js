@@ -34,7 +34,8 @@ exports.createDocumentProjection = (options) => {
         foundDocumentVersion: foundDocument ? foundDocument[versionField] : undefined,
         globalPosition,
         [loggedIdField]: id,
-        messageId: message.id
+        messageId: message.id,
+        type: message.constructor.name
       }
 
       if (foundDocument && foundDocument[versionField] >= globalPosition) {

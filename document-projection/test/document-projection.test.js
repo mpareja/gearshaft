@@ -113,6 +113,7 @@ describe('document-projection', () => {
           foundDocumentVersion: undefined,
           FruitBasketViewId: manufactured.basketId,
           messageId: manufactured.id,
+          type: 'Manufactured',
           globalPosition: manufactured.metadata.globalPosition
         }, 'FruitBasketView document-projection: document updated successfully')
       })
@@ -150,6 +151,7 @@ describe('document-projection', () => {
           foundDocumentVersion: fruitAdded.metadata.globalPosition,
           FruitBasketViewId: fruitAdded.basketId,
           messageId: 'some-id',
+          type: 'FruitAdded',
           globalPosition: fruitAdded.metadata.globalPosition
         }, 'FruitBasketView document-projection: message ignored, already processed')
       })
