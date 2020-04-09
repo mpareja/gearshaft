@@ -1,5 +1,10 @@
 const assert = require('assert')
 
+const isValidId = (value) =>
+  typeof value === 'string' ||
+  typeof value === 'number' ||
+  typeof value === 'bigint'
+
 class StreamName {
   static create (category, id, extra = {}) {
     assert(typeof category === 'string')
@@ -10,10 +15,10 @@ class StreamName {
     }
 
     const allIds = []
-    if (typeof extra.cardinalId === 'string') {
+    if (isValidId(extra.cardinalId)) {
       allIds.push(extra.cardinalId)
     }
-    if (typeof id === 'string') {
+    if (isValidId(id)) {
       allIds.push(id)
     }
     if (Array.isArray(id)) {

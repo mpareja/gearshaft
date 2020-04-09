@@ -231,6 +231,40 @@ describe('stream-name', () => {
     })
   })
 
+  describe('id is number', () => {
+    describe('with category and id', () => {
+      const name = StreamName.create(A_CATEGORY, 0)
+
+      it('stream name is the category and the id', () => {
+        expect(name).toEqual('someCategory-0')
+      })
+    })
+    describe('with category, cardinal id, and child ids', () => {
+      const name = StreamName.create('someCategory', { cardinalId: 1, ids: [0] })
+
+      it('stream name is the category and the ids delimited by + sign', () => {
+        expect(name).toEqual('someCategory-1+0')
+      })
+    })
+  })
+
+  describe('id is BigInt', () => {
+    describe('with category and id', () => {
+      const name = StreamName.create(A_CATEGORY, 0n)
+
+      it('stream name is the category and the id', () => {
+        expect(name).toEqual('someCategory-0')
+      })
+    })
+    describe('with category, cardinal id, and child ids', () => {
+      const name = StreamName.create('someCategory', { cardinalId: 1n, ids: [0n] })
+
+      it('stream name is the category and the ids delimited by + sign', () => {
+        expect(name).toEqual('someCategory-1+0')
+      })
+    })
+  })
+
   describe('examples', () => {
     describe('no category', () => {
       it('category is test + random bytes + XX', () => {
