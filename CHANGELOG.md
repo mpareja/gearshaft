@@ -1,3 +1,21 @@
+## v0.13.3: consumer identifier support (2020-04-09)
+
+### Highlights
+
+- consumer: `identifier` is required when running a consumer in a group. The identifier is used to isolate position storage amongst consumer group members.
+- StreamName: support Number and BigInt stream identifiers
+
+### Commits
+
+- ([`94797ca`](https://github.com/mpareja/gearshaft/commit/94797ca88c48d0ac98c23907c56464997a541b0c)) package: upgrade non-pg dependencies
+- ([`8862c55`](https://github.com/mpareja/gearshaft/commit/8862c556b74299dec7cd80bede17a20624301e3f)) consumer: add identifier required for consumer groups
+- ([`9758fff`](https://github.com/mpareja/gearshaft/commit/9758fff7407ff468b75c2f344f9ff252a0773d37)) consumer: example-consumer: reduce verbosity by using Object.assign
+- ([`04a248a`](https://github.com/mpareja/gearshaft/commit/04a248af0cc0cc019c8150c6c7cb01d4529bf88a)) consumer: position-stream-name: append consumer identifier with dash
+- ([`96454bb`](https://github.com/mpareja/gearshaft/commit/96454bb886aa6eb5afdb4ae80fc7a10e66468a9c)) consumer: position-store: rename event to Recorded from PositionRecorded
+- ([`e24a8e4`](https://github.com/mpareja/gearshaft/commit/e24a8e4027ee534d9f301420e162c82913a5e4c6)) message-store: StreamName: support Number and BigInt stream ids
+- ([`b448feb`](https://github.com/mpareja/gearshaft/commit/b448feb9c58d79afe94a123a8b6d8fac6fea8fb4)) document-projection: include message type in log
+- ([`d1d186e`](https://github.com/mpareja/gearshaft/commit/d1d186eaa1f6a9434727dad5e90337e2251429e9)) document-store: memory: give expert users access to documents
+
 ## v0.13.2: configurable batch sizes (2020-04-07)
 
 ### Commits
