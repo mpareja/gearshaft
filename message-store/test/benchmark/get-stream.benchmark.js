@@ -6,7 +6,9 @@ const cycles = process.env.CYCLES || 100000
 exports.benchmark = async (initializeStore, scriptFile) => {
   console.log('Parameters:')
   console.log(`  CYCLES: ${cycles}`)
-  const messageStore = initializeStore()
+  console.log()
+
+  const { messageStore, teardown } = initializeStore()
 
   const entries = []
   for (let i = 0; i < cycles; i++) {
@@ -27,6 +29,8 @@ exports.benchmark = async (initializeStore, scriptFile) => {
   console.log('Statistics:', stats)
 
   await writeStatsFile(scriptFile, stats)
+
+  await teardown()
 }
 
 async function read (messageStore, entries) {

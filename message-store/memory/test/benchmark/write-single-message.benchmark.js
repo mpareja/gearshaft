@@ -1,4 +1,4 @@
 const { benchmark } = require('../../../test/benchmark/write-single-message.benchmark')
-const { createMessageStore } = require('../../')
+const { initializeStore } = require('./init')
 
-benchmark(createMessageStore, __filename)
+benchmark(initializeStore, __filename)

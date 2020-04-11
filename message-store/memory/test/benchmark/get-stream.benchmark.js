@@ -1,4 +1,4 @@
 const { benchmark } = require('../../../test/benchmark/get-stream.benchmark')
-const { createMessageStore } = require('../../')
+const { initializeStore } = require('./init')
 
-benchmark(createMessageStore, __filename)
+benchmark(initializeStore, __filename)

@@ -5,7 +5,11 @@ const cycles = process.env.CYCLES || 100000
 const warmup = 10
 
 exports.benchmark = async (createMessageStore, benchmarkSource) => {
-  const messageStore = createMessageStore()
+  console.log('Parameters:')
+  console.log(`  CYCLES: ${cycles}`)
+  console.log()
+
+  const { messageStore, teardown } = createMessageStore()
 
   const entries = []
   for (let i = 0; i < cycles + warmup; i++) {
@@ -24,6 +28,8 @@ exports.benchmark = async (createMessageStore, benchmarkSource) => {
   console.log('Statistics:', stats)
 
   await writeStatsFile(benchmarkSource, stats)
+
+  await teardown()
 }
 
 async function write (messageStore, entries) {

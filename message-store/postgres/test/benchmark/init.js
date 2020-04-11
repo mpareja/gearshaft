@@ -11,5 +11,7 @@ exports.initializeStore = () => {
 
   const messageStore = createMessageStore({ log, postgresGateway })
 
-  return messageStore
+  const teardown = () => postgresGateway.end()
+
+  return { messageStore, teardown }
 }
