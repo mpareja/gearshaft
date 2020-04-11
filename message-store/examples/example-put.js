@@ -2,9 +2,9 @@ const { exampleStreamName } = require('./example-stream-name')
 const { exampleCategory } = require('./example-category')
 const { exampleWriteMessageData } = require('./example-message-data')
 
-exports.examplePut = async (messageStore, { streamName, count, trackMessages = true } = {}) => {
+exports.examplePut = async (messageStore, { category, streamName, count, trackMessages = true } = {}) => {
   count = count || 1
-  streamName = streamName || exampleStreamName()
+  streamName = streamName || exampleStreamName(category)
 
   const messages = []
   let position

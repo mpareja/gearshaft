@@ -1,5 +1,5 @@
 const createLog = require('../../test/test-log')
-const { examplePut, exampleStreamName } = require('../examples')
+const { exampleCategory, examplePut, exampleStreamName } = require('../examples')
 
 exports.generateGetLastSuite = ({
   createMessageStore
@@ -50,6 +50,23 @@ exports.generateGetLastSuite = ({
           count: 0,
           streamName
         }, 'message-store getLast: successful')
+      })
+    })
+
+    describe('category with multiple streams', () => {
+      it('retrieves last message from specified stream', async () => {
+        const category = exampleCategory()
+
+        // first stream in category
+        const { streamName, messages } = await examplePut(messageStore, { category, count: 2 })
+        const expectedLastMessage = messages[messages.length - 1]
+
+        // second stream in category
+        await examplePut(messageStore, { category, count: 1 })
+
+        const lastMessage = await messageStore.getLast(streamName)
+
+        expect(lastMessage.data).toEqual(expectedLastMessage.data)
       })
     })
 

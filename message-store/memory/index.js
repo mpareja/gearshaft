@@ -14,8 +14,8 @@ const setImmediateP = promisify(setImmediate)
 const writeError = operationError('message-store write')
 
 module.exports.createMessageStore = ({ batchSize: configuredBatchSize = 1000, log = createLog() } = {}) => {
-  const messages = []
-  const messageIds = {}
+  const categories = new Map()
+  const messageIds = new Set()
   let globalPosition = 0
 
   const get = async function (streamName, {
@@ -27,10 +27,16 @@ module.exports.createMessageStore = ({ batchSize: configuredBatchSize = 1000, lo
   } = {}) {
     await setImmediateP() // mimic async IO
 
-    let subset
-    if (StreamName.isCategory(streamName)) {
-      subset = messages.filter(m =>
-        StreamName.getCategory(m.streamName) === streamName &&
+    const categoryName = StreamName.getCategory(streamName)
+    const category = categories.get(categoryName)
+    const isCategory = streamName === categoryName
+
+    let subset = []
+
+    if (!category) {
+      subset = []
+    } else if (isCategory) {
+      subset = category.filter(m =>
         m.globalPosition >= position &&
         (!correlation ||
           correlated(correlation, m)) &&
@@ -40,7 +46,7 @@ module.exports.createMessageStore = ({ batchSize: configuredBatchSize = 1000, lo
       )
       subset = subset.splice(0, batchSize)
     } else {
-      subset = messages.filter(m =>
+      subset = category.filter(m =>
         m.streamName === streamName &&
         m.position >= position &&
         m.position < (position + batchSize)
@@ -84,7 +90,10 @@ module.exports.createMessageStore = ({ batchSize: configuredBatchSize = 1000, lo
   const getLastSync = (streamName) => {
     let last = null
 
-    for (var m of messages) {
+    const categoryName = StreamName.getCategory(streamName)
+    const category = categories.get(categoryName) || []
+
+    for (var m of category) {
       if (m.streamName === streamName) {
         last = m
       }
@@ -95,12 +104,18 @@ module.exports.createMessageStore = ({ batchSize: configuredBatchSize = 1000, lo
 
   const { read } = createRead({ batchSize: configuredBatchSize, get })
 
-  const put = async (...args) => {
+  const put = async (inputMessage, streamName, expectedVersion) => {
     await setImmediateP() // mimic async IO
-    return putSync(...args)
+
+    const categoryName = StreamName.getCategory(streamName)
+    const category = categories.get(categoryName) || []
+    if (!category.length) {
+      categories.set(categoryName, category)
+    }
+    return putSync(category, inputMessage, streamName, expectedVersion)
   }
 
-  const putSync = (inputMessage, streamName, expectedVersion) => {
+  const putSync = (category, inputMessage, streamName, expectedVersion) => {
     const last = getLastSync(streamName)
 
     const currentVersion = last ? last.position : -1
@@ -112,7 +127,7 @@ module.exports.createMessageStore = ({ batchSize: configuredBatchSize = 1000, lo
 
     const { id } = inputMessage
     if (id) {
-      if (messageIds[id]) {
+      if (messageIds.has(id)) {
         throw writeError(`duplicate message id: ${id}`)
       }
 
@@ -130,8 +145,8 @@ module.exports.createMessageStore = ({ batchSize: configuredBatchSize = 1000, lo
 
     const lastPosition = message.position
 
-    messages.push(message)
-    messageIds[message.id] = true
+    category.push(message)
+    messageIds.add(message.id)
 
     log.info({
       expectedVersion,
@@ -150,7 +165,13 @@ module.exports.createMessageStore = ({ batchSize: configuredBatchSize = 1000, lo
   }
 
   const writeSync = (msgOrBatch, streamName, expectedVersion) => {
-    const originalPosition = messages.length
+    const categoryName = StreamName.getCategory(streamName)
+    const category = categories.get(categoryName) || []
+    if (!category.length) {
+      categories.set(categoryName, category)
+    }
+
+    const originalPosition = category.length
 
     let lastPosition
 
@@ -158,9 +179,9 @@ module.exports.createMessageStore = ({ batchSize: configuredBatchSize = 1000, lo
     for (const inputMessage of batch) {
       try {
         // we need syncronous access to array so nothing changes under our feet
-        lastPosition = putSync(inputMessage, streamName, expectedVersion)
+        lastPosition = putSync(category, inputMessage, streamName, expectedVersion)
       } catch (e) {
-        messages.splice(originalPosition)
+        category.splice(originalPosition)
         throw e
       }
 
@@ -187,5 +208,5 @@ module.exports.createMessageStore = ({ batchSize: configuredBatchSize = 1000, lo
       StreamName.getCategory(correlationStreamName) === correlation
   }
 
-  return { get, getCategory, getLast, getStream, put, read, write }
+  return { categories, messageIds, get, getCategory, getLast, getStream, put, read, write }
 }
