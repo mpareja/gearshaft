@@ -1,3 +1,18 @@
+## v0.13.4: memory message store performance (2020-04-12)
+
+### Highlights
+
+- memory message-store: category stream lookup is now `O(1)` instead of `O(countOfAllMessages * charactersInStreamName)` search. Given a store with 100,000 messages, reads / writes are about 1000x faster.
+- message-store: extract generic benchmarks for use across MessageStore implementations
+
+### Commits
+
+- ([`f411133`](https://github.com/mpareja/gearshaft/commit/f4111334f2c20e87583936fe82c0a3c4f96f0c2a)) message-store: memory: significant performance improvements
+- ([`e349c89`](https://github.com/mpareja/gearshaft/commit/e349c892e7961386f64955282e8856c4efe66246)) message-store: memory: add initial benchmarks
+- ([`73ab408`](https://github.com/mpareja/gearshaft/commit/73ab408720dcd0f20093712a20a37452c7df4988)) message-store: benchmark: disconnect from database once done
+- ([`d54af2f`](https://github.com/mpareja/gearshaft/commit/d54af2f92f7a02c162195436948f0542c7a554c8)) message-store: extract abstract get-stream benchmark
+- ([`eeb0919`](https://github.com/mpareja/gearshaft/commit/eeb0919f5b1be97e06aab234b32bd3dcf89b6444)) message-store: extract abstract write-single-message benchmark
+
 ## v0.13.3: consumer identifier support (2020-04-09)
 
 ### Highlights
