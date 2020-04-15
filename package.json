@@ -74,5 +74,13 @@
     "rimraf": "^3.0.2",
     "standard": "^14.3.3",
     "systeminformation": "^4.23.2"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mpareja/gearshaft.git"
+  },
+  "bugs": {
+    "url": "https://github.com/mpareja/gearshaft/issues"
+  },
+  "homepage": "https://github.com/mpareja/gearshaft#readme"
 }
