@@ -5,12 +5,18 @@ const { exampleCategory } = require('../../../message-store')
 const { initializeStore, log } = require('../interactive/init')
 const { InteractiveMessage } = require('../interactive/messages')
 
+const category = process.env.CATEGORY || exampleCategory('NoOpConsumerBenchmark', { randomize: true })
+const total = process.env.CYCLES || 1e3
+
 benchmark()
 
 async function benchmark () {
+  console.log('Parameters:')
+  console.log(`  CYCLES: ${total}`)
+  console.log(`  CATEGORY: ${category}`)
+  console.log()
+
   const messageStore = initializeStore()
-  const category = exampleCategory('NoOpConsumerBenchmark', { randomize: true })
-  const total = process.env.CYCLES || 1e3
   await bulkWrite({ category, concurrency: 3, total, messageStore, streams: 3 })
 
   console.log('done writing messages')
