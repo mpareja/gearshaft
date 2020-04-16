@@ -4,6 +4,10 @@ An Event Sourcing toolkit for Node.js based on the [Eventide project](https://ev
 
 **Status: Pre-Release** (due to lack of documentation, see [Roadmap](https://github.com/mpareja/gearshaft/issues/3))
 
+## Getting Started
+
+The best way to get started is to dive into the [Gearshaft example project](https://github.com/mpareja/gearshaft-example).
+
 ## Development
 
 1. Run a Postgres instance for use by the automated tests
