@@ -35,6 +35,15 @@ describe('host', () => {
       expect(consumer.runner.stats().stopped).toBe(true)
     })
 
+    it('forwards stopping arguments to runners', () => {
+      const { consumer, host } = setupHostWithConsumer()
+      consumer.runner.stop = jest.fn(consumer.runner.stop)
+
+      host.stop('bob')
+
+      expect(consumer.runner.stop).toHaveBeenCalledWith('bob')
+    })
+
     it('emits "stopped" event', async () => {
       const { host } = setupHostWithConsumer()
       const stopped = jest.fn()
@@ -77,6 +86,15 @@ describe('host', () => {
       host.pause()
 
       expect(consumer.runner.stats().paused).toBe(true)
+    })
+
+    it('forwards pausing arguments to runners', () => {
+      const { consumer, host } = setupHostWithConsumer()
+      consumer.runner.pause = jest.fn(consumer.runner.pause)
+
+      host.pause('bob')
+
+      expect(consumer.runner.pause).toHaveBeenCalledWith('bob')
     })
 
     it('emits "paused" event', async () => {
@@ -122,6 +140,16 @@ describe('host', () => {
       host.unpause()
 
       expect(consumer.runner.stats().paused).toBe(false)
+    })
+
+    it('forwards unpausing arguments to runners', () => {
+      const { consumer, host } = setupHostWithConsumer()
+      consumer.runner.unpause = jest.fn(consumer.runner.unpause)
+
+      host.pause()
+      host.unpause('bob')
+
+      expect(consumer.runner.unpause).toHaveBeenCalledWith('bob')
     })
 
     it('emits "unpaused" event', async () => {

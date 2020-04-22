@@ -17,16 +17,16 @@ const createHost = (consumers, systemProcess) => {
 
   const host = new EventEmitter()
 
-  host.pause = async () => {
-    await Promise.all(runners.map(runner => runner.pause()))
+  host.pause = async (...args) => {
+    await Promise.all(runners.map(runner => runner.pause(...args)))
     host.emit('paused')
   }
-  host.unpause = async () => {
-    await runners.forEach(runner => runner.unpause())
+  host.unpause = async (...args) => {
+    await runners.forEach(runner => runner.unpause(...args))
     host.emit('unpaused')
   }
-  host.stop = async () => {
-    await Promise.all(runners.map(runner => runner.stop()))
+  host.stop = async (...args) => {
+    await Promise.all(runners.map(runner => runner.stop(...args)))
     host.emit('stopped')
   }
 
