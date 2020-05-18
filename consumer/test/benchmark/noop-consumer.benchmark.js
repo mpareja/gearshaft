@@ -6,7 +6,7 @@ const { initializeStore, log } = require('../interactive/init')
 const { InteractiveMessage } = require('../interactive/messages')
 
 const category = process.env.CATEGORY || exampleCategory('NoOpConsumerBenchmark', { randomize: true })
-const total = process.env.CYCLES || 1e3
+const total = process.env.CYCLES || 1e6
 
 benchmark()
 
