@@ -1,3 +1,23 @@
+## v0.14.0: upgrade pg dependency to v8 (2020-05-18)
+
+### Highlights
+
+- **BREAKING** upgrade `pg` to v8. Review the [minimal breaking changes](https://github.com/brianc/node-postgres/blob/master/CHANGELOG.md#pg800) for details. Minor performance improvements have been observed.
+- host: pause/unpause/stop now forward arguments to corresponding runner methods. Custom runners can use the contextual information during their pause/unpause/stop processing. Runners are not guaranteed to receive arguments since process kill signals do not provide contextual information.
+
+### Commits
+
+- ([`32a37c5`](https://github.com/mpareja/gearshaft/commit/32a37c5cf8d5d8d64f43d7dcf9eb27fdd91e88b0)) package: refresh benchmarks after upgrades
+- ([`06b0362`](https://github.com/mpareja/gearshaft/commit/06b036298c64468b79251d3709a67f6a33bd956a)) README: use newer pg in example
+- ([`1a2205c`](https://github.com/mpareja/gearshaft/commit/1a2205c8bff96c2cec2679b01a0a4a3c2c5ef3c3)) package: upgrade dependencies
+- ([`76deffc`](https://github.com/mpareja/gearshaft/commit/76deffc3d643e7a68dcc6e33a3439b71824af569)) host: pause/unpause/stop support forwarding arguments to runners
+- ([`81f538d`](https://github.com/mpareja/gearshaft/commit/81f538d56b8f2f699fdc0f32a8bf65630bae26b9)) README: add link to example project.
+- ([`cf91a28`](https://github.com/mpareja/gearshaft/commit/cf91a28a6c74023d96916d84b7a7f5c09b5c8ec6)) consumer: update noop-consumer benchmarks
+- ([`a9399a2`](https://github.com/mpareja/gearshaft/commit/a9399a2bd73033504d82fce8ee6c4e2366e307d1)) package: upgrade pg from 7 to version 8
+- ([`f67ee27`](https://github.com/mpareja/gearshaft/commit/f67ee27ff4ef618c719da908f79820e7222aceae)) package: upgrade dev dependencies
+- ([`7e0ff7a`](https://github.com/mpareja/gearshaft/commit/7e0ff7aa2f8a06fdec6950f57d49d1c7a8f8da2d)) package: add missing GitHub links
+- ([`28afdff`](https://github.com/mpareja/gearshaft/commit/28afdff83ee36ecaa93c188a679d0a0ba93573a7)) message-store: add benchmarks for batched writes
+
 ## v0.13.4: memory message store performance (2020-04-12)
 
 ### Highlights
