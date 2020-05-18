@@ -2,8 +2,8 @@
 
 ### Highlights
 
-- **BREAKING** upgrade `pg` to v8. Review the [minimal breaking changes](https://github.com/brianc/node-postgres/blob/master/CHANGELOG.md#pg800) for details. Minor performance improvements have been observed.
-- host: pause/unpause/stop now forward arguments to corresponding runner methods. Custom runners can use the contextual information during their pause/unpause/stop processing. Runners are not guaranteed to receive arguments since process kill signals do not provide contextual information.
+- **BREAKING** upgrade `pg` package to v8. Review the [minimal breaking changes](https://github.com/brianc/node-postgres/blob/master/CHANGELOG.md#pg800) for details. Minor performance improvements have been observed.
+- host: `pause`/`unpause`/`stop` now forward arguments to corresponding runner methods. Custom runners can use the contextual information during their `pause`/`unpause`/`stop` processing. Runners are not guaranteed to receive arguments since process kill signals do not provide contextual information.
 
 ### Commits
 
