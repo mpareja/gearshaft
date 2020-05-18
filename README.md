@@ -28,7 +28,7 @@ Use Docker to run Postgres or install Postgres from scratch. The automated tests
 You can run Postgres with docker as follows:
 
 ```
-docker run --name pg -d -p 5432:5432 -e POSTGRES_PASSWORD=NInAN5t3kJo8d7I3 postgres:10.5
+docker run --name pg -d -p 5432:5432 -e POSTGRES_PASSWORD=NInAN5t3kJo8d7I3 postgres:12
 ```
 
 Terminate Postgres and delete all data as follow:
@@ -42,6 +42,7 @@ docker rm -fv pg
 1. Install the Postgres client (psql)
 
    Ubuntu: `sudo apt install postgresql-client`
+   Mac: `brew install libpq && brew link --force libpq`
 
 2. (Re)create the message store database and user credentials
 
