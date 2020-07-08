@@ -65,11 +65,11 @@ describe('entity-store-substitute', () => {
         expect(entity.someMessagesApplied).toBe(false)
       })
 
-      it('returns no other record metadata', async () => {
+      it('record version is -1, stream not initialized', async () => {
         const [entity, record] = await setup().entityStore.fetchRecord('unknown-id')
 
         expect(entity).toBeDefined()
-        expect(record.version).toBeUndefined()
+        expect(record.version).toBe(-1)
       })
     })
   })

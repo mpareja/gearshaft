@@ -125,16 +125,38 @@ module.exports.generateEntityStoreSuite = ({
       })
 
       describe('fetchRecord', () => {
-        it('returns entity with version', async () => {
-          const message = exampleMessage(MessageClassA)
-          const streamName = exampleStreamName(A_CATEGORY)
-          const id = StreamName.getId(streamName)
-          const position = await write(message, streamName)
+        describe('stream exists in store', () => {
+          it('returns entity with version', async () => {
+            const message = exampleMessage(MessageClassA)
+            const streamName = exampleStreamName(A_CATEGORY)
+            const id = StreamName.getId(streamName)
+            const position = await write(message, streamName)
 
-          const [entity, { version }] = await entityStore.fetchRecord(id)
+            const [entity, { version }] = await entityStore.fetchRecord(id)
 
-          expect(entity.applied).toHaveLength(1)
-          expect(version).toEqual(position)
+            expect(entity.applied).toHaveLength(1)
+            expect(version).toEqual(position)
+          })
+        })
+
+        describe('stream does not exist in store', () => {
+          it('returns entity with no messages applied', async () => {
+            const streamName = exampleStreamName(A_CATEGORY)
+            const id = StreamName.getId(streamName)
+
+            const [entity] = await entityStore.fetchRecord(id)
+
+            expect(entity.applied).toHaveLength(0)
+          })
+
+          it('record version is -1, stream not initialized', async () => {
+            const streamName = exampleStreamName(A_CATEGORY)
+            const id = StreamName.getId(streamName)
+
+            const [_, { version }] = await entityStore.fetchRecord(id) // eslint-disable-line no-unused-vars
+
+            expect(version).toBe(-1)
+          })
         })
       })
 

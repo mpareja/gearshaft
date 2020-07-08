@@ -11,7 +11,7 @@ exports.createEntityStoreSubstitute = ({ entity: EntityClass }) => {
   }
 
   const fetchRecord = async (id) => {
-    const record = records[id] || { entity: new EntityClass(), metadata: {} }
+    const record = records[id] || { entity: new EntityClass(), metadata: { version: -1 } }
 
     return [record.entity, record.metadata]
   }
