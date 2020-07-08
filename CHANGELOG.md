@@ -1,3 +1,14 @@
+## v0.15.0: entity-store enhancement (2020-07-08)
+
+### Highlights
+
+- **BREAKING** entity-store: fetchRecord now returns a version of `-1` instead of `undefined` when the entity stream in question has no messages. Returning `-1` (stream not initialized) is beneficial for handlers that support both initializing a new entity stream _and_ appending to an existing entity stream. Such handlers can simply forward `version` as the `expectedVersion` for subsequent writes and rest assured that concurrency controls will be enforced for both initial stream writes and existing stream writes.
+
+### Commits
+
+- ([`e46f3df`](https://github.com/mpareja/gearshaft/commit/e46f3dff01b589cf18eb976a729faef8647a023f)) entity-store: fetchRecord returns version -1 when stream is empty
+- ([`964b6e9`](https://github.com/mpareja/gearshaft/commit/964b6e96c06f242afca1b2f599ff1f518fa525d3)) package: upgrade dependencies
+
 ## v0.14.0: upgrade pg dependency to v8 (2020-05-18)
 
 ### Highlights
