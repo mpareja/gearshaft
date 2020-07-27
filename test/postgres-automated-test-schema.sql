@@ -1,3 +1,9 @@
+-- configurations
+
+ALTER DATABASE message_store SET message_store.sql_condition TO on; 
+
+-- automated_tests
+
 CREATE TABLE IF NOT EXISTS message_store.automated_tests (
   id UUID NOT NULL,
   time TIMESTAMP WITHOUT TIME ZONE DEFAULT (now() AT TIME ZONE 'utc') NOT NULL

@@ -49,6 +49,36 @@ describe('message-store-postgres', () => {
     })
   })
 
+  describe('getStream', () => {
+    describe('sql condition', () => {
+      describe('when not provided', () => {
+        it('parameter defaults to null, returns all results', async () => {
+          const log = createTestLog()
+          const messageStore = createMessageStore({ log })
+          const { streamName } = await examplePut(messageStore, { count: 3 })
+
+          const results = await messageStore.getStream(streamName)
+
+          expect(results.length).toBe(3)
+        })
+      })
+
+      describe('when provided', () => {
+        it('limits the results based on given sql condition', async () => {
+          const log = createTestLog()
+          const messageStore = createMessageStore({ log })
+          const { streamName, messages } = await examplePut(messageStore, { count: 3, trackMessages: true })
+
+          const CONDITION_SQL = 'messages.position = 1'
+          const results = await messageStore.getStream(streamName, { condition: CONDITION_SQL })
+
+          expect(results.length).toBe(1)
+          expect(results[0]).toMatchObject(messages[1])
+        })
+      })
+    })
+  })
+
   describe('get-last', () => {
     describe('connection error', () => {
       it('propagates error', async () => {

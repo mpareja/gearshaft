@@ -12,7 +12,7 @@ exports.createGetStream = (options) => {
     streamName,
     options.position,
     options.batchSize,
-    null
+    options.condition
   ]
 
   const parameters = '$1::varchar, $2::bigint, $3::bigint, $4::varchar'
