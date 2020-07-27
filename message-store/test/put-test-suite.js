@@ -232,10 +232,23 @@ exports.generatePutSuite = ({
 
   describe('example-put-category', () => {
     describe('given no options', () => {
+      it('tracks the only target streamName', async () => {
+        const { streamNames } = await examplePutCategory(messageStore)
+
+        expect(streamNames).toHaveLength(1)
+      })
+
       it('tracks the only message written', async () => {
         const { messages } = await examplePutCategory(messageStore)
 
         expect(messages).toHaveLength(1)
+      })
+    })
+
+    describe('when trackStreamNames is false', () => {
+      it('does not track streamNames', async () => {
+        const { streamNames } = await examplePutCategory(messageStore, { trackStreamNames: false })
+        expect(streamNames).toHaveLength(0)
       })
     })
 
