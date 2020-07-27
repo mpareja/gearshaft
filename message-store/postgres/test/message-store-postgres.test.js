@@ -49,7 +49,7 @@ describe('message-store-postgres', () => {
     })
   })
 
-  describe('getStream', () => {
+  describe('get-stream', () => {
     describe('sql condition', () => {
       describe('when not provided', () => {
         it('parameter defaults to null, returns all results', async () => {
