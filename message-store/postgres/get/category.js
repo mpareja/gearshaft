@@ -14,10 +14,11 @@ exports.createGetCategory = (options) => {
     options.batchSize,
     options.correlation,
     options.consumerGroupMember,
-    options.consumerGroupSize
+    options.consumerGroupSize,
+    options.condition
   ]
 
-  const parameters = '$1::varchar, $2::bigint, $3::bigint, $4::varchar, $5::bigint, $6::bigint'
+  const parameters = '$1::varchar, $2::bigint, $3::bigint, $4::varchar, $5::bigint, $6::bigint, $7::varchar'
   const sql = `SELECT * FROM get_category_messages(${parameters});`
 
   const get = createGet({ ...options, assert, getValues, sql })
