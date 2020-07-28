@@ -8,7 +8,7 @@ const { generateReadSuite } = require('../../test/read-test-suite')
 const { generateWriteSuite } = require('../../test/write-test-suite')
 const { getConfig } = require('../../../postgres-gateway/test/config')
 const {
-  createStore, createTestPostgresGateway, examplePut,
+  createStore, createTestPostgresGateway, examplePut, examplePutCategory,
   exampleStreamName, exampleWriteMessageData
 } = require('./init-message-store')
 
@@ -44,6 +44,69 @@ describe('message-store-postgres', () => {
         await expect(promise).rejects.toMatchObject({
           message: 'message-store get: error reading from database',
           inner: expect.anything()
+        })
+      })
+    })
+  })
+
+  describe('get-stream', () => {
+    describe('sql condition', () => {
+      describe('when not provided', () => {
+        it('parameter defaults to null, returns all results', async () => {
+          const log = createTestLog()
+          const messageStore = createMessageStore({ log })
+          const { streamName } = await examplePut(messageStore, { count: 3 })
+
+          const results = await messageStore.getStream(streamName)
+
+          expect(results.length).toBe(3)
+        })
+      })
+
+      describe('when provided', () => {
+        it('limits the results based on given sql condition', async () => {
+          const log = createTestLog()
+          const messageStore = createMessageStore({ log })
+          const { streamName, messages } = await examplePut(messageStore, { count: 3, trackMessages: true })
+
+          const CONDITION_SQL = 'messages.position = 1'
+          const results = await messageStore.getStream(streamName, { condition: CONDITION_SQL })
+
+          expect(results.length).toBe(1)
+          expect(results[0]).toMatchObject(messages[1])
+        })
+      })
+    })
+  })
+
+  describe('get-category', () => {
+    describe('sql condition', () => {
+      describe('when not provided', () => {
+        it('parameter defaults to null, returns all results', async () => {
+          const log = createTestLog()
+          const messageStore = createMessageStore({ log })
+          const { category } = await examplePutCategory(messageStore, { count: 3 })
+
+          const results = await messageStore.getCategory(category)
+
+          expect(results.length).toBe(3)
+        })
+      })
+
+      describe('when provided', () => {
+        it('limits the results based on given sql condition', async () => {
+          const log = createTestLog()
+          const messageStore = createMessageStore({ log })
+          const { category, messages, streamNames } = await examplePutCategory(messageStore, { count: 3, trackStreamNames: true, trackMessages: true })
+
+          const streamName = streamNames[0]
+          const expectedMessage = messages[0]
+
+          const CONDITION_SQL = `messages.stream_name = '${streamName}'`
+          const results = await messageStore.getCategory(category, { condition: CONDITION_SQL })
+
+          expect(results.length).toBe(1)
+          expect(results[0]).toMatchObject(expectedMessage)
         })
       })
     })
