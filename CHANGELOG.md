@@ -1,3 +1,23 @@
+## v0.15.1: support custom filters when retrieving messages (2020-07-28)
+
+### Highlights
+
+- message-store: postgres: support custom filtering of messages retrieved via `get`/`getCategory`/`getStream`.
+  - `get`/`getCategory`/`getStream` now accept a SQL fragment via the `condition` option. The SQL fragment is appended to the WHERE clause used to retriving messages via [`get_stream_messages`](http://docs.eventide-project.org/user-guide/message-db/server-functions.html#get-messages-from-a-stream) and [`get_category_messages`](http://docs.eventide-project.org/user-guide/message-db/server-functions.html#get-messages-from-a-category).
+  - **WARNING**: great care must be taken as the `condition` option could be used as a [SQL Injection](https://owasp.org/www-community/attacks/SQL_Injection) attack vector.
+  - **NOTE**: [Message DB](http://docs.eventide-project.org/user-guide/message-db/) requires the [`message_store.sql_condition`](http://docs.eventide-project.org/user-guide/message-db/server-functions.html#filtering-messages-with-a-sql-condition) setting be configured to `on`. Using this feature without activating the configuration option will result in an error.
+  - Thanks go out to [sid-360](https://github.com/sid-360) for contributing custom filtering!
+
+### Commits
+
+- ([`007239f`](https://github.com/mpareja/gearshaft/commit/007239f3619fa41f6bd014a54875ecf820341c24)) package: upgrade pg@8.3.0, uuid@8.3.0
+- ([`44f8074`](https://github.com/mpareja/gearshaft/commit/44f8074697c25865e990128e48f33a83f39b5a15)) message-store: no need to grow examplePutCategory API to track stream names
+- ([`a808809`](https://github.com/mpareja/gearshaft/commit/a808809b5f6c078219aaaf1801a4c52f19d21bba)) Merge pull request #4 from sid-360/postgres-get-add-sql-condition
+- ([`4acd378`](https://github.com/mpareja/gearshaft/commit/4acd3788cf373906db09632150d991f9036f1b54)) message-store: postgres: update getCategory
+- ([`6251830`](https://github.com/mpareja/gearshaft/commit/6251830cb6d9d622e6ef6f9053bc3cef00e69853)) message-store: postgres: update examplePutCategory
+- ([`cd4cf39`](https://github.com/mpareja/gearshaft/commit/cd4cf3958931a8ef6c1f662113881a808fb1d6bb)) message-store: postgres: rename test description
+- ([`9e939d7`](https://github.com/mpareja/gearshaft/commit/9e939d71862c38f2b33f5722ada2b087dd2852f8)) message-store: postgres: update getStream
+
 ## v0.15.0: entity-store enhancement (2020-07-08)
 
 ### Highlights
