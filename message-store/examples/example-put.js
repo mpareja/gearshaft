@@ -18,23 +18,19 @@ exports.examplePut = async (messageStore, { category, streamName, count, trackMe
   return { streamName, position, messages }
 }
 
-exports.examplePutCategory = async (messageStore, { category, count, trackStreamNames = true, trackMessages = true } = {}) => {
+exports.examplePutCategory = async (messageStore, { category, count, trackMessages = true } = {}) => {
   count = count || 1
   category = category || exampleCategory()
 
   const messages = []
-  const streamNames = []
   let position
   while (count--) {
     const streamName = exampleStreamName(category)
-    if (trackStreamNames) {
-      streamNames.push(streamName)
-    }
     const message = exampleWriteMessageData()
     if (trackMessages) {
       messages.push(message)
     }
     position = await messageStore.put(message, streamName)
   }
-  return { category, position, streamNames, messages }
+  return { category, position, messages }
 }

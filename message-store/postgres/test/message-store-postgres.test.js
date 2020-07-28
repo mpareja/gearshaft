@@ -52,7 +52,7 @@ describe('message-store-postgres', () => {
   describe('get-stream', () => {
     describe('sql condition', () => {
       describe('when not provided', () => {
-        it('parameter defaults to null, returns all results', async () => {
+        it('returns all results', async () => {
           const log = createTestLog()
           const messageStore = createMessageStore({ log })
           const { streamName } = await examplePut(messageStore, { count: 3 })
@@ -82,7 +82,7 @@ describe('message-store-postgres', () => {
   describe('get-category', () => {
     describe('sql condition', () => {
       describe('when not provided', () => {
-        it('parameter defaults to null, returns all results', async () => {
+        it('returns all results', async () => {
           const log = createTestLog()
           const messageStore = createMessageStore({ log })
           const { category } = await examplePutCategory(messageStore, { count: 3 })
@@ -97,12 +97,11 @@ describe('message-store-postgres', () => {
         it('limits the results based on given sql condition', async () => {
           const log = createTestLog()
           const messageStore = createMessageStore({ log })
-          const { category, messages, streamNames } = await examplePutCategory(messageStore, { count: 3, trackStreamNames: true, trackMessages: true })
+          const { category, messages } = await examplePutCategory(messageStore, { count: 3, trackMessages: true })
 
-          const streamName = streamNames[0]
-          const expectedMessage = messages[0]
+          const expectedMessage = messages[2]
 
-          const CONDITION_SQL = `messages.stream_name = '${streamName}'`
+          const CONDITION_SQL = `messages.id = '${expectedMessage.id}'`
           const results = await messageStore.getCategory(category, { condition: CONDITION_SQL })
 
           expect(results.length).toBe(1)
