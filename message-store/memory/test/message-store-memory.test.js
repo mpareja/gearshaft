@@ -1,4 +1,5 @@
 const createLog = require('../../../test/test-log')
+const { asyncIterableToArray } = require('../../../test/async-iterable-to-array')
 const { createMessageStore } = require('../index')
 const { generateGetCategorySuite } = require('../../test/get-category-test-suite')
 const { generateGetLastSuite } = require('../../test/get-last-test-suite')
@@ -28,15 +29,7 @@ describe('message-store-memory', () => {
   })
 
   const read = (...args) => {
-    return readFrom(messageStore, ...args)
-  }
-
-  const readFrom = async (aStore, streamName, position) => {
-    const found = []
-    for await (const message of aStore.read(streamName, { position })) {
-      found.push(message)
-    }
-    return found
+    return asyncIterableToArray(messageStore.read(...args))
   }
 
   describe('positions', () => {
