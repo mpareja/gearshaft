@@ -1,10 +1,14 @@
 const { StreamName } = require('./stream-name')
 
+// read implementation offered to message-store implementations that
+// retrieve messages in batches
 module.exports = ({ batchSize, get }) => {
-  const read = async function * (streamName, { position } = {}) {
+  const read = async function * (streamName, options = {}) {
+    let position = options.position
+
     let results
     do {
-      results = await get(streamName, { position })
+      results = await get(streamName, { ...options, position })
       for (const result of results) {
         position = StreamName.isCategory(streamName)
           ? result.globalPosition + 1

@@ -1,4 +1,5 @@
 const createTestLog = require('../../../test/test-log')
+const { asyncIterableToArray } = require('../../../test/async-iterable-to-array')
 const { generateGetCategorySuite } = require('../../test/get-category-test-suite')
 const { generateGetLastSuite } = require('../../test/get-last-test-suite')
 const { generateGetStreamSuite } = require('../../test/get-stream-test-suite')
@@ -126,6 +127,38 @@ describe('message-store-postgres', () => {
         await expect(promise).rejects.toMatchObject({
           message: 'message-store getLast: error reading from database',
           inner: expect.anything()
+        })
+      })
+    })
+  })
+
+  describe('read', () => {
+    describe('sql condition', () => {
+      describe('when not provided', () => {
+        it('returns all results', async () => {
+          const log = createTestLog()
+          const messageStore = createMessageStore({ log })
+          const { category } = await examplePutCategory(messageStore, { count: 3 })
+
+          const results = await asyncIterableToArray(messageStore.read(category))
+
+          expect(results.length).toBe(3)
+        })
+      })
+
+      describe('when provided', () => {
+        it('limits the results based on given sql condition', async () => {
+          const log = createTestLog()
+          const messageStore = createMessageStore({ log })
+          const { category, messages } = await examplePutCategory(messageStore, { count: 3, trackMessages: true })
+
+          const expectedMessage = messages[2]
+
+          const CONDITION_SQL = `messages.id = '${expectedMessage.id}'`
+          const results = await asyncIterableToArray(messageStore.read(category, { condition: CONDITION_SQL }))
+
+          expect(results.length).toBe(1)
+          expect(results[0]).toMatchObject(expectedMessage)
         })
       })
     })
