@@ -2,7 +2,7 @@
 
 ### Highlights
 
-- message-store: read: following up on the last release which introduced SQL filters when retrieving queries, we've now added support for such filters when reading all messages in a stream.
+- message-store: read: following up on the last release which introduced SQL filters when retrieving messages, we've now added support for such filters when reading all messages in a stream.
 - message-store: read: addressed an issue reading an entire stream when the global batch size was not specified.
 
 ### Commits
