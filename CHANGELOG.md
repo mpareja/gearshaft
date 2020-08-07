@@ -1,3 +1,16 @@
+## v0.15.2: support custom filters via read (2020-08-07)
+
+### Highlights
+
+- message-store: read: following up on the last release which introduced SQL filters when retrieving queries, we've now added support for such filters when reading all messages in a stream.
+- message-store: read: addressed an issue reading an entire stream when the global batch size was not specified.
+
+### Commits
+
+- ([`132b1b4`](https://github.com/mpareja/gearshaft/commit/132b1b49fd89d1977e733a6a58fb53928bf6b335)) message-store: read: specify default batchSize & allow per-request batchSize
+- ([`a47a536`](https://github.com/mpareja/gearshaft/commit/a47a53694805c481d5dbb53f3a29fe21c498d6df)) message-store: postgres: read: support sql condition
+- ([`1140d2b`](https://github.com/mpareja/gearshaft/commit/1140d2b3196605796a1305f426bc8b3392abc34f)) message-store: extract asyncIterableToArray for testing
+
 ## v0.15.1: support custom filters when retrieving messages (2020-07-28)
 
 ### Highlights
