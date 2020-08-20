@@ -10,6 +10,14 @@ describe('retry', () => {
 
       expect(operation.calls).toBe(1)
     })
+
+    it('the resolved value is returned', async () => {
+      const operation = () => 'someValue'
+
+      const value = await retry([ExampleError], operation)
+
+      expect(value).toBe('someValue')
+    })
   })
 
   describe('given one of the specified errors are thrown', () => {

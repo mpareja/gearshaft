@@ -5,8 +5,7 @@ exports.retry = async (errorTypes, operation) => {
 
   while (true) {
     try {
-      await operation()
-      return
+      return await operation()
     } catch (err) {
       if (!isRetryType(err)) {
         throw err
