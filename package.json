@@ -58,22 +58,22 @@
   "license": "MIT",
   "dependencies": {
     "lodash.clonedeep": "^4.5.0",
-    "pg": "^8.3.0",
+    "pg": "^8.3.3",
     "uuid": "^8.3.0",
     "uuid-validate": "0.0.3"
   },
   "devDependencies": {
     "@eventide/message-db": "^1.2.3",
-    "dependency-cruiser": "^9.9.3",
-    "husky": "^4.2.5",
-    "jest": "^26.1.0",
+    "dependency-cruiser": "^9.13.1",
+    "husky": "^4.3.0",
+    "jest": "^26.4.2",
     "js-joda": "^1.11.0",
-    "opener": "^1.5.1",
-    "pino": "^6.4.1",
+    "opener": "^1.5.2",
+    "pino": "^6.6.0",
     "rc": "^1.2.8",
     "rimraf": "^3.0.2",
     "standard": "^14.3.4",
-    "systeminformation": "^4.26.10"
+    "systeminformation": "^4.27.3"
   },
   "repository": {
     "type": "git",
