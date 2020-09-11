@@ -21,7 +21,8 @@
     "mdb:uninstall": "./node_modules/@eventide/message-db/database/uninstall.sh",
     "mdb:install": "./node_modules/@eventide/message-db/database/install.sh",
     "mdb:passwd": "psql -c \"alter role message_store with password 'NInAN5t3kJo8d7I3';\"",
-    "test": "npm run clean && npm run lint && npm run jest"
+    "test": "npm run clean && npm run lint && npm run jest",
+    "watch-test": "jest --no-coverage --notify --watch"
   },
   "husky": {
     "hooks": {

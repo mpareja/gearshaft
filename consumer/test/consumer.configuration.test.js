@@ -59,6 +59,10 @@ describe('consumer configuration', () => {
     expect(error.message).toBe('consumer: category required')
   })
 
+  it('allows identifier without consumer group settings', () => {
+    setupConsumer({ identifier: 'some-identifier' })
+  })
+
   describe('consumer groups', () => {
     const setupConsumerGroup = (overrides) => {
       return setupConsumer(Object.assign({

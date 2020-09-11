@@ -214,14 +214,12 @@ const assertOptions = (options) => {
 }
 
 const assertConsumerGroupOptions = (options) => {
-  const groupOptions = [
-    typeof options.groupMember === 'number',
-    typeof options.groupSize === 'number',
-    typeof options.identifier === 'string'
-  ]
+  const groupMemberSet = typeof options.groupMember === 'number'
+  const groupSizeSet = typeof options.groupSize === 'number'
+  const identifierSet = typeof options.identifier === 'string'
 
-  const allValid = groupOptions.every(valid => valid)
-  const noneSpecified = groupOptions.every(valid => !valid)
+  const allValid = groupMemberSet && groupSizeSet && identifierSet
+  const noGroupSpecified = !groupMemberSet && !groupSizeSet
 
-  assert(allValid || noneSpecified, errorMessage('groupMember, groupSize, and identifier required for consumer groups'))
+  assert(allValid || noGroupSpecified, errorMessage('groupMember, groupSize, and identifier required for consumer groups'))
 }
