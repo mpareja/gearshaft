@@ -1,3 +1,17 @@
+## v0.15.3: consumer & retry enhancements (2020-09-11)
+
+### Highlights
+
+- consumer: allow specifying identifier without consumer group details. Unique identifiers must be provided when operating multiple consumers on the same stream to ensure consumer positions are tracking distinctly.
+- retry: propagate the value returned by the function being retried
+
+### Commits
+
+- ([`e317d51`](https://github.com/mpareja/gearshaft/commit/e317d51fc3960cd140f689dcf0b1da3df8061e09)) consumer: allow specifying identifier without consumer group details
+- ([`7a53756`](https://github.com/mpareja/gearshaft/commit/7a53756cd958d666fb45e2cf5ddd49e72a595dd5)) package: upgrade pg to 8.3.3, confirmed no performance regressions
+- ([`c80e3ef`](https://github.com/mpareja/gearshaft/commit/c80e3efc1dfdc5f059cbd76baf0f0b98a302ac86)) retry: support returning the value returned by the retried function
+- ([`ac9bd3f`](https://github.com/mpareja/gearshaft/commit/ac9bd3f689deb810799309969ef8621f37c92425)) CHANGELOG: correct typo
+
 ## v0.15.2: support custom filters via read (2020-08-07)
 
 ### Highlights
