@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+
+database_prep() {
+  npm run recreate
+  echo Sleeping 5 seconds while database settles
+  sleep 5
+}
+
+database_prep
+node ./message-store/memory/test/benchmark/get-stream.benchmark.js
+node ./message-store/postgres/test/benchmark/get-stream.benchmark.js
+
+database_prep
+node ./message-store/memory/test/benchmark/write-single-message.benchmark.js
+node ./message-store/postgres/test/benchmark/write-single-message.benchmark.js
+
+database_prep
+node ./message-store/memory/test/benchmark/write-batch-messages.benchmark.js
+node ./message-store/postgres/test/benchmark/write-batch-messages.benchmark.js
+
+database_prep
+node ./consumer/test/benchmark/noop-consumer.benchmark.js

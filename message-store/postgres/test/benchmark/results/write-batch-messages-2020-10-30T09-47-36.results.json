@@ -1,0 +1,40 @@
+{
+  "date": "2020-10-30T09:47:36.288Z",
+  "count": 100,
+  "durationMicroSeconds": 25949728.951,
+  "averageOverheadMicroSeconds": 259497.29,
+  "operationsPerSecond": 3.854,
+  "cpu": {
+    "manufacturer": "Intel®",
+    "brand": "Xeon® E3-1225 v3",
+    "vendor": "GenuineIntel",
+    "family": "6",
+    "model": "60",
+    "stepping": "3",
+    "revision": "",
+    "voltage": "",
+    "speed": "3.20",
+    "speedmin": "0.80",
+    "speedmax": "3.20",
+    "governor": "powersave",
+    "cores": 8,
+    "physicalCores": 4,
+    "processors": 1,
+    "socket": "",
+    "cache": {
+      "l1d": 131072,
+      "l1i": 131072,
+      "l2": 1,
+      "l3": 8
+    }
+  },
+  "os": {
+    "platform": "linux",
+    "distro": "Ubuntu",
+    "release": "20.04.1 LTS",
+    "kernel": "5.4.0-52-generic",
+    "arch": "x64",
+    "servicepack": ""
+  },
+  "node": "v12.19.0"
+}
