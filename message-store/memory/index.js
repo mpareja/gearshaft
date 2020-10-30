@@ -93,7 +93,7 @@ module.exports.createMessageStore = ({ batchSize: configuredBatchSize = 1000, lo
     const categoryName = StreamName.getCategory(streamName)
     const category = categories.get(categoryName) || []
 
-    for (var m of category) {
+    for (const m of category) {
       if (m.streamName === streamName) {
         last = m
       }
