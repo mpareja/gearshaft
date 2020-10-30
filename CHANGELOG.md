@@ -1,3 +1,14 @@
+## v0.15.4: upgrade dependencies, including pg (2020-10-30)
+
+### Highlights
+
+- postgres: upgrade `pg` dependency to version 8.4.2. Performance either improved or remained the same across all benchmarks.
+
+### Commits
+
+- ([`2d45b8e`](https://github.com/mpareja/gearshaft/commit/2d45b8ecebbdec8780b06c80f9d4a09da28acdb0)) package: upgrade dependencies (including pg@8.4.2), update benchmarks
+- ([`cf5c657`](https://github.com/mpareja/gearshaft/commit/cf5c65734455c159699a0f23e794e980d48e24a3)) benchmark: add script and refresh benchmarks
+
 ## v0.15.3: consumer & retry enhancements (2020-09-11)
 
 ### Highlights
