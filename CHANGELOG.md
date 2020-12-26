@@ -1,3 +1,13 @@
+## v0.15.5: upgrade dependencies, including pg (2020-12-26)
+
+### Highlights
+
+- postgres: upgrade `pg` dependency to version 8.5.1. No significant impact on performance.
+
+### Commits
+
+- ([`bda6ae4`](https://github.com/mpareja/gearshaft/commit/bda6ae4b632ec3a5b87e32d433437cba1ba2e5e6)) package: upgrade dependencies (including pg@8.5.1)
+
 ## v0.15.4: upgrade dependencies, including pg (2020-10-30)
 
 ### Highlights
