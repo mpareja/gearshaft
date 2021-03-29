@@ -21,14 +21,13 @@
     "mdb:uninstall": "./node_modules/@eventide/message-db/database/uninstall.sh",
     "mdb:install": "./node_modules/@eventide/message-db/database/install.sh",
     "mdb:passwd": "psql -c \"alter role message_store with password 'NInAN5t3kJo8d7I3';\"",
+    "prepare": "simple-git-hooks",
     "test": "npm run clean && npm run lint && npm run jest",
     "watch-test": "jest --no-coverage --notify --watch"
   },
-  "husky": {
-    "hooks": {
-      "commit-msg": "./tools/commit-msg \"$HUSKY_GIT_PARAMS\"",
-      "pre-commit": "npm test"
-    }
+  "simple-git-hooks": {
+    "commit-msg": "./tools/commit-msg \"$@\"",
+    "pre-commit": "npm test"
   },
   "jest": {
     "collectCoverage": true,
@@ -66,13 +65,13 @@
   "devDependencies": {
     "@eventide/message-db": "^1.2.3",
     "dependency-cruiser": "^9.21.1",
-    "husky": "^4.3.6",
     "jest": "^26.6.3",
     "js-joda": "^1.11.0",
     "opener": "^1.5.2",
     "pino": "^6.8.0",
     "rc": "^1.2.8",
     "rimraf": "^3.0.2",
+    "simple-git-hooks": "2.2.0",
     "standard": "^16.0.3",
     "systeminformation": "^5.6.9"
   },
