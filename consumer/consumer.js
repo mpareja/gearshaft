@@ -197,7 +197,21 @@ exports.createConsumer = (options) => {
     return runner
   }
 
-  return { dispatch, positionStore, start }
+  return {
+    dispatch,
+    positionStore,
+    start,
+
+    // configuration parameters
+    category,
+    correlation,
+    groupMember,
+    groupSize,
+    identifier,
+    name,
+    pollingIntervalMs,
+    positionUpdateInterval
+  }
 }
 
 const errorMessage = (msg) => `consumer: ${msg}`
