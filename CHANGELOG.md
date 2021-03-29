@@ -1,3 +1,17 @@
+## v0.15.6: expose consumer parameters (2021-03-29)
+
+### Highlights
+
+- consumer: expose the configuration parameters used when creating a consumer
+
+### Commits
+
+- ([`a072de4`](https://github.com/mpareja/gearshaft/commit/a072de4b36f492087ddd302b56bf56ccb52e6d5c)) consumer: exposes configuration parameters
+- ([`381e859`](https://github.com/mpareja/gearshaft/commit/381e85977d839b9340182c61cd86ba12e1f7f6c3)) package: upgrade message-db version used for testing
+- ([`2271749`](https://github.com/mpareja/gearshaft/commit/22717499b4efea1482d2fd114d03c4d058824846)) package: upgrade dev dependencies: pino, dependency-cruiser
+- ([`7a334eb`](https://github.com/mpareja/gearshaft/commit/7a334eb639333d0b0ad3f7d8056dbfbded1ffb26)) package: use simple-git-hooks instead of husky
+- ([`2b8acbd`](https://github.com/mpareja/gearshaft/commit/2b8acbda2a8a91933fe1286dbdaa4f95e48d76fc)) package: upgrade systeminformation and migrate existing results format
+
 ## v0.15.5: upgrade dependencies, including pg (2020-12-26)
 
 ### Highlights
