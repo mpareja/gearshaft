@@ -1,0 +1,44 @@
+{
+  "date": "2022-07-30T13:02:12.573Z",
+  "count": 100000,
+  "durationMicroSeconds": 11006482.714,
+  "averageOverheadMicroSeconds": 110.065,
+  "operationsPerSecond": 9085.555,
+  "cpu": {
+    "manufacturer": "Intel",
+    "brand": "Gen Intel® Core™ i5-12500H",
+    "vendor": "Intel",
+    "family": "6",
+    "model": "154",
+    "stepping": "3",
+    "revision": "",
+    "voltage": "",
+    "speed": 3.15,
+    "speedMin": 0.4,
+    "speedMax": 4.5,
+    "governor": "powersave",
+    "cores": 16,
+    "physicalCores": 12,
+    "performanceCores": 4,
+    "efficiencyCores": 8,
+    "processors": 1,
+    "socket": "",
+    "flags": "fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx pdpe1gb rdtscp lm constant_tsc art arch_perfmon pebs bts rep_good nopl xtopology nonstop_tsc cpuid aperfmperf tsc_known_freq pni pclmulqdq dtes64 monitor ds_cpl vmx smx est tm2 ssse3 sdbg fma cx16 xtpr pdcm pcid sse4_1 sse4_2 x2apic movbe popcnt tsc_deadline_timer aes xsave avx f16c rdrand lahf_lm abm 3dnowprefetch cpuid_fault epb cat_l2 invpcid_single cdp_l2 ssbd ibrs ibpb stibp ibrs_enhanced tpr_shadow vnmi flexpriority ept vpid ept_ad fsgsbase tsc_adjust bmi1 avx2 smep bmi2 erms invpcid rdt_a rdseed adx smap clflushopt clwb intel_pt sha_ni xsaveopt xsavec xgetbv1 xsaves split_lock_detect avx_vnni dtherm ida arat pln pts hwp hwp_notify hwp_act_window hwp_epp hwp_pkg_req umip pku ospke waitpkg gfni vaes vpclmulqdq rdpid movdiri movdir64b fsrm md_clear serialize arch_lbr flush_l1d arch_capabilities",
+    "virtualization": true,
+    "cache": {
+      "l1d": 458752,
+      "l1i": 655360,
+      "l2": 9437184,
+      "l3": 18874368
+    }
+  },
+  "os": {
+    "platform": "linux",
+    "distro": "Ubuntu",
+    "release": "22.04 LTS",
+    "kernel": "5.15.0-41-generic",
+    "arch": "x64",
+    "servicepack": ""
+  },
+  "node": "v16.16.0"
+}
