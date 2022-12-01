@@ -58,8 +58,8 @@
   "license": "MIT",
   "dependencies": {
     "lodash.clonedeep": "^4.5.0",
-    "pg": "^8.7.3",
-    "uuid": "^8.3.2",
+    "pg": "^8.8.0",
+    "uuid": "^9.0.0",
     "uuid-validate": "0.0.3"
   },
   "devDependencies": {
