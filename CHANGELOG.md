@@ -1,3 +1,19 @@
+## v0.15.7: upgrade dependencies, including pg (2022-12-01)
+
+### Highlights
+
+- postgres: upgrade `pg` dependency to version 8.8.0. No significant impact on performance or subtle improvement.
+
+### Commits
+
+- ([`b2bf2e3`](https://github.com/mpareja/gearshaft/commit/b2bf2e35a17d5921f6e8611297d86680972f9857)) package: upgrade pg and uuid
+- ([`c0ef290`](https://github.com/mpareja/gearshaft/commit/c0ef2909e199ec32f4838a88655de5a87e8603d2)) package: upgrade dev dependencies
+- ([`8417f8c`](https://github.com/mpareja/gearshaft/commit/8417f8cbdc46f0ab588f913ba538ec653b9a39f5)) package: pin message-db while npm package is sorted out
+- ([`535cad8`](https://github.com/mpareja/gearshaft/commit/535cad85b8bd7e216c0b3196abdcb31b75d8c78f)) tools: add compare-latest-results script
+- ([`15a66ad`](https://github.com/mpareja/gearshaft/commit/15a66ad948181684d39aa83495a4466cf1ee9a49)) benchmark: new baselines (node 18, machine, message-db 1.3.0)
+- ([`e77ebf8`](https://github.com/mpareja/gearshaft/commit/e77ebf84ca86daa43feb01c074f0140d3f168787)) package: upgrade pg dependency (w/ before-after benchmarks)
+- ([`6131f2b`](https://github.com/mpareja/gearshaft/commit/6131f2bb66aa122bfaa404d0dfd4ba373bb44efb)) package: update dev dependencies
+
 ## v0.15.6: expose consumer parameters (2021-03-29)
 
 ### Highlights
