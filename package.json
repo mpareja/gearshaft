@@ -63,7 +63,7 @@
     "uuid-validate": "0.0.3"
   },
   "devDependencies": {
-    "@eventide/message-db": "^1.2.6",
+    "@eventide/message-db": "1.2.6",
     "dependency-cruiser": "^11.13.1",
     "jest": "^28.1.3",
     "js-joda": "^1.11.0",
