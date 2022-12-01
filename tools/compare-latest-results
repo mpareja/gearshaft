@@ -1,0 +1,18 @@
+#!/bin/env bash
+
+compare_latest_results() {
+  get_test_names | while read n; do
+    meld $(get_latest_results "$n")
+  done
+}
+
+get_test_names() {
+  find . -name '*results.json' | sed 's|^\(.*\)-[0-9-]\{10\}T.*\.results.json|\1|' | sort -u
+}
+
+get_latest_results() {
+  # take latest two and order them chronologically
+  ls $1* | sort -r | head -2 | sort
+}
+
+compare_latest_results
