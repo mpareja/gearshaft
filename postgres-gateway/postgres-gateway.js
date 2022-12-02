@@ -1,5 +1,7 @@
-const { Pool, types } = require('pg')
+const { Pool } = require('pg')
+const TypeOverrides = require('pg/lib/type-overrides')
 
+const types = new TypeOverrides()
 types.setTypeParser(20, (data) => {
   /* global BigInt */
   /* istanbul ignore next */
@@ -11,7 +13,7 @@ types.setTypeParser(20, (data) => {
 })
 
 exports.createPostgresGateway = (config) => {
-  const pool = new Pool(config)
+  const pool = new Pool({ ...config, types })
 
   pool.transaction = async (fn) => {
     const client = await pool.connect()
