@@ -33,7 +33,7 @@ exports.generatePutSuite = ({
           expectedVersion: undefined,
           id: message.id,
           position: 0,
-          streamName: streamName,
+          streamName,
           type: 'SomeType'
         }, 'message-store put: successful')
       })

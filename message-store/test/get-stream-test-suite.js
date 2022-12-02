@@ -40,7 +40,7 @@ exports.generateGetStreamSuite = ({
           batchSize: expect.any(Number),
           count: 0,
           position: 0,
-          streamName: streamName
+          streamName
         }, 'message-store get: successful')
       })
     })
