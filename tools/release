@@ -1,5 +1,7 @@
 #!/bin/bash
 
+git fetch
+
 next_version=$(jq -r '.version' package.json)
 next_tag="v$next_version"
 previous_tag=$(git tag | sort -V | tail -1)

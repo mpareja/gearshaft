@@ -1,3 +1,15 @@
+## v0.15.8: avoid global pg configurations (2022-12-02)
+
+### Highlights
+
+- postgres: avoid modifying pg type parsers for non-gearshaft managed connections
+
+### Commits
+
+- ([`638dd1d`](https://github.com/mpareja/gearshaft/commit/638dd1d1f3d022a8b390b444baf462ad78d85b9a)) message-store: tests: use shorthand notation
+- ([`9c4b38e`](https://github.com/mpareja/gearshaft/commit/9c4b38e26beb3de658eb77a21ba672feb7097b83)) postgres-gateway: limit type parser override to gearshaft controlled pool
+- ([`ca9c6dc`](https://github.com/mpareja/gearshaft/commit/ca9c6dc3a5b1577954e8bb16e48dc654f16a6cfd)) tools: workaround npm bug during package publish
+
 ## v0.15.7: upgrade dependencies, including pg (2022-12-01)
 
 ### Highlights
